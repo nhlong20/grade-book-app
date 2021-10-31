@@ -2,8 +2,6 @@ import { User } from '@/user/user.entity'
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
-import { LoginDto } from './dto/login.dto'
-import { SignUpDto } from './dto/signup.dto'
 import { compare, hash } from 'bcrypt'
 import { JwtService, JwtSignOptions } from '@nestjs/jwt'
 import { CookieOptions, Response, Request } from 'express'
@@ -13,6 +11,7 @@ import {
   REFRESH_TOKEN_COOKIE_KEY,
 } from '@/utils/constant'
 import { tryCatch } from '@/utils/functionalTryCatch'
+import { DTO } from '@/type'
 
 const commonJwtSignOptions: JwtSignOptions = {
   algorithm: 'HS256',
@@ -32,7 +31,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) { }
 
-  async signup(dto: SignUpDto) {
+  async signup(dto: DTO.Auth.SignUpDto) {
     if (await this.checkExistence(dto.email))
       throw new BadRequestException('User already exists')
 
@@ -42,7 +41,7 @@ export class AuthService {
     })
   }
 
-  async login(dto: LoginDto, res: Response) {
+  async login(dto: DTO.Auth.LoginDto, res: Response) {
     const user = await this.userRepo.findOne({ email: dto.email })
 
     if (!user) throw new BadRequestException('Email or password is wrong')

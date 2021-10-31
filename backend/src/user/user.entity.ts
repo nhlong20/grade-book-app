@@ -7,7 +7,7 @@ export enum Role {
   TE = 'teacher'
 }
 
-@Entity({ name: 'users' })
+@Entity({ name: 'user' })
 export class User extends BaseEntity {
   @Column({ type: 'varchar' })
   name: string

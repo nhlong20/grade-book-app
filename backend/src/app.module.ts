@@ -7,6 +7,10 @@ import { JwtAuthGuard } from './jwt.guard'
 import { PassportModule } from '@nestjs/passport'
 import { JwtModule } from '@nestjs/jwt'
 import { JwtStrategy } from './jwt.strategy'
+import { AssignmentModule } from './assignment/assignment.module'
+import { SubmissionModule } from './submission/submission.module'
+import { SubscriptionModule } from './subscription/subscription.module'
+import { ClassModule } from './class/class.module'
 
 @Module({
   imports: [
@@ -23,6 +27,10 @@ import { JwtStrategy } from './jwt.strategy'
     }),
     UserModule,
     AuthModule,
+    AssignmentModule,
+    SubmissionModule,
+    SubscriptionModule,
+    ClassModule,
     PassportModule,
     JwtModule.register({ secret: process.env.JWT_SECRET }),
   ],

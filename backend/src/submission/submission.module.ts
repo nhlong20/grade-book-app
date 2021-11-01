@@ -8,5 +8,6 @@ import { SubmissionService } from './submission.service'
   imports: [TypeOrmModule.forFeature([Submission])],
   controllers: [SubmissionController],
   providers: [SubmissionService],
+  exports: [SubmissionService],
 })
 export class SubmissionModule { }

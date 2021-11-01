@@ -18,6 +18,6 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar' })
   password: string
 
-  @Column({ enum: Role, type: "enum", array: true })
-  role: Role[]
+  @Column({ enum: Role, type: "enum" })
+  role: Role
 }

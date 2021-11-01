@@ -1,4 +1,4 @@
-import { ClassService } from '@/class/class.service'
+import { Class } from '@/class/class.entity'
 import { DTO } from '@/type'
 import { AuthRequest } from '@/utils/interface'
 import { BadRequestException, Injectable } from '@nestjs/common'
@@ -11,7 +11,9 @@ export class SubscriptionService {
   constructor(
     @InjectRepository(Subscription)
     private readonly subscriptionRepo: Repository<Subscription>,
-    private readonly classService: ClassService,
+
+    @InjectRepository(Class)
+    private readonly classRepo: Repository<Class>,
   ) { }
 
   async create(req: AuthRequest, dto: DTO.Subscription.Create) {
@@ -49,7 +51,7 @@ export class SubscriptionService {
   }
 
   async createByCode(req: AuthRequest, dto: DTO.Subscription.CreateByCode) {
-    const c = await this.classService.getOne({ code: dto.code })
+    const c = await this.classRepo.findOne({ inviteCode: dto.code })
     const ownerId = req.user.sub
 
     if (!c) throw new BadRequestException('Class do not exist')
@@ -64,7 +66,7 @@ export class SubscriptionService {
   }
 
   async checkExistence(ownerId: string, classId: string) {
-    const subscription = await this.subscriptionRepo.find({ ownerId, classId })
+    const subscription = await this.subscriptionRepo.findOne({ ownerId, classId })
     return !!subscription
   }
 

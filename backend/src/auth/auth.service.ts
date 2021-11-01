@@ -3,7 +3,6 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { compare, hash } from 'bcrypt'
-import { JwtService, JwtSignOptions } from '@nestjs/jwt'
 import { CookieOptions, Response, Request } from 'express'
 import { JwtPayload } from '@/utils/interface'
 import {
@@ -12,11 +11,7 @@ import {
 } from '@/utils/constant'
 import { tryCatch } from '@/utils/functionalTryCatch'
 import { DTO } from '@/type'
-
-const commonJwtSignOptions: JwtSignOptions = {
-  algorithm: 'HS256',
-  secret: process.env.JWT_SECRET,
-}
+import jwt from 'jsonwebtoken'
 
 const commonCookieOption: CookieOptions = {
   httpOnly: true,
@@ -27,8 +22,7 @@ const commonCookieOption: CookieOptions = {
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User) private userRepo: Repository<User>,
-    private jwtService: JwtService,
+    @InjectRepository(User) private userRepo: Repository<User>, // @Inject() private jwtService: JwtService,
   ) { }
 
   async signup(dto: DTO.Auth.SignUpDto) {
@@ -56,15 +50,16 @@ export class AuthService {
       sub: user.id,
     }
 
-    const accessToken = this.jwtService.sign(payload, {
-      ...commonJwtSignOptions,
+    const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
+      algorithm: 'HS256',
       expiresIn: '15m',
     })
 
-    const refreshToken = this.jwtService.sign(
+    const refreshToken = jwt.sign(
       { email: user.email },
+      process.env.JWT_SECRET,
       {
-        ...commonJwtSignOptions,
+        algorithm: 'HS256',
         expiresIn: '14 days',
       },
     )
@@ -86,11 +81,11 @@ export class AuthService {
     const token = req.cookies[REFRESH_TOKEN_COOKIE_KEY]
     if (!token) throw new BadRequestException('Token to refresh not found')
 
-    const [payload, err] = tryCatch<{ email: string }>(() =>
-      this.jwtService.verify(token, {
-        algorithms: ['HS256'],
-        secret: process.env.JWT_SECRET,
-      }),
+    const [payload, err] = tryCatch<{ email: string }>(
+      () =>
+        jwt.verify(token, process.env.JWT_SECRET, {
+          algorithms: ['HS256'],
+        }) as any,
     )
 
     if (err) throw new BadRequestException('Token is not valid')
@@ -106,8 +101,7 @@ export class AuthService {
       sub: user.id,
     }
 
-    const accessToken = this.jwtService.sign(newPayload, {
-      ...commonJwtSignOptions,
+    const accessToken = jwt.sign(newPayload, process.env.JWT_SECRET, {
       expiresIn: '15m',
     })
 

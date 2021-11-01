@@ -1,4 +1,5 @@
 import { Role } from '@/user/user.entity'
+import { Request } from 'express';
 
 export interface JwtPayload {
   sub: string
@@ -6,4 +7,8 @@ export interface JwtPayload {
   role: Role[]
   email: string
   name: string
+}
+
+export interface AuthRequest extends Request {
+  user: JwtPayload
 }

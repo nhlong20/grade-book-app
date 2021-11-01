@@ -1,5 +1,5 @@
 import { DTO } from "@/type";
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "./user.entity";
@@ -8,7 +8,12 @@ import { User } from "./user.entity";
 export class UserService {
   constructor(@InjectRepository(User) private userRepo: Repository<User>) { }
 
-  async updateRole(dto: DTO.User.UpdateRole) {
+  async updateRole(userId: string, dto: DTO.User.UpdateRole) {
+    const user = await this.userRepo.findOne(userId)
+    if (!user) throw new BadRequestException('User does not exist')
 
+    user.role = dto.role
+    return await this.userRepo.save(user)
   }
+
 }

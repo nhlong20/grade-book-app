@@ -1,5 +1,6 @@
 import { Class } from '@/class/class.entity'
-import { BaseEntity, Column, Entity, ManyToOne } from 'typeorm'
+import { BaseEntity } from '@/utils/base.entity'
+import { Column, Entity, ManyToOne } from 'typeorm'
 
 @Entity()
 export class Assignment extends BaseEntity {
@@ -16,7 +17,7 @@ export class Assignment extends BaseEntity {
   percentage: number
 
   @Column({ type: 'uuid', select: false })
-  classID: string
+  classId: string
 
   @ManyToOne(() => Class, (c) => c.assignments)
   class: Class

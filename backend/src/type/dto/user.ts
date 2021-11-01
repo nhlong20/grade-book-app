@@ -4,5 +4,5 @@ import { IsEnum } from "class-validator";
 
 export class UpdateRole {
   @IsEnum(Role)
-  role: Role
+  role: Role[]
 }

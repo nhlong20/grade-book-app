@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { Module, CacheModule } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserModule } from './user/user.module'
 import { AuthModule } from './auth/auth.module'
@@ -14,6 +14,7 @@ import { ClassModule } from './class/class.module'
 
 @Module({
   imports: [
+    CacheModule.register(),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DB_HOST,

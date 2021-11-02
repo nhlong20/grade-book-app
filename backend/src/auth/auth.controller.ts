@@ -18,7 +18,7 @@ export class AuthController {
   @Public()
   @Post('login')
   logIn(
-    @Body() body: DTO.Auth.LoginDto,
+    @Body() body: DTO.Auth.Login,
     @Response({ passthrough: true }) res: ExpressResponse,
   ) {
     return this.service.login(body, res)
@@ -26,7 +26,7 @@ export class AuthController {
 
   @Public()
   @Post('signup')
-  signUp(@Body() body: DTO.Auth.SignUpDto) {
+  signUp(@Body() body: DTO.Auth.SignUp) {
     return this.service.signup(body)
   }
 

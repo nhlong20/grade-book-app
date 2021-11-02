@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
+import {
+  IsDate,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator'
 
 export class Create {
   @IsString()
@@ -8,11 +14,11 @@ export class Create {
 
 export class GetOne {
   @IsUUID()
-  @IsOptional()
-  id?: string
+  id: string
+}
 
-  @IsString()
-  @IsNotEmpty()
+export class CreateCode {
+  @IsDate()
   @IsOptional()
-  code?: string
+  expiration?: Date
 }

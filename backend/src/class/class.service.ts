@@ -5,6 +5,7 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { Class } from './class.entity'
+import * as nanoid from 'nanoid'
 
 @Injectable()
 export class ClassService {
@@ -32,16 +33,18 @@ export class ClassService {
     )
       throw new BadRequestException('You have not taken part in this class yet')
 
-    let qb = this.classRepo.createQueryBuilder('c')
+    return this.classRepo.findOne(dto.id)
+  }
 
-    if (dto.code) {
-      qb = qb.where('u.code=:code', { code: dto.code })
-    }
+  async createCode(classId: string, dto: DTO.Class.CreateCode, req: AuthRequest) {
+    const c = await this.classRepo.findOne(classId)
+    if (!c) throw new BadRequestException('Class does not exist')
 
-    if (dto.id) {
-      qb = qb.andWhere('u.id=:id', { id: dto.id })
-    }
+    const code = nanoid.nanoid()
 
-    return qb.execute()
+    c.inviteCode = code
+    c.codeExpiration = dto.expiration || null
+
+    return this.classRepo.save(c)
   }
 }

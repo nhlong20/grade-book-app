@@ -5,6 +5,7 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { Subscription } from './subscription.entity'
+import * as moment from 'moment'
 
 @Injectable()
 export class SubscriptionService {
@@ -59,14 +60,24 @@ export class SubscriptionService {
     if (await this.checkExistence(ownerId, c.id))
       throw new BadRequestException('You have already taken part in the class')
 
+    if (
+      c.codeExpiration !== null &&
+      moment(c.codeExpiration).isSameOrBefore(moment())
+    ) {
+      throw new BadRequestException('The code is expired')
+    }
+
     return await this.subscriptionRepo.save({
       ownerId,
-      classId: c.id
+      classId: c.id,
     })
   }
 
   async checkExistence(ownerId: string, classId: string) {
-    const subscription = await this.subscriptionRepo.findOne({ ownerId, classId })
+    const subscription = await this.subscriptionRepo.findOne({
+      ownerId,
+      classId,
+    })
     return !!subscription
   }
 

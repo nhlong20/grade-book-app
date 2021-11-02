@@ -22,7 +22,6 @@ async function bootstrap() {
     const config = new DocumentBuilder()
       .setTitle('Grade Book API')
       .setVersion('0.1.0')
-      .addTag('grade book')
       .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('docs', app, document);

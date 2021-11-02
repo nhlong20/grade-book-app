@@ -11,7 +11,7 @@ import {
 } from '@/utils/constant'
 import { tryCatch } from '@/utils/functionalTryCatch'
 import { DTO } from '@/type'
-import jwt from 'jsonwebtoken'
+import * as jwt from 'jsonwebtoken'
 
 const commonCookieOption: CookieOptions = {
   httpOnly: true,
@@ -25,7 +25,7 @@ export class AuthService {
     @InjectRepository(User) private userRepo: Repository<User>, // @Inject() private jwtService: JwtService,
   ) { }
 
-  async signup(dto: DTO.Auth.SignUpDto) {
+  async signup(dto: DTO.Auth.SignUp) {
     if (await this.checkExistence(dto.email))
       throw new BadRequestException('User already exists')
 
@@ -35,7 +35,7 @@ export class AuthService {
     })
   }
 
-  async login(dto: DTO.Auth.LoginDto, res: Response) {
+  async login(dto: DTO.Auth.Login, res: Response) {
     const user = await this.userRepo.findOne({ email: dto.email })
 
     if (!user) throw new BadRequestException('Email or password is wrong')
@@ -64,17 +64,17 @@ export class AuthService {
       },
     )
 
-    res.cookie(ACCESS_TOKEN_COOKIE_KEY, accessToken, {
+    res = res.cookie(ACCESS_TOKEN_COOKIE_KEY, accessToken, {
       ...commonCookieOption,
       maxAge: 15 * 60 * 1000, //15m
     })
 
-    res.cookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken, {
+    res = res.cookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken, {
       ...commonCookieOption,
       maxAge: 14 * 24 * 60 * 60 * 1000, //2 weeks
     })
 
-    return user
+    return { user, accessToken, refreshToken }
   }
 
   async refresh(req: Request, res: Response) {

@@ -6,6 +6,7 @@ import {
   CACHE_MANAGER,
   Inject,
   Injectable,
+  Logger,
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
@@ -25,7 +26,7 @@ export class SubscriptionService {
     private readonly classRepo: Repository<Class>,
 
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    private mailService: MailService
+    private mailService: MailService,
   ) { }
 
   async create(req: AuthRequest, dto: DTO.Subscription.Create) {
@@ -89,7 +90,13 @@ export class SubscriptionService {
     const token = randomBytes(48).toString('base64')
 
     await this.cacheManager.set(token, payload, { ttl: 5 * 60 }) // 5m
-    this.mailService.sendMail()
+    this.mailService
+      .sendMail({
+        to: dto.email,
+        subject: 'You are invited to a class',
+        html: process.env.FE_URL + '/invite?token=' + token,
+      })
+      .catch((e) => Logger.log(e))
 
     return
   }
@@ -106,7 +113,8 @@ export class SubscriptionService {
     }
 
     if (!classId) throw new BadRequestException('Token does not exist')
-    if (email !== req.user.email) throw new BadRequestException('Token is invalid')
+    if (email !== req.user.email)
+      throw new BadRequestException('Token is invalid')
 
     const c = await this.classRepo.findOne(classId)
     if (!c) throw new BadRequestException('Class does not exist')

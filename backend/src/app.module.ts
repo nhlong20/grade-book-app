@@ -11,9 +11,11 @@ import { AssignmentModule } from './assignment/assignment.module'
 import { SubmissionModule } from './submission/submission.module'
 import { SubscriptionModule } from './subscription/subscription.module'
 import { ClassModule } from './class/class.module'
+import { CsvModule } from 'nest-csv-parser'
 
 @Module({
   imports: [
+    CsvModule,
     CacheModule.register(),
     TypeOrmModule.forRoot({
       type: 'mysql',

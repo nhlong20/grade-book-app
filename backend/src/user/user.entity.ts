@@ -12,6 +12,18 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar' })
   name: string
 
+  @Column()
+  picture: string
+
+  @Column({ type: 'varchar' })
+  phone: string
+
+  @Column({ type: 'varchar', default: null })
+  facebookId: string | null
+
+  @Column({ type: 'varchar', default: null })
+  googleId: string | null
+
   @Column({ type: 'varchar', unique: true })
   email: string
 

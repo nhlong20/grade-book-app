@@ -1,4 +1,4 @@
-import { Module, CacheModule } from '@nestjs/common'
+import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserModule } from './user/user.module'
 import { AuthModule } from './auth/auth.module'
@@ -11,12 +11,10 @@ import { AssignmentModule } from './assignment/assignment.module'
 import { SubmissionModule } from './submission/submission.module'
 import { SubscriptionModule } from './subscription/subscription.module'
 import { ClassModule } from './class/class.module'
-import { CsvModule } from 'nest-csv-parser'
+import { SubjectModule } from './subject/subject.module'
 
 @Module({
   imports: [
-    CsvModule,
-    CacheModule.register(),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DB_HOST,
@@ -33,6 +31,7 @@ import { CsvModule } from 'nest-csv-parser'
     AssignmentModule,
     SubmissionModule,
     SubscriptionModule,
+    SubjectModule,
     ClassModule,
     PassportModule,
     JwtModule.register({ secret: process.env.JWT_SECRET }),

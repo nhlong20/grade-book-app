@@ -1,7 +1,9 @@
 import {
   IsDate,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
+  IsPositive,
   IsString,
   IsUUID,
 } from 'class-validator'
@@ -12,6 +14,37 @@ export class CCreate {
   @IsString()
   @IsNotEmpty()
   name: string
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  description?: string
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  academicYear?: string
+
+  @ApiProperty()
+  @IsNumber()
+  @IsPositive()
+  credit: number
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  identityCode: string
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  semester: string
+
+  @ApiProperty()
+  @IsUUID()
+  subjectId: string
 }
 
 export class CGetOne {

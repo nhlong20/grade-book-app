@@ -1,6 +1,7 @@
 import { Assignment } from "@/assignment/assignment.entity";
+import { Subject } from "@/subject/subject.entity";
 import { BaseEntity } from "@/utils/base.entity";
-import { Column, Entity, OneToMany } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 
 @Entity({ name: "class" })
 export class Class extends BaseEntity {
@@ -10,9 +11,31 @@ export class Class extends BaseEntity {
   @Column({ name: 'code_expiration', default: null })
   codeExpiration: Date | null
 
+  @Column({ type: "varchar", unique: true })
+  identityCode: string
+
   @Column({ type: "varchar" })
   name: string
 
+  @Column({ type: "varchar", default: null })
+  description: string
+
+  @Column()
+  credit: number
+
+  @Column({ type: 'varchar' })
+  semester: string
+
+  @Column({ type: 'varchar', default: null })
+  academicYear: string
+
   @OneToMany(() => Assignment, assignment => assignment.class)
   assignments: Assignment[]
+
+  @Column({ type: "uuid", select: false })
+  subjectId: string
+
+  @ManyToOne(() => Subject, s => s.classes)
+  @JoinColumn()
+  subject: Subject
 }

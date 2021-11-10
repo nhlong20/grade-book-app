@@ -12,8 +12,10 @@ import {
   UseInterceptors,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
+import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { SubmissionService } from './submission.service'
 
+@ApiTags('submission')
 @Controller('submission')
 export class SubmissionController {
   constructor(
@@ -21,16 +23,19 @@ export class SubmissionController {
   ) { }
 
   @Post()
+  @ApiOperation({ summary: "create submission" })
   create(@Body() dto: DTO.Submission.Create, @Request() req: AuthRequest) {
     return this.service.create(req, dto)
   }
 
   @Get()
+  @ApiOperation({ summary: "get one submission" })
   getOne(@Query('id', ParseUUIDPipe) id: string, @Request() req: AuthRequest) {
     return this.service.getOne(req, id)
   }
 
   @Post('score/bulk')
+  @ApiOperation({ summary: "bulk update score by uploading csv" })
   @UseInterceptors(FileInterceptor('file'))
   bulkUpdateScore(@UploadedFile() file: Express.Multer.File) {
     return this.service.bulkUpdateScore(file.buffer)

@@ -10,8 +10,10 @@ import {
   Put,
   Query,
 } from '@nestjs/common'
+import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { AssignmentService } from './assignment.service'
 
+@ApiTags('assignment')
 @Controller('assignment')
 export class AssignmnetController {
   constructor(
@@ -20,11 +22,13 @@ export class AssignmnetController {
   ) { }
 
   @Post()
+  @ApiOperation({ summary: "create assignment" })
   create(@Body() dto: DTO.Assignment.Create) {
     return this.service.create(dto)
   }
 
   @Put(':id')
+  @ApiOperation({ summary: "update assignment's percentage" })
   updatePercentage(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: DTO.Assignment.UpdatePercentage,
@@ -33,6 +37,7 @@ export class AssignmnetController {
   }
 
   @Get('grade')
+  @ApiOperation({ summary: "get all submissions of a assignmnet" })
   getAssignmentGrade(
     @Query('assignmentId', ParseUUIDPipe) assignmentId: string,
   ) {

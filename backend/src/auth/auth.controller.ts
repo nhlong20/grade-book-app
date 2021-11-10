@@ -8,15 +8,18 @@ import {
   Request,
   Response,
 } from '@nestjs/common'
+import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Response as ExpressResponse, Request as ExpressRequest } from 'express'
 import { AuthService } from './auth.service'
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly service: AuthService) { }
 
   @Public()
   @Post('login')
+  @ApiOperation({ summary: "to log in" })
   logIn(
     @Body() body: DTO.Auth.Login,
     @Response({ passthrough: true }) res: ExpressResponse,
@@ -25,12 +28,14 @@ export class AuthController {
   }
 
   @Public()
+  @ApiOperation({ summary: "to sign up" })
   @Post('signup')
   signUp(@Body() body: DTO.Auth.SignUp) {
     return this.service.signup(body)
   }
 
   @Public()
+  @ApiOperation({ summary: "to refresh access token" })
   @Post('refresh')
   refresh(
     @Request() req: ExpressRequest,
@@ -40,6 +45,7 @@ export class AuthController {
   }
 
   @Delete()
+  @ApiOperation({ summary: "to log out" })
   logOut(@Response({ passthrough: true }) res: ExpressResponse) {
     return this.service.logout(res)
   }

@@ -9,7 +9,7 @@ import {
 } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger';
 
-export class Create {
+export class ACreate {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -36,7 +36,7 @@ export class Create {
   classID: string
 }
 
-export class UpdatePercentage {
+export class AUpdatePercentage {
   @ApiProperty({
     maximum: 100
   })

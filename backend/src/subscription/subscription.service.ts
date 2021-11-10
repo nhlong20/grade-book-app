@@ -29,7 +29,7 @@ export class SubscriptionService {
     private mailService: MailService,
   ) { }
 
-  async create(req: AuthRequest, dto: DTO.Subscription.Create) {
+  async create(req: AuthRequest, dto: DTO.Subscription.SRCreate) {
     const ownerId = req.user.sub
 
     if (await this.checkExistence(ownerId, dto.classId))
@@ -63,7 +63,7 @@ export class SubscriptionService {
     return subscriptions.map((s) => s.owner)
   }
 
-  async createByCode(req: AuthRequest, dto: DTO.Subscription.CreateByCode) {
+  async createByCode(req: AuthRequest, dto: DTO.Subscription.SRCreateByCode) {
     const c = await this.classRepo.findOne({ inviteCode: dto.code })
     const ownerId = req.user.sub
 
@@ -85,7 +85,7 @@ export class SubscriptionService {
     })
   }
 
-  async sendInvitation(dto: DTO.Subscription.SendInvitation) {
+  async sendInvitation(dto: DTO.Subscription.SRSendInvitation) {
     const payload = JSON.stringify(dto)
     const token = randomBytes(48).toString('base64')
 
@@ -102,7 +102,7 @@ export class SubscriptionService {
   }
 
   async createByInvitation(
-    dto: DTO.Subscription.CreateByInvitation,
+    dto: DTO.Subscription.SRCreateByInvitation,
     req: AuthRequest,
   ) {
     const payload = (await this.cacheManager.get(dto.token)) as string | null

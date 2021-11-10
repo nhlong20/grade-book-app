@@ -11,13 +11,13 @@ export class AssignmentService {
     private readonly assignmentRepo: Repository<Assignment>,
   ) { }
 
-  create(dto: DTO.Assignment.Create) {
+  create(dto: DTO.Assignment.ACreate) {
     return this.assignmentRepo.save(dto)
   }
 
   async updateAssignmentPercentage(
     id: string,
-    dto: DTO.Assignment.UpdatePercentage,
+    dto: DTO.Assignment.AUpdatePercentage,
   ) {
     const assignment = await this.assignmentRepo.findOne(id)
     if (!assignment) throw new BadRequestException('Assignment does not exist')

@@ -9,24 +9,25 @@ import {
   Query,
   Request,
 } from '@nestjs/common'
-import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { SubscriptionService } from './subscription.service'
 
 @ApiTags('subscription')
+@ApiBearerAuth('access-token')
 @Controller('subscription')
 export class SubscriptionController {
   constructor(private readonly service: SubscriptionService) { }
 
   @Post()
   @ApiOperation({ summary: "create subscription/join class" })
-  create(@Body() dto: DTO.Subscription.Create, @Request() req: AuthRequest) {
+  create(@Body() dto: DTO.Subscription.SRCreate, @Request() req: AuthRequest) {
     return this.service.create(req, dto)
   }
 
   @Post('by-code')
   @ApiOperation({ summary: "join class by code" })
   createByCode(
-    @Body() dto: DTO.Subscription.CreateByCode,
+    @Body() dto: DTO.Subscription.SRCreateByCode,
     @Request() req: AuthRequest,
   ) {
     return this.service.createByCode(req, dto)

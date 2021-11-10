@@ -24,7 +24,7 @@ export class SubmissionService {
     private readonly csvParser: CsvParser,
   ) { }
 
-  create(req: AuthRequest, dto: DTO.Submission.Create) {
+  create(req: AuthRequest, dto: DTO.Submission.SCreate) {
     return this.submissionRepo.save({
       ...dto,
       ownerId: req.user.sub,

@@ -15,7 +15,7 @@ export class ClassService {
     private readonly subscriptionRepo: Repository<Subscription>,
   ) { }
 
-  create(dto: DTO.Class.Create) {
+  create(dto: DTO.Class.CCreate) {
     return this.classRepo.save(dto)
   }
 
@@ -23,7 +23,7 @@ export class ClassService {
     return this.classRepo.find()
   }
 
-  async getOne(dto: DTO.Class.GetOne, req?: AuthRequest) {
+  async getOne(dto: DTO.Class.CGetOne, req?: AuthRequest) {
     if (
       dto.id &&
       !(await this.subscriptionRepo.findOne({
@@ -36,7 +36,7 @@ export class ClassService {
     return this.classRepo.findOne(dto.id)
   }
 
-  async createCode(classId: string, dto: DTO.Class.CreateCode, req: AuthRequest) {
+  async createCode(classId: string, dto: DTO.Class.CCreateCode, req: AuthRequest) {
     const c = await this.classRepo.findOne(classId)
     if (!c) throw new BadRequestException('Class does not exist')
 

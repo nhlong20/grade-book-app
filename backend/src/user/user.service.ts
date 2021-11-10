@@ -8,7 +8,7 @@ import { User } from "./user.entity";
 export class UserService {
   constructor(@InjectRepository(User) private userRepo: Repository<User>) { }
 
-  async updateRole(userId: string, dto: DTO.User.UpdateRole) {
+  async updateRole(userId: string, dto: DTO.User.UUpdateRole) {
     const user = await this.userRepo.findOne(userId)
     if (!user) throw new BadRequestException('User does not exist')
 

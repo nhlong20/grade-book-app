@@ -7,20 +7,20 @@ import {
 } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger';
 
-export class Create {
+export class CCreate {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
   name: string
 }
 
-export class GetOne {
+export class CGetOne {
   @ApiProperty()
   @IsUUID()
   id: string
 }
 
-export class CreateCode {
+export class CCreateCode {
   @ApiProperty()
   @IsDate()
   @IsOptional()

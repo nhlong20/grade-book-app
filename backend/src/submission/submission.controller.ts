@@ -12,10 +12,11 @@ import {
   UseInterceptors,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
-import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { SubmissionService } from './submission.service'
 
 @ApiTags('submission')
+@ApiBearerAuth('access-token')
 @Controller('submission')
 export class SubmissionController {
   constructor(
@@ -24,7 +25,7 @@ export class SubmissionController {
 
   @Post()
   @ApiOperation({ summary: "create submission" })
-  create(@Body() dto: DTO.Submission.Create, @Request() req: AuthRequest) {
+  create(@Body() dto: DTO.Submission.SCreate, @Request() req: AuthRequest) {
     return this.service.create(req, dto)
   }
 

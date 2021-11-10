@@ -1,9 +1,10 @@
 import { DTO } from '@/type'
 import { Body, Controller, Param, ParseUUIDPipe, Put } from '@nestjs/common'
-import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { UserService } from './user.service'
 
 @ApiTags('user')
+@ApiBearerAuth('access-token')
 @Controller('user')
 export class UserController {
   constructor(private readonly service: UserService) { }
@@ -11,7 +12,7 @@ export class UserController {
   @Put(':id/role')
   @ApiOperation({ summary: "update role of user" })
   updateRole(
-    @Body() dto: DTO.User.UpdateRole,
+    @Body() dto: DTO.User.UUpdateRole,
     @Param('id', ParseUUIDPipe) id: string,
   ) {
     return this.service.updateRole(id, dto)

@@ -4,6 +4,7 @@ import { AuthRequest } from '@/utils/interface'
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Get,
   Param,
   ParseUUIDPipe,
@@ -44,12 +45,12 @@ export class ClassController {
   @ApiOperation({ summary: 'get one or many class' })
   getClasses(
     @Request() req: AuthRequest,
-    @Query('classId', ParseUUIDPipe) classId?: string,
+    @Query() query: DTO.Class.CGetManyQuery
   ) {
-    if (classId) {
-      return this.service.getOne({ id: classId }, req)
+    if (query.classId) {
+      return this.service.getOne({ id: query.classId }, req)
     }
-    return this.service.getMany()
+    return this.service.getMany(query)
   }
 
   @Get('grade')

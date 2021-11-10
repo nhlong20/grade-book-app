@@ -19,8 +19,14 @@ export class ClassService {
     return this.classRepo.save(dto)
   }
 
-  getMany() {
-    return this.classRepo.find()
+  getMany(query: DTO.Class.CGetManyQuery) {
+    Object.keys(query).forEach(
+      (key) => query[key] === undefined && delete query[key],
+    )
+
+    return this.classRepo.find({
+      where: query
+    })
   }
 
   async getOne(dto: DTO.Class.CGetOne, req?: AuthRequest) {
@@ -36,7 +42,11 @@ export class ClassService {
     return this.classRepo.findOne(dto.id)
   }
 
-  async createCode(classId: string, dto: DTO.Class.CCreateCode, req: AuthRequest) {
+  async createCode(
+    classId: string,
+    dto: DTO.Class.CCreateCode,
+    req: AuthRequest,
+  ) {
     const c = await this.classRepo.findOne(classId)
     if (!c) throw new BadRequestException('Class does not exist')
 

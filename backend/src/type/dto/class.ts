@@ -59,3 +59,24 @@ export class CCreateCode {
   @IsOptional()
   expiration?: Date
 }
+
+
+export class CGetManyQuery {
+  @IsUUID()
+  @IsOptional()
+  classId?: string
+
+  @IsString()
+  @IsOptional()
+  query?: string
+
+  @IsNumber()
+  @IsPositive()
+  @IsOptional()
+  credit?: number
+
+
+  @IsString()
+  @IsOptional()
+  semester?: string
+}

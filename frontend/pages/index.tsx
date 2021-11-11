@@ -2,7 +2,7 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-
+import SignUp from './signup'
 const Home: NextPage = () => {
   return (
     <div>
@@ -16,15 +16,14 @@ const Home: NextPage = () => {
             <button className="py-2 px-4 font-semibold shadow-md text-black hover:text-green-700 mx-1">
               Đăng nhập
             </button>
-            <button className="py-2 px-4 font-semibold rounded-lg shadow-md text-white bg-green-500 hover:bg-green-700 mx-1">
-              Đăng ký
-            </button>
+            <SignUp/>
           </div>
         </div>
       </div>
 
       <div className="container h-screen min-h-full min-w-full">
         <main className="flex flex-col text-center min-h-full justify-center">
+          
           <h1 className="text-4xl sm:text-4xl lg:text-6xl text-green-500 font-bold uppercase">Gradebooks</h1>
 
           <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-center pt-8">

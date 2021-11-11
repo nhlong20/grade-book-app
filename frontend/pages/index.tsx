@@ -8,8 +8,6 @@ const Home: NextPage = () => {
     <div>
       <Head>
         <title>Gradebooks</title>
-        <meta name="description" content="An educational platform" />
-        <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="shadow-md py-2 fixed min-w-full">
         <div className="flex justify-around items-center">

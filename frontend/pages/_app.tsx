@@ -1,11 +1,22 @@
 import '../styles/globals.css'
 import '../styles/tailwind.css'
 import type { AppProps } from 'next/app'
+import { useState } from 'react'
+import { QueryClient, QueryClientProvider } from 'react-query'
+
 import axios from 'axios'
 
 
 export default function MyApp({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />
+
+  const [queryClient] = useState(() => new QueryClient())
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Component {...pageProps} />
+    </QueryClientProvider>
+
+  )
 }
 
 

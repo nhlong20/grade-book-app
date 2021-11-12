@@ -1,18 +1,59 @@
-import Link from 'next/link'
+import { API } from '../environment'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useMutation } from 'react-query'
-import { useRouter } from 'next/router'
+import { useMutation} from 'react-query'
+import axios, { AxiosResponse } from 'axios'
+
+type FormData = { name: string; email: string; password: string; }
 
 export default function SignUp() {
+    const { register, handleSubmit, reset  } = useForm<FormData>()
     const [showModal, setShowModal] = useState(false);
+    const [success, setSuccess] = useState(false)
+
+
+    const { mutateAsync, isLoading } = useMutation(
+        ['signup'],
+        (data: FormData) => axios.post(`${API}/auth/signup`, data),
+        {
+            onSuccess(res) {
+                setSuccess(true)
+                toast.success("Đăng ký thành công");
+                setShowModal(false);
+                reset()
+            },
+            onError(err) {
+                toast.error(err.response.statusText + ": "+ err.response.data.message);
+            },
+        },
+    )
+
+    const signUp = useCallback((data: FormData) => {
+        mutateAsync(data)
+    }, [])
+
     return (
         <>
+      
             <button className="py-2 px-4 font-semibold rounded-lg shadow-md text-white bg-green-500 hover:bg-green-700 mx-1"
                 onClick={() => setShowModal(true)}>
                 Đăng ký
             </button>
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+            />
             {showModal ? (
                 <>
                     <div
@@ -29,30 +70,28 @@ export default function SignUp() {
                                     <p>Bạn đã có tài khoản?  <span className="underline cursor-pointer" onClick={() => setShowModal(false)}>Đăng nhập</span> </p>
 
                                 </div>
-                                <div className="relative p-6 flex-auto">
+                                <form className="relative p-6 flex-auto"
+                                    onSubmit={handleSubmit(signUp)}>
                                     <input
                                         type="text"
                                         className="block border border-grey-light w-full p-3 rounded mb-4"
-                                        name="fullname"
-                                        placeholder="Tên của bạn *" required />
+                                        placeholder="Tên của bạn *"
+                                        {...register('name')}
+                                        required />
 
                                     <input
                                         type="email"
                                         className="block border border-grey-light w-full p-3 rounded mb-4"
-                                        name="email"
-                                        placeholder="Email *" required />
+                                        placeholder="Email của bạn *"
+                                        {...register('email')}
+                                        required />
 
                                     <input
                                         type="password"
                                         className="block border border-grey-light w-full p-3 rounded mb-4"
-                                        name="password"
-                                        placeholder="Password *" required />
-                                    <input
-                                        type="password"
-                                        className="block border border-grey-light w-full p-3 rounded mb-4"
-                                        name="confirm_password"
-                                        placeholder="Confirm Password *" required />
-
+                                        placeholder="Mật khẩu *"
+                                        {...register('password')}
+                                        required />
 
                                     <div className="my-4">
                                         <p className="text-center text-sm text-grey-dark">
@@ -74,10 +113,15 @@ export default function SignUp() {
                                     >Đăng ký</button>
                                     <button
                                         type="submit"
-                                        className="w-full text-center py-3 rounded bg-red-500 text-white hover:bg-green-dark focus:outline-none my-1 uppercase font-bold"
+                                        className="w-full text-center py-3 rounded bg-red-500 text-white hover:bg-red-dark focus:outline-none my-1 uppercase font-bold"
+                                    >  <span className="fab fa-google mr-2" />Đăng ký với Google</button>
+                                    <button
+                                        type="submit"
+                                        className="w-full text-center py-3 rounded bg-gray-500 text-white hover:bg-gray-dark focus:outline-none my-1 uppercase font-bold"
                                         onClick={() => setShowModal(false)}
                                     >Huỷ</button>
-                                </div>
+
+                                </form>
                             </div>
                         </div>
                     </div>

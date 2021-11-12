@@ -19,7 +19,7 @@ function Layout({
 }: Props) {
   const [session] = useGradeBookSession()
   const { replace } = useRouter()
-  useEffectgit(() => {
+  useEffect(() => {
     if (session && !session.user) replace('/403')
   }, [session])
 

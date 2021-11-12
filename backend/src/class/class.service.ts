@@ -6,17 +6,24 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { Class } from './class.entity'
 import * as nanoid from 'nanoid'
+import { User } from '@/user/user.entity'
 
 @Injectable()
 export class ClassService {
   constructor(
     @InjectRepository(Class) private readonly classRepo: Repository<Class>,
+    @InjectRepository(User) private readonly userRepo: Repository<User>,
     @InjectRepository(Subscription)
     private readonly subscriptionRepo: Repository<Subscription>,
   ) { }
 
-  create(dto: DTO.Class.CCreate) {
-    return this.classRepo.save(dto)
+  async create(dto: DTO.Class.CCreate, req: AuthRequest) {
+    const user = await this.userRepo.findOne({ where: { id: req.user.sub } })
+
+    return this.classRepo.save({
+      ...dto,
+      teachers: [user]
+    })
   }
 
   getMany(query: DTO.Class.CGetManyQuery) {
@@ -25,7 +32,8 @@ export class ClassService {
     )
 
     return this.classRepo.find({
-      where: query
+      where: query,
+      relations: ['teachers']
     })
   }
 
@@ -39,7 +47,16 @@ export class ClassService {
     )
       throw new BadRequestException('You have not taken part in this class yet')
 
-    return this.classRepo.findOne(dto.id)
+    const c = await this.classRepo.findOne({
+      where: { id: dto.id },
+      relations: ['teachers']
+    })
+
+    if (c.teachers.some(t => t.id === req?.user.sub)) {
+      return c
+    } else {
+      throw new BadRequestException('You have not taken part in this class yet')
+    }
   }
 
   async createCode(

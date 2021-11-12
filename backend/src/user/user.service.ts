@@ -18,13 +18,4 @@ export class UserService {
       ...dto
     })
   }
-
-  async updateRole(id: string, dto: DTO.User.UserUpdateRole) {
-    const user = await this.userRepo.findOne(id)
-    if (!user) throw new BadRequestException('User does not exist')
-
-    user.role = dto.role
-    return this.userRepo.save(user)
-  }
-
 }

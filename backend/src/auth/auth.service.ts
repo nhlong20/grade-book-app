@@ -46,7 +46,6 @@ export class AuthService {
       email: user.email,
       iat: Date.now(),
       name: user.name,
-      role: user.role,
       sub: user.id,
     }
 
@@ -97,7 +96,6 @@ export class AuthService {
       email: user.email,
       iat: Date.now(),
       name: user.name,
-      role: user.role,
       sub: user.id,
     }
 

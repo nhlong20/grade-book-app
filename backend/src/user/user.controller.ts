@@ -3,8 +3,6 @@ import { AuthRequest } from '@/utils/interface'
 import {
   Body,
   Controller,
-  Param,
-  ParseUUIDPipe,
   Patch,
   Request,
 } from '@nestjs/common'
@@ -23,12 +21,4 @@ export class UserController {
     return this.service.patch(req, dto)
   }
 
-  @Patch(':id/role')
-  @ApiOperation({ summary: "to patch user's role" })
-  patchRole(
-    @Body() dto: DTO.User.UserUpdateRole,
-    @Param('id', ParseUUIDPipe) userId: string,
-  ) {
-    return this.service.updateRole(userId, dto)
-  }
 }

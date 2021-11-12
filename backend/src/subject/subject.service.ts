@@ -12,7 +12,7 @@ export class SubjectService {
 
   async create(dto: DTO.Subject.SubjectCreate) {
     const subject = await this.subjectRepo.findOne({ name: dto.name })
-    if (!subject) throw new BadRequestException('Subject already exists')
+    if (subject) throw new BadRequestException('Subject already exists')
 
     return this.subjectRepo.save(dto)
   }

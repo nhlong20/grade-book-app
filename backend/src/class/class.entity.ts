@@ -1,7 +1,8 @@
 import { Assignment } from "@/assignment/assignment.entity";
 import { Subject } from "@/subject/subject.entity";
+import { User } from "@/user/user.entity";
 import { BaseEntity } from "@/utils/base.entity";
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
 
 @Entity({ name: "class" })
 export class Class extends BaseEntity {
@@ -25,6 +26,10 @@ export class Class extends BaseEntity {
 
   @Column({ type: 'varchar' })
   semester: string
+
+  @ManyToMany(() => User)
+  @JoinTable()
+  teachers: User[]
 
   @Column({ type: 'varchar', default: null })
   academicYear: string

@@ -1,13 +1,5 @@
-import { Role } from '@/user/user.entity'
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator'
-
-export class UserUpdateRole {
-  @ApiProperty({ enum: Role, enumName: 'Role' })
-  @IsEnum(Role)
-  @IsOptional()
-  role: Role
-}
+import { ApiPropertyOptional } from '@nestjs/swagger'
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator'
 
 export class UserPatching {
   @ApiPropertyOptional()

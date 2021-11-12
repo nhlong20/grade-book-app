@@ -4,7 +4,6 @@ import { AuthRequest } from '@/utils/interface'
 import {
   Body,
   Controller,
-  DefaultValuePipe,
   Get,
   Param,
   ParseUUIDPipe,
@@ -27,14 +26,14 @@ export class ClassController {
 
   @Post()
   @ApiOperation({ summary: 'create class' })
-  create(@Body() dto: DTO.Class.CCreate) {
-    return this.service.create(dto)
+  create(@Body() dto: DTO.Class.CCreate, @Request() req: AuthRequest) {
+    return this.service.create(dto, req)
   }
 
   @Put(':classId/code')
   @ApiOperation({ summary: 'create code for a class' })
   createCode(
-    dto: DTO.Class.CCreateCode,
+    @Body() dto: DTO.Class.CCreateCode,
     @Param('classId', ParseUUIDPipe) classId: string,
     @Request() req: AuthRequest,
   ) {
@@ -45,7 +44,7 @@ export class ClassController {
   @ApiOperation({ summary: 'get one or many class' })
   getClasses(
     @Request() req: AuthRequest,
-    @Query() query: DTO.Class.CGetManyQuery
+    @Query() query: DTO.Class.CGetManyQuery,
   ) {
     if (query.classId) {
       return this.service.getOne({ id: query.classId }, req)

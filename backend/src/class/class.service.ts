@@ -22,19 +22,35 @@ export class ClassService {
 
     return this.classRepo.save({
       ...dto,
-      teachers: [user]
+      teachers: [user],
     })
   }
 
   getMany(query: DTO.Class.CGetManyQuery) {
-    Object.keys(query).forEach(
-      (key) => query[key] === undefined && delete query[key],
-    )
+    let qb = this.classRepo
+      .createQueryBuilder('c')
+      .leftJoinAndSelect('c.teachers', 'user')
 
-    return this.classRepo.find({
-      where: query,
-      relations: ['teachers']
-    })
+    if (query.classId) {
+      return qb.where('c.id=:classId', { classId: query.classId }).getOne()
+    }
+
+    if (query.credit) {
+      qb = qb.andWhere('c.credit=:cr', { cr: query.credit })
+    }
+
+    if (query.semester) {
+      qb = qb.andWhere('c.semester=:sem', { sem: query.semester })
+    }
+
+    if (query.query) {
+      qb = qb.andWhere(
+        "to_tsvector(c.name) @@ plainto_tsquery(:query)",
+        { query: query.query },
+      )
+    }
+
+    return qb.getMany()
   }
 
   async getOne(dto: DTO.Class.CGetOne, req?: AuthRequest) {
@@ -49,10 +65,10 @@ export class ClassService {
 
     const c = await this.classRepo.findOne({
       where: { id: dto.id },
-      relations: ['teachers']
+      relations: ['teachers'],
     })
 
-    if (c.teachers.some(t => t.id === req?.user.sub)) {
+    if (c.teachers.some((t) => t.id === req?.user.sub)) {
       return c
     } else {
       throw new BadRequestException('You have not taken part in this class yet')

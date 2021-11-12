@@ -44,7 +44,7 @@ export default function Login() {
     return (
         <div>
             <Head>
-                <title>Gradebooks | Login</title>
+                <title>Login | Gradebooks</title>
             </Head>
             <div className="shadow-md py-2 fixed min-w-full">
                 <div className="flex justify-around items-center">
@@ -59,6 +59,7 @@ export default function Login() {
                     </div>
                 </div>
             </div>
+
             <div className="container h-screen min-h-full min-w-full">
                 <main className="flex flex-col text-center min-h-full justify-center">
                     <div>

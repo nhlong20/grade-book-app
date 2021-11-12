@@ -49,11 +49,6 @@ const Home: NextPage = () => {
                 Tham gia lớp học
               </button>
             </div>
-            <Link href="/contribute">
-              <button className="py-2 px-4 font-semibold shadow-md text-black hover:text-green-700 mx-1">
-                Đăng nhập
-              </button>
-            </Link>
           </div>
 
         </main>

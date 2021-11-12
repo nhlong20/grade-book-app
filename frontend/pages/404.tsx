@@ -7,7 +7,7 @@ export default function NotFound() {
   return (
     <div className="min-h-screen grid place-content-center">
       <Head>
-        <title>Not Found | HCMUSMods</title>
+        <title>Not Found | Gradebooks</title>
       </Head>
 
       <div className="flex flex-col items-center">

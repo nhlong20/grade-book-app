@@ -7,7 +7,7 @@ export default function Forbidden() {
   return (
     <div className="min-h-screen grid place-content-center">
       <Head>
-        <title>Forbidden | HCMUSMods</title>
+        <title>Forbidden | Gradebooks</title>
       </Head>
 
       <div className="flex flex-col items-center">

@@ -1,7 +1,7 @@
 import NextAuth, { Session, User } from 'next-auth'
 import Providers from 'next-auth/providers'
 import { JWT } from 'next-auth/jwt'
-import { asyncTryCatch } from '@utils/asyncTryCatch'
+import { asyncTryCatch } from '../../../utils/asyncTryCatch'
 import axios from 'axios'
 import jwt from 'jsonwebtoken'
 import { API } from './../../../environment'
@@ -19,19 +19,25 @@ export type JWTPayload = Token & {
 
 export default NextAuth({
     providers: [
+        Providers.Google({
+            id: 'google',
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          }),
         Providers.Credentials({
             id: 'login',
             name: 'Credentials',
             async authorize(credentials: Record<string, string>) {
                 const [res] = await asyncTryCatch(() =>
                     axios
-                        .put(`${API}/auth`, {
+                        .post(`${API}/auth/login`, {
                             email: credentials.email,
                             password: credentials.password,
                         })
-                        .then((res) => res.data),
+                        .then((res) => {
+                            return res.data
+                        }),
                 )
-
                 return res
             },
         })
@@ -47,12 +53,39 @@ export default NextAuth({
           if (url.includes('callbackUrl')) {
             return url.split('=')[1]
           }
-    
+          
           return url
         },
-        async signIn(user, account, profile) {    
-          return true
-        },
+        async signIn(user, account, profile) {
+            if (account.provider === 'google') {
+              const [res, err] = await asyncTryCatch(() =>
+                axios.put(`${API}/auth/by-google-id`, {
+                  email: profile.email,
+                  googleId: profile.id,
+                }),
+              )
+      
+              if (err) {
+                return false
+              }
+      
+              Object.assign(user, res?.data)
+            }
+      
+            if (account.provider === 'google-signup') {
+              const [_res, err] = await asyncTryCatch(() =>
+                axios.get(`${API}/auth/user/by-email`, {
+                  params: {
+                    email: profile.email,
+                  },
+                }),
+              )
+      
+              if (!err) return '/signup?error=EmailExisted'
+            }
+      
+            return true
+          },
         jwt(payload, user: User, account) {
           if (user) {
             Object.assign(payload, user)
@@ -95,7 +128,8 @@ export default NextAuth({
         },
     },
     pages: {
-        signIn: '/login',
+        signIn: '/auth/login',
+        signOut: '/auth/signout',
         error: '/login',
     },
 

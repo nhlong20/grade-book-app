@@ -1,11 +1,10 @@
 import { API } from '../environment'
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 
 import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation} from 'react-query'
-import axios, { AxiosResponse } from 'axios'
+import axios from 'axios'
 
 type FormData = { name: string; email: string; password: string; }
 
@@ -21,7 +20,7 @@ export default function SignUp() {
         {
             onSuccess(res) {
                 setSuccess(true)
-                toast.success("Đăng ký thành công");
+                toast.success("Đăng ký thành côngg");
                 setShowModal(false);
                 reset()
             },
@@ -42,18 +41,6 @@ export default function SignUp() {
                 onClick={() => setShowModal(true)}>
                 Đăng ký
             </button>
-            <ToastContainer
-                position="top-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="colored"
-            />
             {showModal ? (
                 <>
                     <div

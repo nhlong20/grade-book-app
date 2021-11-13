@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation} from 'react-query'
+
 import axios from 'axios'
 
 type FormData = { name: string; email: string; password: string; }
@@ -24,7 +25,7 @@ export default function SignUp() {
                 setShowModal(false);
                 reset()
             },
-            onError(err) {
+            onError(err: any) {
                 toast.error(err.response.statusText + ": "+ err.response.data.message);
             },
         },

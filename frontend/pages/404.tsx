@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import Image from 'next/image'
 
 export default function NotFound() {
   const { push } = useRouter()
@@ -11,7 +12,7 @@ export default function NotFound() {
       </Head>
 
       <div className="flex flex-col items-center">
-        <img src="/illustrations/404.svg" alt="Not Found" />
+        <Image src="/illustrations/404.svg" alt="Not Found" />
         <div className="mt-4 font-medium text-gray-600 text-lg">
           Oops! It's look like you have followed a bad link!!
         </div>

@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import Image from 'next/image'
 
 export default function Forbidden() {
   const { push } = useRouter()
@@ -11,7 +12,7 @@ export default function Forbidden() {
       </Head>
 
       <div className="flex flex-col items-center">
-        <img src="/illustrations/403.svg" alt="Forbidden" />
+        <Image src="/illustrations/403.svg" alt="Forbidden" />
         <div className="mt-4 font-medium text-gray-600 text-lg">
           Oops! It's look like you can not be here!!
         </div>

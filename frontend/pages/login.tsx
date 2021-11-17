@@ -32,7 +32,7 @@ export default function Login() {
     const login = useCallback(
         (data: Record<string, any>) => {
             signIn('login', {
-                callbackUrl: (query.callbackUrl as string) || '/login',
+                callbackUrl: (query.callbackUrl as string) || '/',
                 ...data,
             })
         },

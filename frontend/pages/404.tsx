@@ -13,7 +13,7 @@ export default function NotFound() {
       <div className="flex flex-col items-center">
         <img src="/illustrations/404.svg" alt="Not Found" />
         <div className="mt-4 font-medium text-gray-600 text-lg">
-          Oops! It's look like you have followed a bad link!!
+          Oops! It looks like you have followed a bad link!!
         </div>
         <button onClick={() => push('/')} className="hcmus-button w-40 mt-2">
           <span className="fa fa-home mr-2" />

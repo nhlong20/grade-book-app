@@ -13,7 +13,7 @@ export default function Forbidden() {
       <div className="flex flex-col items-center">
         <img src="/illustrations/403.svg" alt="Forbidden" />
         <div className="mt-4 font-medium text-gray-600 text-lg">
-          Oops! It's look like you can not be here!!
+          Oops! It looks like you can not be here!!
         </div>
         <button onClick={() => push('/')} className="hcmus-button w-40 mt-2">
           <span className="fa fa-home mr-2" />

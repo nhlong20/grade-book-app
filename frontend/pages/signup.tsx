@@ -7,6 +7,8 @@ import { useMutation } from 'react-query'
 import Navbar from '@components/Navbar'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import Head from 'next/head'
+import { useGradeBookSession } from '@utils/hooks/useSession'
 
 import axios from 'axios'
 
@@ -19,9 +21,10 @@ type FormData = {
 export default function SignUp() {
     const router = useRouter()
     const { register, handleSubmit, reset } = useForm<FormData>()
+    const [session] = useGradeBookSession()
 
     const { mutateAsync, isLoading } = useMutation(
-        ['signup'],
+        'signup',
         (data: FormData) => axios.post(`${API}/auth/signup`, data),
         {
             onSuccess(res) {
@@ -39,30 +42,33 @@ export default function SignUp() {
         mutateAsync(data)
     }, [])
 
+    if (session && session.user) {
+        router.push("/");
+        return;
+    }
+
     return (
-        <>
+        <div>
+            <Head>
+                <title>Signup - Gradebooks</title>
+            </Head>
             <Navbar />
-
             <div
-                className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
+                className="container h-screen min-h-full min-w-full"
             >
-                <div className="relative w-auto my-6 mx-auto max-w-3xl">
+                <main className="flex flex-col text-center min-h-full justify-center">
 
-                    <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-
-                        <div className="flex flex-col align-center p-5 border-b border-solid border-blueGray-200 rounded-t text-center">
+                    <div className="flex flex-col items-center  ">
+                        <form className="w-96 rounded-md bg-white dark:bg-gray-600 inline-block p-8 shadow-md"
+                            onSubmit={handleSubmit(signUp)}>
                             <h3 className="text-4xl font-bold uppercase text-green-500 py-5">
                                 TẠO TÀI KHOẢN
                             </h3>
-                            <p>Bạn đã có tài khoản?{" "}
+                            <p className="mb-6">Bạn đã có tài khoản?{" "}
                                 <Link href="/login">
                                     <span className="underline cursor-pointer">Đăng nhập</span>
                                 </Link>
                             </p>
-
-                        </div>
-                        <form className="relative p-6 flex-auto"
-                            onSubmit={handleSubmit(signUp)}>
                             <input
                                 type="text"
                                 className="block border border-grey-light w-full p-3 rounded mb-4"
@@ -108,8 +114,8 @@ export default function SignUp() {
                             >  <span className="fab fa-google mr-2" />Đăng ký với Google</button>
                         </form>
                     </div>
-                </div>
+                </main>
             </div>
-        </>
+        </div>
     );
 }

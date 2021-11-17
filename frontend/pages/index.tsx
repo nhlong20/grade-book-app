@@ -1,14 +1,23 @@
-import type { NextPage } from 'next'
+import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Navbar from '@components/Navbar'
+import { useGradeBookSession } from '@utils/hooks/useSession'
 
-const Home: NextPage = () => {
+const Home = () => {
+  const [session] = useGradeBookSession()
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  useEffect(() => {
+    if (session && session.user.email !== "") {
+      setIsLoggedIn(true);
+    }
+  }, [session])
+
   return (
     <div>
       <Head>
         <title>Gradebooks</title>
       </Head>
-      <Navbar/>
+      <Navbar isLoggedIn userData={session ? session.user : null} />
       <div className="container h-screen min-h-full min-w-full">
         <main className="flex flex-col text-center min-h-full justify-center">
 

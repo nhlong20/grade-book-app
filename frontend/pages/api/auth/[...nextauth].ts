@@ -8,7 +8,7 @@ import { API } from 'environment'
 
 import { User as IUser } from '@models/user'
 
-type Token = JWT & Pick<IUser, '' | 'name' | 'email'>
+type Token = JWT & Pick<IUser,  'name' | 'email'>
 
 export type JWTPayload = Token & {
     iat?: number
@@ -36,7 +36,7 @@ export default NextAuth({
                         })
                         .then((res) => res.data),
                 )
-                return res
+                return res?.user
             },
         })
 

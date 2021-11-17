@@ -6,6 +6,7 @@ import { useRouter } from 'next/dist/client/router'
 import Head from 'next/head'
 import Navbar from '@components/Navbar'
 import Link from 'next/link'
+import { useGradeBookSession } from '@utils/hooks/useSession'
 
 type FormData = {
     email: string
@@ -19,7 +20,9 @@ const errorMapping: Record<string, string> = {
 
 export default function Login() {
     const { query } = useRouter()
+    const router = useRouter()
     const { register, handleSubmit } = useForm<FormData>()
+    const [session] = useGradeBookSession()
 
     useEffect(() => {
         if (!('error' in query)) return
@@ -29,7 +32,7 @@ export default function Login() {
     const login = useCallback(
         (data: Record<string, any>) => {
             signIn('login', {
-                callbackUrl: (query.callbackUrl as string) || '/',
+                callbackUrl: (query.callbackUrl as string) || '/login',
                 ...data,
             })
         },
@@ -39,6 +42,11 @@ export default function Login() {
     const loginWithGoogle = useCallback(() => {
         signin('google')
     }, [])
+
+    if(session && session.user){
+        router.push("/");
+        return;
+    }
 
     return (
         <div>

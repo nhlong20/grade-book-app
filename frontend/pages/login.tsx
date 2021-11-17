@@ -4,9 +4,9 @@ import { useCallback, useEffect } from 'react'
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/dist/client/router'
 import Head from 'next/head'
-import SignUp from './signup'
+import Navbar from '@components/Navbar'
 import Link from 'next/link'
-
+import { useGradeBookSession } from '@utils/hooks/useSession'
 
 type FormData = {
     email: string
@@ -16,17 +16,19 @@ const errorMapping: Record<string, string> = {
     AccessDenied: 'Your account has not existed in the system yet!',
     CredentialsSignin: 'Your provided credentials are not correct!',
     Callback: 'System failure!',
-  }
+}
 
 export default function Login() {
     const { query } = useRouter()
+    const router = useRouter()
     const { register, handleSubmit } = useForm<FormData>()
+    const [session] = useGradeBookSession()
 
     useEffect(() => {
         if (!('error' in query)) return
         toast.error(errorMapping[query.error as string])
-      }, [query])
-    
+    }, [query])
+
     const login = useCallback(
         (data: Record<string, any>) => {
             signIn('login', {
@@ -36,29 +38,22 @@ export default function Login() {
         },
         [query],
     )
-    
+
     const loginWithGoogle = useCallback(() => {
         signin('google')
-      }, [])
-    
+    }, [])
+
+    if(session && session.user){
+        router.push("/");
+        return;
+    }
+
     return (
         <div>
             <Head>
-                <title>Login | Gradebooks</title>
+                <title>Login - Gradebooks</title>
             </Head>
-            <div className="shadow-md py-2 fixed min-w-full">
-                <div className="flex justify-around items-center">
-                    <Link href="/">
-                        <h1 className="text-2xl cursor-pointer font-bold text-green-500 uppercase">Gradebooks</h1>
-                    </Link>
-                    <div>
-                        <button className="py-2 px-4 font-semibold shadow-md text-black hover:text-green-700 mx-1">
-                            Đăng nhập
-                        </button>
-                        <SignUp />
-                    </div>
-                </div>
-            </div>
+            <Navbar />
 
             <div className="container h-screen min-h-full min-w-full">
                 <main className="flex flex-col text-center min-h-full justify-center">
@@ -112,7 +107,11 @@ export default function Login() {
                                 onClick={loginWithGoogle}
                             >  <span className="fab fa-google mr-2" />Đăng nhập với Google</button>
 
-                            <p className="mt-8">Bạn chưa có tài khoản?  <span className="underline cursor-pointer">Đăng ký</span> </p>
+                            <p className="mt-8">Bạn chưa có tài khoản?{" "}
+                                <Link href="/signup">
+                                    <span className="underline cursor-pointer">Đăng ký</span>
+                                </Link>
+                            </p>
 
                         </form>
 

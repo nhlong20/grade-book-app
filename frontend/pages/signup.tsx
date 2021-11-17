@@ -3,14 +3,14 @@ import { toast } from 'react-toastify';
 
 import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useMutation} from 'react-query'
+import { useMutation } from 'react-query'
 
 import axios from 'axios'
 
 type FormData = { name: string; email: string; password: string; }
 
 export default function SignUp() {
-    const { register, handleSubmit, reset  } = useForm<FormData>()
+    const { register, handleSubmit, reset } = useForm<FormData>()
     const [showModal, setShowModal] = useState(false);
     const [success, setSuccess] = useState(false)
 
@@ -26,7 +26,7 @@ export default function SignUp() {
                 reset()
             },
             onError(err: any) {
-                toast.error(err.response.statusText + ": "+ err.response.data.message);
+                toast.error(err.response.statusText + ": " + err.response.data.message);
             },
         },
     )
@@ -37,7 +37,7 @@ export default function SignUp() {
 
     return (
         <>
-      
+
             <button className="py-2 px-4 font-semibold rounded-lg shadow-md text-white bg-green-500 hover:bg-green-700 mx-1"
                 onClick={() => setShowModal(true)}>
                 Đăng ký

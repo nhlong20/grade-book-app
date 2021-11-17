@@ -1,7 +1,6 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import SignUp from './signup'
-import Link from 'next/link'
+import Navbar from '@components/Navbar'
 
 const Home: NextPage = () => {
   return (
@@ -9,20 +8,7 @@ const Home: NextPage = () => {
       <Head>
         <title>Gradebooks</title>
       </Head>
-      <div className="shadow-md py-2 fixed min-w-full">
-        <div className="flex justify-around items-center">
-          <h1 className="text-2xl cursor-pointer font-bold text-green-500 uppercase">Gradebooks</h1>
-          <div>
-            <Link href="/login">
-              <button className="py-2 px-4 font-semibold shadow-md text-black hover:text-green-700 mx-1">
-                Đăng nhập
-              </button>
-            </Link>
-            <SignUp />
-          </div>
-        </div>
-      </div>
-
+      <Navbar/>
       <div className="container h-screen min-h-full min-w-full">
         <main className="flex flex-col text-center min-h-full justify-center">
 

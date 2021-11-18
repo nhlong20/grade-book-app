@@ -1036,7 +1036,7 @@ chalk@^2.0.0, chalk@^2.4.1, chalk@^2.4.2:
     escape-string-regexp "^1.0.5"
     supports-color "^5.3.0"
 
-chalk@^4.0.0, chalk@^4.1.0, chalk@^4.1.1:
+chalk@^4.0.0, chalk@^4.1.0, chalk@^4.1.1, chalk@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-4.1.2.tgz#aac4e2b7734a740867aeb16bf02aad556a1e7a01"
   integrity sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==
@@ -3146,6 +3146,13 @@ nest-csv-parser@^2.0.4:
     csv-parser "2.3.3"
     reflect-metadata "0.1.13"
     rxjs "6.6.0"
+
+nestjs-typeorm-paginate@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/nestjs-typeorm-paginate/-/nestjs-typeorm-paginate-3.1.3.tgz#ba68bb403a53b2cf02b1c55af254f5f6cce8edb7"
+  integrity sha512-7iXNnO9hUe1IbJfUeVU6lH0fTEvmPPRvySIKphhEFE39VF1rz0ptd/0pec7pDs6oI9vFQlsdtiH39TNaL4Gf9Q==
+  dependencies:
+    chalk "^4.1.2"
 
 netmask@^2.0.1:
   version "2.0.2"

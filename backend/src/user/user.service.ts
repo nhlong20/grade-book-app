@@ -10,7 +10,7 @@ export class UserService {
   constructor(@InjectRepository(User) private userRepo: Repository<User>) { }
 
   async patch(req: AuthRequest, dto: DTO.User.UserPatching) {
-    const user = await this.userRepo.findOne(req.user.sub)
+    const user = await this.userRepo.findOne({ where: { email: req.user.email } })
     if (!user) throw new BadRequestException('User does not exist')
 
     return this.userRepo.save({

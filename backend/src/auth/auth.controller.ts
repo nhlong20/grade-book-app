@@ -3,9 +3,7 @@ import { Public } from '@/utils/decorators/public.decorator'
 import {
   Body,
   Controller,
-  Delete,
   Post,
-  Request,
   Response,
 } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
@@ -32,21 +30,5 @@ export class AuthController {
   @Post('signup')
   signUp(@Body() body: DTO.Auth.SignUp) {
     return this.service.signup(body)
-  }
-
-  @Public()
-  @ApiOperation({ summary: "to refresh access token" })
-  @Post('refresh')
-  refresh(
-    @Request() req: ExpressRequest,
-    @Response({ passthrough: true }) res: ExpressResponse,
-  ) {
-    return this.service.refresh(req, res)
-  }
-
-  @Delete()
-  @ApiOperation({ summary: "to log out" })
-  logOut(@Response({ passthrough: true }) res: ExpressResponse) {
-    return this.service.logout(res)
   }
 }

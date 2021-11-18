@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsEmail, IsNotEmpty, IsString, IsUUID } from 'class-validator'
+import { IsEmail, IsEnum, IsNotEmpty, IsString, IsUUID } from 'class-validator'
 
 export class SRCreate {
   @ApiProperty()
@@ -22,6 +22,11 @@ export class SRCreateByInvitation {
   token: string
 }
 
+export enum InvitationType {
+  TEACHER = 'teacher',
+  STUDENT = 'student'
+}
+
 export class SRSendInvitation {
   @ApiProperty()
   @IsEmail()
@@ -30,4 +35,8 @@ export class SRSendInvitation {
   @ApiProperty()
   @IsUUID()
   classId: string
+
+  @ApiProperty({ enum: InvitationType, enumName: "InvitationType" })
+  @IsEnum(InvitationType)
+  type: InvitationType
 }

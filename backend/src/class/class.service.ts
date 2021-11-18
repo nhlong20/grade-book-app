@@ -1,4 +1,3 @@
-import { Subscription } from '@/subscription/subscription.entity'
 import { DTO } from '@/type'
 import { AuthRequest } from '@/utils/interface'
 import { BadRequestException, Injectable } from '@nestjs/common'
@@ -13,8 +12,6 @@ export class ClassService {
   constructor(
     @InjectRepository(Class) private readonly classRepo: Repository<Class>,
     @InjectRepository(User) private readonly userRepo: Repository<User>,
-    @InjectRepository(Subscription)
-    private readonly subscriptionRepo: Repository<Subscription>,
   ) { }
 
   async create(dto: DTO.Class.CCreate, req: AuthRequest) {
@@ -54,15 +51,6 @@ export class ClassService {
   }
 
   async getOne(dto: DTO.Class.CGetOne, req?: AuthRequest) {
-    if (
-      dto.id &&
-      !(await this.subscriptionRepo.findOne({
-        ownerId: req.user.sub,
-        classId: dto.id,
-      }))
-    )
-      throw new BadRequestException('You have not taken part in this class yet')
-
     const c = await this.classRepo.findOne({
       where: { id: dto.id },
       relations: ['teachers'],

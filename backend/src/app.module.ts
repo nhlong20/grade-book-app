@@ -7,9 +7,6 @@ import { JwtAuthGuard } from './jwt.guard'
 import { PassportModule } from '@nestjs/passport'
 import { JwtModule } from '@nestjs/jwt'
 import { JwtStrategy } from './jwt.strategy'
-import { AssignmentModule } from './assignment/assignment.module'
-import { SubmissionModule } from './submission/submission.module'
-import { SubscriptionModule } from './subscription/subscription.module'
 import { ClassModule } from './class/class.module'
 import { SubjectModule } from './subject/subject.module'
 
@@ -28,9 +25,6 @@ import { SubjectModule } from './subject/subject.module'
     }),
     UserModule,
     AuthModule,
-    AssignmentModule,
-    SubmissionModule,
-    SubscriptionModule,
     SubjectModule,
     ClassModule,
     PassportModule,

@@ -1,5 +1,3 @@
-import { SubmissionModule } from '@/submission/submission.module'
-import { Subscription } from '@/subscription/subscription.entity'
 import { User } from '@/user/user.entity'
 import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
@@ -8,7 +6,7 @@ import { Class } from './class.entity'
 import { ClassService } from './class.service'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Class, Subscription, User]), SubmissionModule],
+  imports: [TypeOrmModule.forFeature([Class, User])],
   providers: [ClassService],
   controllers: [ClassController],
   exports: [ClassService],

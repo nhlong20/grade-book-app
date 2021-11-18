@@ -1,4 +1,3 @@
-import { SubmissionService } from '@/submission/submission.service'
 import { DTO } from '@/type'
 import { AuthRequest } from '@/utils/interface'
 import {
@@ -21,7 +20,6 @@ import { ClassService } from './class.service'
 export class ClassController {
   constructor(
     private readonly service: ClassService,
-    private readonly submissionService: SubmissionService,
   ) { }
 
   @Post()
@@ -49,12 +47,9 @@ export class ClassController {
     if (query.classId) {
       return this.service.getOne({ id: query.classId }, req)
     }
+
     return this.service.getMany(query)
   }
 
-  @Get('grade')
-  @ApiOperation({ summary: 'get all submissions of a class' })
-  getClassesGrade(@Query('classId', ParseUUIDPipe) classId: string) {
-    return this.submissionService.getManyByClassId(classId)
-  }
+
 }

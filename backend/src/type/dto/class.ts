@@ -62,9 +62,13 @@ export class CCreateCode {
 
 
 export class CGetManyQuery {
-  @IsUUID()
-  @IsOptional()
-  classId?: string
+  @IsNumber()
+  @IsPositive()
+  page = 1
+
+  @IsNumber()
+  @IsPositive()
+  limit = 10
 
   @IsString()
   @IsOptional()

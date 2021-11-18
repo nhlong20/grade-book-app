@@ -4,8 +4,8 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { Class } from './class.entity'
-import * as nanoid from 'nanoid'
 import { User } from '@/user/user.entity'
+import { paginate } from 'nestjs-typeorm-paginate'
 
 @Injectable()
 export class ClassService {
@@ -15,7 +15,7 @@ export class ClassService {
   ) { }
 
   async create(dto: DTO.Class.CCreate, req: AuthRequest) {
-    const user = await this.userRepo.findOne({ where: { id: req.user.sub } })
+    const user = await this.userRepo.findOne({ where: { id: req.user.id } })
 
     return this.classRepo.save({
       ...dto,
@@ -27,10 +27,7 @@ export class ClassService {
     let qb = this.classRepo
       .createQueryBuilder('c')
       .leftJoinAndSelect('c.teachers', 'user')
-
-    if (query.classId) {
-      return qb.where('c.id=:classId', { classId: query.classId }).getOne()
-    }
+      .leftJoinAndSelect('c.students', 'user')
 
     if (query.credit) {
       qb = qb.andWhere('c.credit=:cr', { cr: query.credit })
@@ -47,35 +44,23 @@ export class ClassService {
       )
     }
 
-    return qb.getMany()
+    return paginate(qb, { limit: query.limit, page: query.page })
   }
 
   async getOne(dto: DTO.Class.CGetOne, req?: AuthRequest) {
-    const c = await this.classRepo.findOne({
-      where: { id: dto.id },
-      relations: ['teachers'],
-    })
+    const [c, user] = await Promise.all([
+      this.classRepo.findOne({
+        where: { id: dto.id },
+        relations: ['teachers'],
+      }),
+      this.userRepo.findOne({ where: { email: req.user.email } })
+    ])
 
-    if (c.teachers.some((t) => t.id === req?.user.sub)) {
+    if (!user) throw new BadRequestException('User does not exist')
+    if (c.teachers.some((t) => t.id === user.id)) {
       return c
     } else {
-      throw new BadRequestException('You have not taken part in this class yet')
+      throw new BadRequestException('User has not taken part in this class yet')
     }
-  }
-
-  async createCode(
-    classId: string,
-    dto: DTO.Class.CCreateCode,
-    req: AuthRequest,
-  ) {
-    const c = await this.classRepo.findOne(classId)
-    if (!c) throw new BadRequestException('Class does not exist')
-
-    const code = nanoid.nanoid()
-
-    c.inviteCode = code
-    c.codeExpiration = dto.expiration || null
-
-    return this.classRepo.save(c)
   }
 }

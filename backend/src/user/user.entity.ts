@@ -1,5 +1,6 @@
+import { Class } from '@/class/class.entity'
 import { BaseEntity } from '@/utils/base.entity'
-import { Column, Entity } from 'typeorm'
+import { Column, Entity, ManyToMany } from 'typeorm'
 
 @Entity({ name: 'user' })
 export class User extends BaseEntity {
@@ -23,4 +24,7 @@ export class User extends BaseEntity {
 
   @Column({ type: 'varchar' })
   password: string
+
+  @ManyToMany(() => Class, (c) => c.students)
+  subscriptedClasses: Class[]
 }

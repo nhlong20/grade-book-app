@@ -1,8 +1,7 @@
 import { Request } from 'express';
 
 export interface JwtPayload {
-  sub: string
-  iat: number
+  id: string
   email: string
   name: string
 }

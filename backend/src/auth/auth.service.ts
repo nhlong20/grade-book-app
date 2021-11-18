@@ -5,17 +5,12 @@ import { Repository } from 'typeorm'
 import { compare, hash } from 'bcrypt'
 import { Response } from 'express'
 import { JwtPayload } from '@/utils/interface'
-import {
-  ACCESS_TOKEN_COOKIE_KEY,
-} from '@/utils/constant'
 import { DTO } from '@/type'
 import * as jwt from 'jsonwebtoken'
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @InjectRepository(User) private userRepo: Repository<User>, // @Inject() private jwtService: JwtService,
-  ) { }
+  constructor(@InjectRepository(User) private userRepo: Repository<User>) { }
 
   async signup(dto: DTO.Auth.SignUp) {
     if (await this.checkExistence(dto.email))
@@ -36,9 +31,8 @@ export class AuthService {
 
     const payload: JwtPayload = {
       email: user.email,
-      iat: Date.now(),
       name: user.name,
-      sub: user.id,
+      id: user.id,
     }
 
     const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -46,11 +40,9 @@ export class AuthService {
       expiresIn: '1 day',
     })
 
-
-    res.set(ACCESS_TOKEN_COOKIE_KEY, accessToken)
+    res.set('X-Access-Token', accessToken)
     return payload
   }
-
 
   async checkExistence(email: string) {
     const user = await this.userRepo.findOne({ email })

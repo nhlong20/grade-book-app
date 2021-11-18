@@ -1,4 +1,3 @@
-import { Assignment } from "@/assignment/assignment.entity";
 import { Subject } from "@/subject/subject.entity";
 import { User } from "@/user/user.entity";
 import { BaseEntity } from "@/utils/base.entity";
@@ -32,11 +31,12 @@ export class Class extends BaseEntity {
   @JoinTable()
   teachers: User[]
 
+  @ManyToMany(() => User, user => user.subscriptedClasses)
+  @JoinTable()
+  students: User[]
+
   @Column({ type: 'varchar', default: null })
   academicYear: string
-
-  @OneToMany(() => Assignment, assignment => assignment.class)
-  assignments: Assignment[]
 
   @Column({ type: "uuid", select: false })
   subjectId: string

@@ -28,26 +28,18 @@ export class ClassController {
     return this.service.create(dto, req)
   }
 
-  @Put(':classId/code')
-  @ApiOperation({ summary: 'create code for a class' })
-  createCode(
-    @Body() dto: DTO.Class.CCreateCode,
-    @Param('classId', ParseUUIDPipe) classId: string,
-    @Request() req: AuthRequest,
-  ) {
-    return this.service.createCode(classId, dto, req)
+  @Get(':id')
+  @ApiOperation({ summary: 'to get one class' })
+  getClass(@Param('id', ParseUUIDPipe) id: string, @Request() req: AuthRequest) {
+    return this.service.getOne({ id }, req)
   }
 
   @Get()
-  @ApiOperation({ summary: 'get one or many class' })
+  @ApiOperation({ summary: 'get many classes' })
   getClasses(
     @Request() req: AuthRequest,
     @Query() query: DTO.Class.CGetManyQuery,
   ) {
-    if (query.classId) {
-      return this.service.getOne({ id: query.classId }, req)
-    }
-
     return this.service.getMany(query)
   }
 

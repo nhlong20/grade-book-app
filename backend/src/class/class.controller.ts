@@ -18,9 +18,7 @@ import { ClassService } from './class.service'
 @ApiBearerAuth('access-token')
 @Controller('class')
 export class ClassController {
-  constructor(
-    private readonly service: ClassService,
-  ) { }
+  constructor(private readonly service: ClassService) { }
 
   @Post()
   @ApiOperation({ summary: 'create class' })
@@ -30,18 +28,30 @@ export class ClassController {
 
   @Get(':id')
   @ApiOperation({ summary: 'to get one class' })
-  getClass(@Param('id', ParseUUIDPipe) id: string, @Request() req: AuthRequest) {
+  getClass(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Request() req: AuthRequest,
+  ) {
     return this.service.getOne({ id }, req)
   }
 
   @Get()
   @ApiOperation({ summary: 'get many classes' })
-  getClasses(
-    @Request() req: AuthRequest,
-    @Query() query: DTO.Class.CGetManyQuery,
-  ) {
+  getClasses(@Query() query: DTO.Class.CGetManyQuery) {
     return this.service.getMany(query)
   }
 
+  @Post(':id/invite')
+  @ApiOperation({ summary: 'to send invitation' })
+  sendInvitation() {
 
+  }
+
+  @Put(':id/student/join')
+  @ApiOperation({ summary: 'to join class as student' })
+  joinClassAsStudent() { }
+
+  @Put(':id/teacher/join')
+  @ApiOperation({ summary: 'to join class as teacher' })
+  joinClassAsTeacher() { }
 }

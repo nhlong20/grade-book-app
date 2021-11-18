@@ -1,13 +1,20 @@
 import {
+  ArrayMinSize,
+  IsArray,
   IsDate,
+  IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsPositive,
   IsString,
   IsUUID,
+  ValidateNested,
 } from 'class-validator'
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Paginate } from './util';
+import { CodeType } from '@/class/class.entity';
 
 export class CCreate {
   @ApiProperty()
@@ -61,15 +68,7 @@ export class CCreateCode {
 }
 
 
-export class CGetManyQuery {
-  @IsNumber()
-  @IsPositive()
-  page = 1
-
-  @IsNumber()
-  @IsPositive()
-  limit = 10
-
+export class CGetManyQuery extends Paginate {
   @IsString()
   @IsOptional()
   query?: string
@@ -83,4 +82,27 @@ export class CGetManyQuery {
   @IsString()
   @IsOptional()
   semester?: string
+}
+
+export class SendInvitation {
+  @ApiProperty()
+  @IsArray()
+  @ArrayMinSize(1)
+  @ValidateNested({ each: true })
+  @IsEmail()
+  emails: string[]
+
+  @ApiProperty({ enum: CodeType, enumName: 'CodeType' })
+  @IsEnum(CodeType)
+  type: CodeType
+
+  @ApiPropertyOptional()
+  @IsDate()
+  expire?: Date
+}
+
+export class JoinClass {
+  @ApiProperty()
+  @IsUUID()
+  token: string
 }

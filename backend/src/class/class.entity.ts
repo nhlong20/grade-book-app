@@ -5,12 +5,6 @@ import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, On
 
 @Entity({ name: "class" })
 export class Class extends BaseEntity {
-  @Column({ type: "varchar", name: "invite_code", default: null, unique: true })
-  inviteCode: string | null
-
-  @Column({ name: 'code_expiration', default: null })
-  codeExpiration: Date | null
-
   @Column({ type: "varchar", unique: true })
   identityCode: string
 
@@ -44,4 +38,21 @@ export class Class extends BaseEntity {
   @ManyToOne(() => Subject, s => s.classes)
   @JoinColumn()
   subject: Subject
+}
+
+export enum CodeType {
+  Student = 'student',
+  Teacher = 'teacher'
+}
+
+@Entity()
+export class Code extends BaseEntity {
+  @Column()
+  emails: string[]
+
+  @Column({ nullable: true, default: null })
+  expire: Date
+
+  @Column({ enum: CodeType, type: 'enum' })
+  type: CodeType
 }

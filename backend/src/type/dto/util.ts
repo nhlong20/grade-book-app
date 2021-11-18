@@ -5,10 +5,10 @@ export class Paginate {
   @ApiProperty()
   @IsNumber()
   @IsPositive()
-  page: number
+  page = 1
 
   @ApiProperty()
   @IsNumber()
   @IsPositive()
-  limit: number
+  limit = 10
 }

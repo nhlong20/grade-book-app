@@ -69,16 +69,19 @@ export class CCreateCode {
 
 
 export class CGetManyQuery extends Paginate {
+  @ApiPropertyOptional()
   @IsString()
   @IsOptional()
   query?: string
 
+  @ApiPropertyOptional()
   @IsNumber()
   @IsPositive()
   @IsOptional()
   credit?: number
 
 
+  @ApiPropertyOptional()
   @IsString()
   @IsOptional()
   semester?: string
@@ -88,8 +91,6 @@ export class SendInvitation {
   @ApiProperty()
   @IsArray()
   @ArrayMinSize(1)
-  @ValidateNested({ each: true })
-  @IsEmail()
   emails: string[]
 
   @ApiProperty({ enum: CodeType, enumName: 'CodeType' })
@@ -97,6 +98,7 @@ export class SendInvitation {
   type: CodeType
 
   @ApiPropertyOptional()
+  @IsOptional()
   @IsDate()
   expire?: Date
 }

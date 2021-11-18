@@ -43,15 +43,21 @@ export class ClassController {
 
   @Post(':id/invite')
   @ApiOperation({ summary: 'to send invitation' })
-  sendInvitation() {
-
+  sendInvitation(
+    @Param('id', ParseUUIDPipe) classId: string,
+    @Request() req: AuthRequest,
+    @Body() dto: DTO.Class.SendInvitation,
+  ) {
+    return this.service.sendInvitation(classId, dto, req)
   }
 
-  @Put(':id/student/join')
-  @ApiOperation({ summary: 'to join class as student' })
-  joinClassAsStudent() { }
-
-  @Put(':id/teacher/join')
-  @ApiOperation({ summary: 'to join class as teacher' })
-  joinClassAsTeacher() { }
+  @Put(':id/join')
+  @ApiOperation({ summary: 'to join class' })
+  join(
+    @Param('id', ParseUUIDPipe) classId: string,
+    @Request() req: AuthRequest,
+    @Body() dto: DTO.Class.JoinClass,
+  ) {
+    return this.service.join(classId, dto, req)
+  }
 }

@@ -47,7 +47,7 @@ export enum CodeType {
 
 @Entity()
 export class Code extends BaseEntity {
-  @Column()
+  @Column({ type: "varchar", array: true })
   emails: string[]
 
   @Column({ nullable: true, default: null })

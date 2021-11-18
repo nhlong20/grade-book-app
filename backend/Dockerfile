@@ -18,6 +18,8 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/.env ./
 
+ENV DB_HOST dev-db.cjqy64ggirgx.ap-southeast-1.rds.amazonaws.com
+
 EXPOSE 8000
 
 CMD ["node", "dist/main"]

@@ -34,9 +34,11 @@ export default NextAuth({
                             email: credentials.email,
                             password: credentials.password,
                         })
-                        .then((res) => res.data),
+                        .then((res) => {
+                            return res.data
+                        }),
                 )
-                return res?.user
+                return res
             },
         })
 
@@ -57,12 +59,11 @@ export default NextAuth({
         async signIn(user, account, profile) {
             if (account.provider === 'google') {
                 const [res, err] = await asyncTryCatch(() =>
-                    axios.put(`${API}/auth/by-google-id`, {
+                    axios.put(`${API}/auth/google`, {
                         email: profile.email,
                         googleId: profile.id,
-                    }),
+                    })
                 )
-
                 if (err) {
                     return false
                 }

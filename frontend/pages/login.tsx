@@ -105,7 +105,7 @@ export default function Login() {
                                 type="submit"
                                 className="w-full text-center py-3 rounded bg-red-500 text-white hover:bg-red-dark focus:outline-none my-1 uppercase font-bold"
                                 onClick={loginWithGoogle}
-                            >  <span className="fab fa-google mr-2" />Đăng nhập với Google</button>
+                            >  <i className="fab fa-google mr-2" />Đăng nhập với Google</button>
 
                             <p className="mt-8">Bạn chưa có tài khoản?{" "}
                                 <Link href="/signup">

@@ -3,7 +3,9 @@ import { Public } from '@/utils/decorators/public.decorator'
 import {
   Body,
   Controller,
+  Get,
   Post,
+  Query,
   Response,
 } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
@@ -30,5 +32,19 @@ export class AuthController {
   @Post('signup')
   signUp(@Body() body: DTO.Auth.SignUp) {
     return this.service.signup(body)
+  }
+
+  @Public()
+  @ApiOperation({ summary: "to login with google" })
+  @Post('login-with-google')
+  logInWithGoogle(@Body() dto: DTO.Auth.LoginByGoogle) {
+    return this.service.loginByGoggle(dto)
+  }
+
+  @Public()
+  @ApiOperation({ summary: "to check if account exists" })
+  @Get()
+  check(@Query() dto: DTO.Auth.CheckUserExistence) {
+    return this.service.checkExistence(dto.email)
   }
 }

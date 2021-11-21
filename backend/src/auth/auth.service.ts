@@ -19,6 +19,7 @@ export class AuthService {
     await this.userRepo.save({
       ...dto,
       password: await hash(dto.password, 10),
+      googleId: dto.googleId ? await hash(dto.googleId, 10) : null,
     })
   }
 
@@ -48,5 +49,22 @@ export class AuthService {
     const user = await this.userRepo.findOne({ email })
 
     return !!user
+  }
+
+  async loginByGoggle(dto: DTO.Auth.LoginByGoogle) {
+    const user = await this.userRepo.findOne({ email: dto.email })
+
+    if (!user) throw new BadRequestException('This account does not exist')
+
+    if (!(await compare(dto.googleId, user.googleId)))
+      throw new BadRequestException('This account does not exist')
+
+    const payload: JwtPayload = {
+      email: user.email,
+      name: user.name,
+      id: user.id,
+    }
+
+    return payload
   }
 }

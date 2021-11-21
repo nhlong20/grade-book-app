@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator"
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class Login {
   @ApiProperty()
@@ -10,6 +10,17 @@ export class Login {
   @IsString()
   @IsNotEmpty()
   password: string
+}
+
+export class LoginByGoogle {
+  @ApiProperty()
+  @IsEmail()
+  email: string
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  googleId: string
 }
 
 export class SignUp {
@@ -26,4 +37,16 @@ export class SignUp {
   @IsString()
   @IsNotEmpty()
   password: string
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  googleId?: string
+}
+
+export class CheckUserExistence {
+  @ApiProperty()
+  @IsEmail()
+  email: string
 }

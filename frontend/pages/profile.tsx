@@ -1,15 +1,14 @@
 import { API } from '../environment'
 import { toast } from 'react-toastify';
 
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation} from 'react-query'
 
 import axios from 'axios'
-
 type FormData = { name: string; email: string; password: string; }
 
-export default function SignUp() {
+export default function Profile() {
     const { register, handleSubmit, reset  } = useForm<FormData>()
     const [showModal, setShowModal] = useState(false);
     const [success, setSuccess] = useState(false)

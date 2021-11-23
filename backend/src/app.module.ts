@@ -8,7 +8,6 @@ import { PassportModule } from '@nestjs/passport'
 import { JwtModule } from '@nestjs/jwt'
 import { JwtStrategy } from './jwt.strategy'
 import { ClassModule } from './class/class.module'
-import { SubjectModule } from './subject/subject.module'
 
 @Module({
   imports: [
@@ -25,7 +24,6 @@ import { SubjectModule } from './subject/subject.module'
     }),
     UserModule,
     AuthModule,
-    SubjectModule,
     ClassModule,
     PassportModule,
     JwtModule.register({ secret: process.env.JWT_SECRET }),

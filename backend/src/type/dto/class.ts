@@ -50,8 +50,9 @@ export class CCreate {
   semester: string
 
   @ApiProperty()
-  @IsUUID()
-  subjectId: string
+  @IsString()
+  @IsNotEmpty()
+  department: string
 }
 
 export class CGetOne {

@@ -12,7 +12,7 @@ export default function NotFound() {
       </Head>
 
       <div className="flex flex-col items-center">
-        <Image src="/illustrations/404.svg" alt="Not Found" />
+        <Image src="/illustrations/404.svg" width="406" height="306" alt="Not Found" />
         <div className="mt-4 font-medium text-gray-600 text-lg">
           Oops! It looks like you have followed a bad link!!
         </div>

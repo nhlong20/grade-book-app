@@ -37,7 +37,7 @@ export default function UserDropDown({ userData }) {
                     <div className="py-1">
                         <Menu.Item>
                             {({ active }) => (
-                                <Link href="/login">
+                                <Link href="/profile">
                                     <a
                                         href="#"
                                         className={classNames(

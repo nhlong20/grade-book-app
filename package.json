@@ -1,0 +1,21 @@
+{
+  "name": "grade-book-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "bootstrap": "concurrently \"cd backend && yarn install\" \"cd frontend && yarn install\"",
+    "dev": "concurrently \"cd backend && yarn dev\" \"cd frontend && yarn dev\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nhlong20/grade-book-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "homepage": "https://github.com/nhlong20/grade-book-app#readme",
+  "devDependencies": {
+    "concurrently": "^6.4.0"
+  }
+}

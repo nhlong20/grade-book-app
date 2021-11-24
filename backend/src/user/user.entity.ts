@@ -1,16 +1,23 @@
+import { Class } from '@/class/class.entity'
 import { BaseEntity } from '@/utils/base.entity'
-import { Column, Entity } from 'typeorm'
+import { Column, Entity, ManyToMany } from 'typeorm'
 
-export enum Role {
-  AD = 'admin',
-  ST = 'student',
-  TE = 'teacher'
-}
-
-@Entity({ name: 'users' })
+@Entity({ name: 'user' })
 export class User extends BaseEntity {
   @Column({ type: 'varchar' })
   name: string
+
+  @Column({ nullable: true, default: null })
+  picture: string
+
+  @Column({ type: 'varchar', nullable: true, default: null })
+  phone: string
+
+  @Column({ type: 'varchar', default: null })
+  facebookId: string | null
+
+  @Column({ type: 'varchar', default: null })
+  googleId: string | null
 
   @Column({ type: 'varchar', unique: true })
   email: string
@@ -18,6 +25,6 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar' })
   password: string
 
-  @Column({ enum: Role, type: "enum", array: true })
-  role: Role[]
+  @ManyToMany(() => Class, (c) => c.students)
+  subscriptedClasses: Class[]
 }

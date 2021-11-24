@@ -12,7 +12,7 @@ export default function Forbidden() {
       </Head>
 
       <div className="flex flex-col items-center">
-        <Image src="/illustrations/403.svg" alt="Forbidden" />
+        <Image src="/illustrations/403.svg" width="406" height="306" alt="Forbidden" />
         <div className="mt-4 font-medium text-gray-600 text-lg">
           Oops! It looks like you can not be here!!
         </div>

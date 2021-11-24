@@ -2,13 +2,14 @@ import { Injectable } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { Request } from 'express'
-import { ACCESS_TOKEN_COOKIE_KEY } from './utils/constant'
 
 const cookieExtractor = function (req: Request) {
   let token = null
 
   if (req && req.cookies) {
-    token = req.cookies[ACCESS_TOKEN_COOKIE_KEY]
+    token =
+      req.cookies['next-auth.session-token'] ||
+      req.cookies['__Secure-next-auth.session-token']
   }
 
   return token

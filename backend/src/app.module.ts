@@ -7,11 +7,12 @@ import { JwtAuthGuard } from './jwt.guard'
 import { PassportModule } from '@nestjs/passport'
 import { JwtModule } from '@nestjs/jwt'
 import { JwtStrategy } from './jwt.strategy'
+import { ClassModule } from './class/class.module'
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'mysql',
+      type: 'postgres',
       host: process.env.DB_HOST,
       port: Number(process.env.DB_PORT),
       username: process.env.DB_USERNAME,
@@ -23,6 +24,7 @@ import { JwtStrategy } from './jwt.strategy'
     }),
     UserModule,
     AuthModule,
+    ClassModule,
     PassportModule,
     JwtModule.register({ secret: process.env.JWT_SECRET }),
   ],

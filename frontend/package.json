@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "aos": "^2.3.4",
+    "@headlessui/react": "^1.4.2",
     "axios": "^0.24.0",
     "framer-motion": "^5.3.1",
     "jsonwebtoken": "^8.5.1",

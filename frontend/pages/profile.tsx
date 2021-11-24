@@ -1,120 +1,170 @@
 import { API } from '../environment'
 import { toast } from 'react-toastify';
+import Loading from '@components/Loading'
 
 import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation} from 'react-query'
-
 import axios from 'axios'
-type FormData = { name: string; email: string; password: string; }
+import { GetServerSideProps } from 'next'
+import { getSession,useSession, signin, signout } from 'next-auth/client'
+import Head from 'next/head'
 
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await getSession(ctx)
+
+  if ('uuid' in (session?.user || {}))
+    return { redirect: { destination: '/404', permanent: false } }
+
+  return { props: {} }
+}
+type FormData = {
+    name: string;
+    studentId: string;
+    google: string;
+    emailsv:string;
+    phone:string
+
+}
 export default function Profile() {
-    const { register, handleSubmit, reset  } = useForm<FormData>()
-    const [showModal, setShowModal] = useState(false);
-    const [success, setSuccess] = useState(false)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>()
 
+  const [session] = useSession()
 
-    const { mutateAsync, isLoading } = useMutation(
-        ['signup'],
-        (data: FormData) => axios.post(`${API}/auth/signup`, data),
-        {
-            onSuccess(res) {
-                setSuccess(true)
-                toast.success("Đăng ký thành côngg");
-                setShowModal(false);
-                reset()
-            },
-            onError(err: any) {
-                toast.error(err.response.statusText + ": "+ err.response.data.message);
-            },
-        },
-    )
+  const { mutateAsync, isLoading } = useMutation(
+    'update-information',
+    (data: Partial<FormData>) => axios.post(`${API}/auth/`, data),
+    {
+      onSuccess() {
+        signout().then(() => signin(undefined, { callbackUrl: '/' }))
+      },
+    },
+  )
 
-    const signUp = useCallback((data: FormData) => {
-        mutateAsync(data)
-    }, [])
+  const updateInformation = useCallback(
+    (data: FormData) => {
+        console.log(session)
+        console.log(data)
 
-    return (
-        <>
-      
-            <button className="py-2 px-4 font-semibold rounded-lg shadow-md text-white bg-green-500 hover:bg-green-700 mx-1"
-                onClick={() => setShowModal(true)}>
-                Đăng ký
-            </button>
-            {showModal ? (
-                <>
-                    <div
-                        className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
-                    >
-                        <div className="relative w-auto my-6 mx-auto max-w-3xl">
+      mutateAsync({
+        ...data,
+        email: session!.email,
+        googleId: session!.id as string,
+      })
+    },
+    [session],
+  )
 
-                            <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+  return (
+    <div className="min-h-screen grid place-content-center">
+      <Head>
+        <title>GradeBook | {}</title>
+      </Head>
+      <form className="w-96" onSubmit={handleSubmit(updateInformation)}>
+        <h1 className="text-center text-2xl text-black-600 dark:text-white font-semibold mb-8">
+          Thông tin của bạn
+        </h1>
 
-                                <div className="flex flex-col align-center p-5 border-b border-solid border-blueGray-200 rounded-t text-center">
-                                    <h3 className="text-4xl font-bold uppercase text-green-500 py-5">
-                                        Gradebooks
-                                    </h3>
-                                    <p>Bạn đã có tài khoản?  <span className="underline cursor-pointer" onClick={() => setShowModal(false)}>Đăng nhập</span> </p>
+        <div className="mb-4">
+          <label htmlFor="name" className="hcmus-label">
+            Họ và tên
+          </label>
+          <input
+            type="text"
+            id="name"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            {...register('name', {
+              required: {
+                value: true,
+                message: 'This field is required',
+              },
+            })}
+          />
+          {errors.name && (
+            <div className="mt-2 text-red-600">{errors.name.message}</div>
+          )}
+        </div>
 
-                                </div>
-                                <form className="relative p-6 flex-auto"
-                                    onSubmit={handleSubmit(signUp)}>
-                                    <input
-                                        type="text"
-                                        className="block border border-grey-light w-full p-3 rounded mb-4"
-                                        placeholder="Tên của bạn *"
-                                        {...register('name')}
-                                        required />
-
-                                    <input
-                                        type="email"
-                                        className="block border border-grey-light w-full p-3 rounded mb-4"
-                                        placeholder="Email của bạn *"
-                                        {...register('email')}
-                                        required />
-
-                                    <input
-                                        type="password"
-                                        className="block border border-grey-light w-full p-3 rounded mb-4"
-                                        placeholder="Mật khẩu *"
-                                        {...register('password')}
-                                        required />
-
-                                    <div className="my-4">
-                                        <p className="text-center text-sm text-grey-dark">
-                                            Bằng cách ấn đăng ký, bạn đã đồng ý với
-                                        </p>
-                                        <p className="text-center text-sm text-grey-dark">
-                                            <a className="no-underline border-b border-grey-dark text-grey-dark font-semibold" href="#">
-                                                <span>Điều khoản dịch vụ</span>
-                                            </a> và
-                                            <a className="no-underline border-b border-grey-dark text-grey-dark font-semibold" href="#">
-                                                <span> Quy định chính sách </span>
-                                            </a>
-                                            của chúng tôi
-                                        </p>
-                                    </div>
-                                    <button
-                                        type="submit"
-                                        className="w-full text-center py-3 rounded bg-green-500 text-white hover:bg-green-dark focus:outline-none my-1 uppercase font-bold"
-                                    >Đăng ký</button>
-                                    <button
-                                        type="submit"
-                                        className="w-full text-center py-3 rounded bg-red-500 text-white hover:bg-red-dark focus:outline-none my-1 uppercase font-bold"
-                                    >  <span className="fab fa-google mr-2" />Đăng ký với Google</button>
-                                    <button
-                                        type="submit"
-                                        className="w-full text-center py-3 rounded bg-gray-500 text-white hover:bg-gray-dark focus:outline-none my-1 uppercase font-bold"
-                                        onClick={() => setShowModal(false)}
-                                    >Huỷ</button>
-
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
-                </>
-            ) : null}
-        </>
-    );
+        <div className="mb-4">
+          <label htmlFor="student-id" className="hcmus-label">
+            Mã số sinh viên
+          </label>
+          <input
+            type="text"
+            id="student-id"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            {...register('studentId', {
+              required: { value: true, message: 'This field is required' },
+            })}
+          />
+          {errors.studentId && (
+            <div className="mt-2 text-red-600">{errors.studentId.message}</div>
+          )}
+        </div>
+        <div className="mb-4">
+          <label htmlFor="google" className="hcmus-label">
+            Liên kết Google
+          </label>
+          <input
+            type="text"
+            id="google"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            {...register('google', {
+              required: { value: true, message: 'This field is required' },
+            })}
+          />
+          {errors.google && (
+            <div className="mt-2 text-red-600">{errors.google.message}</div>
+          )}
+        </div>
+        <div className="mb-4">
+          <label htmlFor="emailsv" className="hcmus-label">
+            Email sinh viên
+          </label>
+          <input
+            type="text"
+            id="emailsv"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            {...register('emailsv', {
+              required: { value: true, message: 'This field is required' },
+            })}
+          />
+          {errors.emailsv && (
+            <div className="mt-2 text-red-600">{errors.emailsv.message}</div>
+          )}
+        </div>
+        <div className="mb-4">
+          <label htmlFor="phone" className="hcmus-label">
+            Số điện thoại
+          </label>
+          <input
+            type="text"
+            id="phone"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            {...register('phone', {
+              required: { value: true, message: 'This field is required' },
+            })}
+          />
+          {errors.phone && (
+            <div className="mt-2 text-red-600">{errors.phone.message}</div>
+          )}
+        </div>
+        
+        
+        <div>
+          <button
+            disabled={isLoading}
+            className="bg-green-500 w-full hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="submit"
+          >
+            <Loading on={isLoading}>Submit</Loading>
+          </button>
+        </div>
+      </form>
+    </div>
+  )
 }

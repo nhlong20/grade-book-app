@@ -13,6 +13,7 @@ class MyDocument extends Document {
             crossOrigin="anonymous"
             referrerPolicy="no-referrer"
           />
+                <link rel="stylesheet" type="text/css" href="/nprogress.css" />
 
           <link
             rel="stylesheet"

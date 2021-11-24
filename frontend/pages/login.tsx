@@ -1,56 +1,55 @@
-import { signin, signIn } from 'next-auth/client';
-import { useForm } from 'react-hook-form';
-import { useCallback, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import { useRouter } from 'next/dist/client/router';
-import Head from 'next/head';
-import Navbar from '@components/Navbar';
-import Link from 'next/link';
-import { useGradeBookSession } from '@utils/hooks/useSession';
+import { signin, signIn } from 'next-auth/client'
+import { useForm } from 'react-hook-form'
+import { useCallback, useEffect } from 'react'
+import { toast } from 'react-toastify'
+import { useRouter } from 'next/dist/client/router'
+import Head from 'next/head'
+import Navbar from '@components/Navbar'
+import Link from 'next/link'
+import { useGradeBookSession } from '@utils/hooks/useSession'
 
 type FormData = {
-  email: string;
-  password: string;
-};
+  email: string
+  password: string
+}
 const errorMapping: Record<string, string> = {
   AccessDenied: 'Your account has not existed in the system yet!',
   CredentialsSignin: 'Your provided credentials are not correct!',
   Callback: 'System failure!',
-};
+}
 
 export default function Login() {
-  const { query } = useRouter();
-  const router = useRouter();
-  const { register, handleSubmit } = useForm<FormData>();
-  const [session] = useGradeBookSession();
+  const { query } = useRouter()
+  const router = useRouter()
+  const { register, handleSubmit } = useForm<FormData>()
+  const [session] = useGradeBookSession()
 
   useEffect(() => {
-    if (!('error' in query)) return;
-    toast.error(errorMapping[query.error as string]);
-  }, [query]);
+    if (!('error' in query)) return
+    toast.error(errorMapping[query.error as string])
+  }, [query])
 
   const login = useCallback(
     (data: Record<string, any>) => {
       signIn('login', {
         callbackUrl: (query.callbackUrl as string) || '/',
         ...data,
-      });
+      })
     },
-    [query]
-  );
+    [query],
+  )
 
   const loginWithGoogle = useCallback(() => {
     signin('google', {
       callbackUrl: (query.callbackUrl as string) || '/',
-    });
-  }, [query]);
+    })
+  }, [query])
 
   return (
     <div>
       <Head>
         <title>Login - Gradebooks</title>
       </Head>
-      <Navbar />
 
       <div className="container h-screen min-h-full min-w-full">
         <main className="flex flex-col text-center min-h-full justify-center">
@@ -124,5 +123,5 @@ export default function Login() {
         </main>
       </div>
     </div>
-  );
+  )
 }

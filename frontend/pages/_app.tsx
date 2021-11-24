@@ -1,43 +1,43 @@
 import type { AppProps } from 'next/app'
-import { useState,useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify'
 import '../styles/globals.css'
 import '../styles/tailwind.css'
-import 'react-toastify/dist/ReactToastify.css';
+import 'react-toastify/dist/ReactToastify.css'
 import { Provider as NextAuthProvider } from 'next-auth/client'
-import { motion } from "framer-motion";
-import NProgress from "nprogress";
-import Router from "next/router";
-import AOS from "aos";
-import Sidebar from "@components/Sidebar"
+import { motion } from 'framer-motion'
+import NProgress from 'nprogress'
+import Router from 'next/router'
+import AOS from 'aos'
+import Sidebar from '@components/Sidebar'
 import { useGradeBookSession } from '@utils/hooks/useSession'
-import Navbar from "@components/Navbar"
-Router.events.on("routeChangeStart", () => {
-  NProgress.start();
-});
-Router.events.on("routeChangeComplete", () => {
-  NProgress.done();
-});
-Router.events.on("routeChangeError", () => NProgress.done());
+import Navbar from '@components/Navbar'
+Router.events.on('routeChangeStart', () => {
+  NProgress.start()
+})
+Router.events.on('routeChangeComplete', () => {
+  NProgress.done()
+})
+Router.events.on('routeChangeError', () => NProgress.done())
 
-export default function MyApp({ Component, pageProps,router }: AppProps) {
+export default function MyApp({ Component, pageProps, router }: AppProps) {
   const [session] = useGradeBookSession()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   useEffect(() => {
-    if (session && session.user.email !== "") {
-      setIsLoggedIn(true);
+    if (session && session.user.email !== '') {
+      setIsLoggedIn(true)
     }
   }, [session])
 
   const [queryClient] = useState(() => new QueryClient())
   useEffect(() => {
     AOS.init({
-        offset: 50,
-        once: true,
-    });
-}, []);
+      offset: 50,
+      once: true,
+    })
+  }, [])
   return (
     <NextAuthProvider
       options={{
@@ -47,30 +47,29 @@ export default function MyApp({ Component, pageProps,router }: AppProps) {
       session={pageProps.session}
     >
       <QueryClientProvider client={queryClient}>
+        <motion.div
+          key={router.route}
+          initial="initial"
+          animate="animate"
+          variants={{
+            initial: {
+              opacity: 0,
+            },
+            animate: {
+              opacity: 1,
+            },
+          }}
+        >
+          <Navbar isLoggedIn userData={session ? session.user : null} />
 
-      <motion.div
-                key={router.route}
-                initial="initial"
-                animate="animate"
-                variants={{
-                    initial: {
-                        opacity: 0,
-                    },
-                    animate: {
-                        opacity: 1,
-                    },
-                }}
-            >
-      <Navbar isLoggedIn userData={session ? session.user : null} />
-
-              <div className="relative min-h-screen md:flex">
-                <Sidebar/>
-                <div className="flex-1 p-10 text-2xl font-bold">
-                  <Component {...pageProps} />  
-                </div>
-              </div>
+          <div className="flex-1 relative">
+            {isLoggedIn && <Sidebar />}
+            <div className="text-2xl font-bold">
+              <Component {...pageProps} />
+            </div>
+          </div>
         </motion.div>
-        
+
         <ToastContainer
           position="top-right"
           autoClose={5000}
@@ -85,8 +84,5 @@ export default function MyApp({ Component, pageProps,router }: AppProps) {
         />
       </QueryClientProvider>
     </NextAuthProvider>
-
   )
 }
-
-

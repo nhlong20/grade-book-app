@@ -34,9 +34,11 @@ export default NextAuth({
                             email: credentials.email,
                             password: credentials.password,
                         })
-                        .then((res) => res.data),
+                        .then((res) => {
+                            return res.data
+                        }),
                 )
-                return res?.user
+                return res
             },
         })
 
@@ -51,37 +53,9 @@ export default NextAuth({
             if (url.includes('callbackUrl')) {
                 return url.split('=')[1]
             }
-
             return url
         },
-        async signIn(user, account, profile) {
-            if (account.provider === 'google') {
-                const [res, err] = await asyncTryCatch(() =>
-                    axios.put(`${API}/auth/by-google-id`, {
-                        email: profile.email,
-                        googleId: profile.id,
-                    }),
-                )
-
-                if (err) {
-                    return false
-                }
-
-                Object.assign(user, res?.data)
-            }
-
-            if (account.provider === 'google-signup') {
-                const [_res, err] = await asyncTryCatch(() =>
-                    axios.get(`${API}/auth/user/by-email`, {
-                        params: {
-                            email: profile.email,
-                        },
-                    }),
-                )
-
-                if (!err) return '/signup?error=EmailExisted'
-            }
-
+        async signIn() {
             return true
         },
         jwt(payload, user: User, account) {

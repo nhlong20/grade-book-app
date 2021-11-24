@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import UserDropDown from './UserDropDown'
+
 export default function Navbar({ isLoggedIn, userData }) {
     return (
         <div className="shadow-md py-2 fixed min-w-full">
@@ -6,19 +8,7 @@ export default function Navbar({ isLoggedIn, userData }) {
                 <Link href="/">
                     <h1 className="text-2xl cursor-pointer font-bold text-green-500 uppercase">Gradebooks</h1>
                 </Link>
-                {isLoggedIn && userData ?
-                    (
-                        <Link href="/profile">
-                            <div className="flex items-center cursor-pointer">
-                                <p className="font-semibold">{userData?.name}</p>
-                                <img
-                                    src={"/team-1-800x800.jpg"}
-                                    alt="..."
-                                    className="w-8 h-8 rounded-full border-2 border-blueGray-50 shadow ml-2"
-                                ></img>
-                            </div>
-                        </Link>
-                    )
+                {isLoggedIn && userData ? <UserDropDown userData={userData} />
                     : (
                         <ul className="flex">
                             <li>

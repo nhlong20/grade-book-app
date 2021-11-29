@@ -160,13 +160,26 @@ export class ClassService {
       where: { id: classId }
     })
 
+    if (!clazz) throw new BadRequestException('Class does not exist')
+
     const result = await this.gradeStructureRepo.save({
       ...dto,
       class: clazz
     })
+    
     return {
       id: result.id
     }
   }
+  async getManyGradeStructure(classId: string, req: AuthRequest) {
+    const clazz = await this.classRepo.findOne({
+      where: { id: classId }
+    })
 
+    if (!clazz) throw new BadRequestException('Class does not exist')
+
+    return this.gradeStructureRepo.find({
+      where: { class: classId }
+    });
+  }
 }

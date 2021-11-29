@@ -155,7 +155,7 @@ export class ClassService {
 
     return newC
   }
-  async creatGradeStructure(classId: string, dto: DTO.Class.CreateGradeStructure, req: AuthRequest) {
+  async creatGradeStructure(classId: string, dto: DTO.Class.CreateGradeStructure) {
     const clazz = await this.classRepo.findOne({
       where: { id: classId }
     })
@@ -171,7 +171,7 @@ export class ClassService {
       id: result.id
     }
   }
-  async getManyGradeStructure(classId: string, req: AuthRequest) {
+  async getManyGradeStructure(classId: string) {
     const clazz = await this.classRepo.findOne({
       where: { id: classId }
     })
@@ -181,6 +181,22 @@ export class ClassService {
     return this.gradeStructureRepo.find({
       where: { class: classId }
     });
+  }
+
+  async patchGradeStructure(classId: string, gradeStructureId: string, dto: DTO.Class.CreateGradeStructure) {
+    const clazz = await this.classRepo.findOne({
+      where: { id: classId }
+    })
+
+    if (!clazz) throw new BadRequestException('Class does not exist')
+
+    const gradeStructure = await this.gradeStructureRepo.update(
+      { id: gradeStructureId, class: clazz }, { ...dto }
+    );
+
+    if (gradeStructure.affected === 0) throw new BadRequestException('Failed to update')
+    
+    return gradeStructure.affected
   }
 
 }

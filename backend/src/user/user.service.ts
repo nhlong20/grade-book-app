@@ -22,15 +22,10 @@ export class UserService {
     })
   }
 
-  getUserClasses() {
-    const qb = this.userRepo
-      .createQueryBuilder('u')
-      .leftJoinAndSelect('u.classes', 'class')
-      .select('u.classes')
-
-    return paginate(qb, {
-      limit: 10,
-      page: 1,
+  getUserClasses(req: AuthRequest) {
+    return this.userRepo.find({
+      where: { id: req.user.id },
+      relations: ['subscriptedClasses'],
     })
   }
 }

@@ -4,7 +4,7 @@ import { API } from 'environment'
 
 export const getCourses = (token?: string) => () =>
   axios
-    .get<Course[]>(API + '/course', {
+    .get<Course[]>(API + '/class', {
       headers: { Authorization: 'Bearer ' + token },
     })
     .then((r) => r.data)

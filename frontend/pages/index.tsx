@@ -11,7 +11,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const client = new QueryClient()
   const token = getSessionToken(ctx.req.cookies)
 
-  await client.prefetchQuery('courses', getCourses(token))
+  if (token) {
+    await client.prefetchQuery('courses', getCourses(token))
+  }
 
   return {
     props: {

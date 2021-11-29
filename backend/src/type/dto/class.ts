@@ -2,15 +2,11 @@ import {
   ArrayMinSize,
   IsArray,
   IsDate,
-  IsEmail,
   IsEnum,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
-  IsPositive,
   IsString,
   IsUUID,
-  ValidateNested,
 } from 'class-validator'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Paginate } from './util';
@@ -27,32 +23,6 @@ export class CCreate {
   @IsNotEmpty()
   @IsOptional()
   description?: string
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  @IsOptional()
-  academicYear?: string
-
-  @ApiProperty()
-  @IsNumber()
-  @IsPositive()
-  credit: number
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  identityCode: string
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  semester: string
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  department: string
 }
 
 export class CGetOne {
@@ -74,18 +44,6 @@ export class CGetManyQuery extends Paginate {
   @IsString()
   @IsOptional()
   query?: string
-
-  @ApiPropertyOptional()
-  @IsNumber()
-  @IsPositive()
-  @IsOptional()
-  credit?: number
-
-
-  @ApiPropertyOptional()
-  @IsString()
-  @IsOptional()
-  semester?: string
 }
 
 export class SendInvitation {

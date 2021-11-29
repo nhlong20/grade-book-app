@@ -64,16 +64,16 @@ export class ClassController {
   }
 
   @Get(':id/grade-structure')
-  @ApiOperation({ summary: 'to get grade structure' })
+  @ApiOperation({ summary: 'to get all grade structure of a class' })
   getGradeStructure(
     @Param('id', ParseUUIDPipe) classId: string,
     @Request() req: AuthRequest,
   ) {
-    return 1
+    return this.service.getManyGradeStructure(classId, req)
   }
 
   @Post(':id/grade-structure')
-  @ApiOperation({ summary: 'to add new grade structure' })
+  @ApiOperation({ summary: 'to add a new grade structure' })
   creatGradeStructure(
     @Param('id', ParseUUIDPipe) classId: string,
     @Request() req: AuthRequest,
@@ -83,7 +83,7 @@ export class ClassController {
   }
 
   @Patch(':id/grade-structure/:gsId')
-  @ApiOperation({ summary: 'to add new grade structure' })
+  @ApiOperation({ summary: 'to update a grade structure' })
   updateGradeStructure(
     @Param('id', ParseUUIDPipe) classId: string,
     @Request() req: AuthRequest,
@@ -93,7 +93,7 @@ export class ClassController {
   }
 
   @Delete(':id/grade-structure/:gsId')
-  @ApiOperation({ summary: 'to add new grade structure' })
+  @ApiOperation({ summary: 'to delete a grade structure' })
   deleteGradeStructure(
     @Param('id', ParseUUIDPipe) classId: string,
     @Request() req: AuthRequest,

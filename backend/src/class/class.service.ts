@@ -28,7 +28,6 @@ export class ClassService {
     })
     return {
       id: clazz.id,
-      identityCode: clazz.identityCode
     }
   }
 
@@ -38,13 +37,7 @@ export class ClassService {
       .leftJoinAndSelect('c.teachers', 'user')
       .leftJoinAndSelect('c.students', 'user')
 
-    if (query.credit) {
-      qb = qb.andWhere('c.credit=:cr', { cr: query.credit })
-    }
 
-    if (query.semester) {
-      qb = qb.andWhere('c.semester=:sem', { sem: query.semester })
-    }
 
     if (query.query) {
       qb = qb.andWhere('to_tsvector(c.name) @@ plainto_tsquery(:query)', {
@@ -163,13 +156,9 @@ export class ClassService {
     return newC
   }
   async creatGradeStructure(classId: string, dto: DTO.Class.CreateGradeStructure, req: AuthRequest) {
-    const [clazz, user] = await Promise.all([
-      this.classRepo.findOne({
-        where: { id: classId },
-        relations: ['teachers'],
-      }),
-      this.userRepo.findOne({ where: { email: req.user.email } }),
-    ])
+    const clazz = await this.classRepo.findOne({
+      where: { id: classId }
+    })
 
     const result = await this.gradeStructureRepo.save({
       ...dto,
@@ -179,4 +168,5 @@ export class ClassService {
       id: result.id
     }
   }
+
 }

@@ -3,9 +3,11 @@ import { AuthRequest } from '@/utils/interface'
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   Put,
   Query,
@@ -60,4 +62,43 @@ export class ClassController {
   ) {
     return this.service.join(classId, dto, req)
   }
+
+  @Get(':id/grade-structure')
+  @ApiOperation({ summary: 'to get grade structure' })
+  getGradeStructure(
+    @Param('id', ParseUUIDPipe) classId: string,
+    @Request() req: AuthRequest,
+  ) {
+    return 1
+  }
+
+  @Post(':id/grade-structure')
+  @ApiOperation({ summary: 'to add new grade structure' })
+  creatGradeStructure(
+    @Param('id', ParseUUIDPipe) classId: string,
+    @Request() req: AuthRequest,
+    @Body() dto: DTO.Class.CreateGradeStructure,
+  ) {
+    return this.service.creatGradeStructure(classId, dto, req)
+  }
+
+  @Patch(':id/grade-structure/:gsId')
+  @ApiOperation({ summary: 'to add new grade structure' })
+  updateGradeStructure(
+    @Param('id', ParseUUIDPipe) classId: string,
+    @Request() req: AuthRequest,
+    @Body() dto: DTO.Class.CreateGradeStructure,
+  ) {
+    return 1
+  }
+
+  @Delete(':id/grade-structure/:gsId')
+  @ApiOperation({ summary: 'to add new grade structure' })
+  deleteGradeStructure(
+    @Param('id', ParseUUIDPipe) classId: string,
+    @Request() req: AuthRequest,
+  ) {
+    return 1
+  }
+
 }

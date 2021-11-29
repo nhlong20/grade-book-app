@@ -8,6 +8,7 @@ import { User } from '@/user/user.entity'
 import { paginate } from 'nestjs-typeorm-paginate'
 import { MailService } from '@/mail/mail.service'
 import moment from 'moment'
+import { GradeStructure } from '@/gradestructure/grade-structure.entity'
 
 @Injectable()
 export class ClassService {
@@ -15,16 +16,20 @@ export class ClassService {
     @InjectRepository(Class) private readonly classRepo: Repository<Class>,
     @InjectRepository(User) private readonly userRepo: Repository<User>,
     @InjectRepository(Code) private readonly codeRepo: Repository<Code>,
+    @InjectRepository(GradeStructure) private readonly gradeStructureRepo: Repository<GradeStructure>,
     private readonly mailService: MailService,
   ) { }
 
   async create(dto: DTO.Class.CCreate, req: AuthRequest) {
     const user = await this.userRepo.findOne({ where: { id: req.user.id } })
-
-    return this.classRepo.save({
+    const clazz = await this.classRepo.save({
       ...dto,
       teachers: [user],
     })
+    return {
+      id: clazz.id,
+      identityCode: clazz.identityCode
+    }
   }
 
   getMany(query: DTO.Class.CGetManyQuery) {
@@ -156,5 +161,22 @@ export class ClassService {
     ])
 
     return newC
+  }
+  async creatGradeStructure(classId: string, dto: DTO.Class.CreateGradeStructure, req: AuthRequest) {
+    const [clazz, user] = await Promise.all([
+      this.classRepo.findOne({
+        where: { id: classId },
+        relations: ['teachers'],
+      }),
+      this.userRepo.findOne({ where: { email: req.user.email } }),
+    ])
+
+    const result = await this.gradeStructureRepo.save({
+      ...dto,
+      class: clazz
+    })
+    return {
+      id: result.id
+    }
   }
 }

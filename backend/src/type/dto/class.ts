@@ -109,3 +109,14 @@ export class JoinClass {
   @IsUUID()
   token: string
 }
+
+
+export class CreateGradeStructure {
+  @ApiProperty()
+  @IsString()
+  title?: string
+  
+  @ApiProperty()
+  @IsString()
+  detail?: string
+}

@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "bootstrap": "concurrently \"cd backend && yarn install\" \"cd frontend && yarn install\"",
+    "dbcontainer": "docker run -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=gradebook -dp 5432:5432 --name gradebook-con postgres",
     "dev": "concurrently \"cd backend && yarn dev\" \"cd frontend && yarn dev\""
   },
   "repository": {

@@ -3,17 +3,17 @@ import Document, { Html, Head, Main, NextScript } from 'next/document'
 class MyDocument extends Document {
   render() {
     return (
-      <Html>
+      <Html prefix="og: https://ogp.me/ns#">
         <Head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
+
           <link
-            href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@100;200;300;400;500;600;700;800;900&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap"
             rel="stylesheet"
-            crossOrigin="anonymous"
             referrerPolicy="no-referrer"
+            crossOrigin="anonymous"
           />
-                <link rel="stylesheet" type="text/css" href="/nprogress.css" />
 
           <link
             rel="stylesheet"
@@ -21,10 +21,9 @@ class MyDocument extends Document {
             crossOrigin="anonymous"
             referrerPolicy="no-referrer"
           />
-        <meta name="description" content="An educational platform" />
-          <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-        </Head>
 
+          <link rel="shortcut icon" href="/favicon.png" />
+        </Head>
         <body>
           <Main />
           <NextScript />

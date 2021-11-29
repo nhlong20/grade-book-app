@@ -3,6 +3,7 @@ import { AuthRequest } from '@/utils/interface'
 import {
   Body,
   Controller,
+  Get,
   Patch,
   Request,
 } from '@nestjs/common'
@@ -19,6 +20,11 @@ export class UserController {
   @ApiOperation({ summary: 'to patch user' })
   patch(@Body() dto: DTO.User.UserPatching, @Request() req: AuthRequest) {
     return this.service.patch(req, dto)
+  }
+
+  @Get()
+  getUser(@Request() req: AuthRequest) {
+    return this.service.getUserClasses(req)
   }
 
 }

@@ -199,4 +199,19 @@ export class ClassService {
     return gradeStructure.affected
   }
 
+  async deleteGradeStructure(classId: string, gradeStructureId: string) {
+    const clazz = await this.classRepo.findOne({
+      where: { id: classId }
+    })
+
+    if (!clazz) throw new BadRequestException('Class does not exist')
+
+    const gradeStructure = await this.gradeStructureRepo.delete(
+      { id: gradeStructureId, class: clazz }
+    );
+
+    if (gradeStructure.affected === 0) throw new BadRequestException('Failed to delete')
+    
+    return gradeStructure
+  }
 }

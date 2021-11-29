@@ -1,14 +1,12 @@
-import { useGradeBookSession } from '@utils/hooks/useSession'
-import { signIn } from 'next-auth/client'
-import Loading from './Loading'
+import { signIn, useSession } from 'next-auth/client'
 
 export default function RequireLogin() {
-  const [session, loading] = useGradeBookSession()
+  const [session, loading] = useSession()
 
   if (typeof window !== undefined && loading) {
     return (
       <div className="min-h-screen bg-gray-50 grid place-content-center">
-        <Loading size={45} />
+        Loading
       </div>
     )
   }

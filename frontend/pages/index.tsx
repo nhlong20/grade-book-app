@@ -1,57 +1,67 @@
-import { useState, useEffect } from 'react'
-import Head from 'next/head'
-import Navbar from '@components/Navbar'
-import { useGradeBookSession } from '@utils/hooks/useSession'
+import Empty from '@utils/components/Empty'
+import Layout from '@utils/components/Layout'
+import { getSessionToken } from '@utils/libs/getToken'
+import { getCourses } from '@utils/service/course'
+import { GetServerSideProps } from 'next'
+import { dehydrate, QueryClient, useQuery } from 'react-query'
+import { useModal } from '@utils/hooks/useModal'
+import CreateCourseModal from '@components/CreateCourseModal'
 
-const Home = () => {
-  // const [session] = useGradeBookSession()
-  // const [isLoggedIn, setIsLoggedIn] = useState(false)
-  // useEffect(() => {
-  //   if (session && session.user.email !== "") {
-  //     setIsLoggedIn(true);
-  //   }
-  // }, [session])
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const client = new QueryClient()
+  const token = getSessionToken(ctx.req.cookies)
 
-  return (
-    <div>
-      <Head>
-        <title>Gradebooks</title>
-      </Head>
-      <div className="container h-screen min-h-full min-w-full">
-        <main className="flex flex-col text-center min-h-full justify-center">
+  await client.prefetchQuery('courses', getCourses(token))
 
-          <h1 className="text-4xl sm:text-4xl lg:text-6xl text-green-500 font-bold uppercase">Gradebooks</h1>
-
-          <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-center pt-8">
-            Where teaching and learning come together
-          </h1>
-
-          <p className="text-xl p-8">
-            Grade Books is your all-in-one place for teaching and learning. Our easy-to-use and secure tool helps educators manage, measure, and enrich learning experiences.
-          </p>
-
-          <div className="flex justify-center">
-            <div className="mx-4 text-center">
-              <p className="text-2xl font-semibold pb-2">Bạn là giáo viên?</p>
-              <button className="py-3 px-8 text-lg md:text-xl font-semibold rounded-lg shadow-md text-white bg-green-500 hover:bg-green-700">
-                Tạo lớp học ngay
-              </button>
-            </div>
-            <div className="mx-4 text-center">
-              <p className="text-2xl font-semibold pb-2">Bạn là học viên?</p>
-              <button className="py-3 px-8 text-lg md:text-xl font-semibold rounded-lg shadow-md text-green-500 bg-white-500 hover:bg-gray-300">
-                Tham gia lớp học
-              </button>
-            </div>
-          </div>
-
-        </main>
-
-      </div>
-
-
-    </div>
-  )
+  return {
+    props: {
+      dehydratedState: dehydrate(client),
+    },
+  }
 }
 
-export default Home
+export default function Index() {
+  const { data: courses } = useQuery('course', getCourses())
+  const [visible, open, close] = useModal()
+
+  return (
+    <Layout requireLogin>
+      <CreateCourseModal close={close} visible={visible} />
+      <div className="cr-container py-4 mb-6">
+        <div className="flex justify-between items-center">
+          <h1 className="inline-block text-3xl font-medium mr-2 ">Courses</h1>
+          <button onClick={open} className="cr-button mb-2 font-medium">
+            <span className="fa fa-plus mr-2" /> Create course
+          </button>
+        </div>
+
+        <div
+          style={{
+            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 240px))',
+          }}
+          className="grid gap-2"
+        >
+          {courses?.map(({ id, name, teacher }) => (
+            <div
+              className="h-[260px] border rounded-md p-4 hover:shadow-md cr-transition overflow-hidden"
+              key={id}
+            >
+              <div
+                className="bg-hover bg-center h-[100px] m-[-16px] mb-0"
+                style={{
+                  backgroundImage:
+                    'url(https://gstatic.com/classroom/themes/Economics.jpg)',
+                }}
+              />
+              <div className="truncate w-full text-xl font-medium mt-2">
+                {name}
+              </div>
+              <div className="truncate w-full">Teacher: {teacher.name}</div>
+            </div>
+          ))}
+        </div>
+        <Empty message="There is no course" on={!courses?.length} />
+      </div>
+    </Layout>
+  )
+}

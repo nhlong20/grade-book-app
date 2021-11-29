@@ -11,6 +11,7 @@ interface Props {
 
 export default function CreateCourseModal({ close, visible }: Props) {
   const [name, changeName] = useInput('')
+  const [description, changeDescription] = useInput('')
   const client = useQueryClient()
 
   const { mutateAsync, isLoading } = useMutation(
@@ -50,6 +51,19 @@ export default function CreateCourseModal({ close, visible }: Props) {
           value={name}
           onChange={changeName}
           id="name"
+          className="cr-input w-full"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label htmlFor="name" className="cr-label">
+          Description
+        </label>
+        <input
+          type="text"
+          value={description}
+          onChange={changeDescription}
+          id="desc"
           className="cr-input w-full"
         />
       </div>

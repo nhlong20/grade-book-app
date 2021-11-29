@@ -166,7 +166,7 @@ export class ClassService {
       ...dto,
       class: clazz
     })
-    
+
     return {
       id: result.id
     }
@@ -182,4 +182,5 @@ export class ClassService {
       where: { class: classId }
     });
   }
+
 }

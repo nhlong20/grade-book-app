@@ -14,7 +14,7 @@ export default NextAuth({
       async authorize(credentials: Record<string, string>) {
         const [res] = await asyncTryCatch(() =>
           axios
-            .put(`${API}/auth`, {
+            .post(`${API}/auth/login`, {
               email: credentials.email,
               password: credentials.password,
             })

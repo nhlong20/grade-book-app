@@ -1,18 +1,18 @@
 import Empty from '@utils/components/Empty'
 import Layout from '@utils/components/Layout'
 import { getSessionToken } from '@utils/libs/getToken'
-import { getCourses } from '@utils/service/course'
 import { GetServerSideProps } from 'next'
 import { dehydrate, QueryClient, useQuery } from 'react-query'
 import { useModal } from '@utils/hooks/useModal'
 import CreateCourseModal from '@components/CreateCourseModal'
+import { getUser } from '@utils/service/user'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const client = new QueryClient()
   const token = getSessionToken(ctx.req.cookies)
 
   if (token) {
-    await client.prefetchQuery('courses', getCourses(token))
+    await client.prefetchQuery('user', getUser(token))
   }
 
   return {
@@ -23,7 +23,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 }
 
 export default function Index() {
-  const { data: courses } = useQuery('course', getCourses())
+  const { data: user } = useQuery('user', getUser())
+  const courses = user?.subscriptedClasses
+
   const [visible, open, close] = useModal()
 
   return (
@@ -31,9 +33,11 @@ export default function Index() {
       <CreateCourseModal close={close} visible={visible} />
       <div className="cr-container py-4 mb-6">
         <div className="flex justify-between items-center">
-          <h1 className="inline-block text-3xl font-medium mr-2 ">Courses</h1>
+          <h1 className="inline-block text-3xl font-medium mr-2 ">
+            Your Classes
+          </h1>
           <button onClick={open} className="cr-button mb-2 font-medium">
-            <span className="fa fa-plus mr-2" /> Create course
+            <span className="fa fa-plus mr-2" /> Create class
           </button>
         </div>
 
@@ -58,11 +62,11 @@ export default function Index() {
               <div className="truncate w-full text-xl font-medium mt-2">
                 {name}
               </div>
-              <div className="truncate w-full">Teacher: {teacher.name}</div>
+              <div className="truncate w-full">Teacher: {teacher[0].name}</div>
             </div>
           ))}
         </div>
-        <Empty message="There is no course" on={!courses?.length} />
+        <Empty message="You haven't taken any class" on={!courses?.length} />
       </div>
     </Layout>
   )

@@ -22,7 +22,7 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', unique: true })
   email: string
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', select: false })
   password: string
 
   @ManyToMany(() => Class, (c) => c.students)

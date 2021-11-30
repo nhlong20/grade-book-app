@@ -70,7 +70,7 @@ export default function CreateAssigment({
   return (
     <Modal visible={visible} onCancel={close} footer={null} centered>
       <div className="text-semibold text-2xl mb-6">
-        {assignmentData ? 'Update' : 'Create'} Course
+        {assignmentData ? 'Update' : 'Create'} Assignment
       </div>
 
       <div className="mb-4">

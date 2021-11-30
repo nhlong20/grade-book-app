@@ -1,5 +1,6 @@
 import { useInput } from '@utils/hooks/useInput'
-import { createAssignment } from '@utils/service/class'
+import { Assignment } from '@utils/models/assignment'
+import { createAssignment, updateAssignment } from '@utils/service/class'
 import { Modal, notification } from 'antd'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect } from 'react'
@@ -8,9 +9,14 @@ import { useMutation, useQueryClient } from 'react-query'
 type Props = {
   visible: boolean
   close: () => void
+  assignmentData: Assignment | undefined
 }
 
-export default function CreateAssigment({ close, visible }: Props) {
+export default function CreateAssigment({
+  close,
+  visible,
+  assignmentData,
+}: Props) {
   const { query } = useRouter()
   const [name, changeName] = useInput('')
   const [point, changePoint] = useInput(0)
@@ -32,19 +38,40 @@ export default function CreateAssigment({ close, visible }: Props) {
     },
   )
 
+  const { mutateAsync: mutateAsyncUpdate, isLoading: isUpdating } = useMutation(
+    ['update-assignment', assignmentData?.id],
+    updateAssignment(assignmentData?.id || ''),
+    {
+      onSuccess() {
+        client.invalidateQueries('class')
+        notification.success({ message: `Update assignment successfully` })
+        close()
+      },
+      onError() {
+        notification.error({ message: 'Update assignment unsuccessfully' })
+      },
+    },
+  )
+
   useEffect(() => {
-    changeName({ target: { value: '' } } as any)
-    changePoint({ target: { value: 0 } } as any)
+    changeName({ target: { value: assignmentData?.name || '' } } as any)
+    changePoint({ target: { value: assignmentData?.point || 0 } } as any)
   }, [visible])
 
   const create = useCallback(() => {
-    //@ts-ignore
+    if (assignmentData) {
+      mutateAsyncUpdate({ name, point })
+      return
+    }
+
     mutateAsync({ name, point })
-  }, [name, point])
+  }, [name, point, assignmentData])
 
   return (
     <Modal visible={visible} onCancel={close} footer={null} centered>
-      <div className="text-semibold text-2xl mb-6">Create Course</div>
+      <div className="text-semibold text-2xl mb-6">
+        {assignmentData ? 'Update' : 'Create'} Assignment
+      </div>
 
       <div className="mb-4">
         <label htmlFor="name" className="cr-label">
@@ -62,7 +89,7 @@ export default function CreateAssigment({ close, visible }: Props) {
 
       <div className="mb-4">
         <label htmlFor="point" className="cr-label">
-          Description
+          Point
         </label>
         <input
           type="number"
@@ -75,7 +102,8 @@ export default function CreateAssigment({ close, visible }: Props) {
 
       <div className="mb-4 flex gap-2">
         <button onClick={create} disabled={isLoading} className="cr-button">
-          {isLoading ? 'Creating' : 'Create'}
+          {!assignmentData && (isLoading ? 'Creating' : 'Create')}
+          {assignmentData && (isUpdating ? 'Updating' : 'Update')}
         </button>
 
         <button onClick={close} className="cr-button-outline">

@@ -40,7 +40,7 @@ export default function CreateCourseModal({ close, visible }: Props) {
 
   return (
     <Modal visible={visible} onCancel={close} footer={null} centered>
-      <div className="text-semibold text-2xl mb-6">Create Course</div>
+      <div className="text-semibold text-2xl mb-6">Create Class</div>
 
       <div className="mb-4">
         <label htmlFor="name" className="cr-label">

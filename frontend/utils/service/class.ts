@@ -21,10 +21,8 @@ export const createAssignment =
 
 export const createInvitation =
   (id: string) => (data: Pick<Invitation, 'emails' | 'type'>) =>
-    {
-      console.log(data)
-      return axios.post(API + '/class/' + id + '/invite', data).then((r) => r.data)
-    }
+    axios.post(API + '/class/' + id + '/invite', data).then((r) => r.data)
+
 
 export const updateAssignment =
   (id: string) => (data: Pick<Assignment, 'name' | 'point'>) =>

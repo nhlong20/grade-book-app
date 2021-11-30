@@ -18,5 +18,12 @@ export const createAssignment =
   (id: string) => (data: Pick<Assignment, 'name' | 'point'>) =>
     axios.post(API + '/class/' + id + '/assignment', data).then((r) => r.data)
 
+export const updateAssignment =
+  (id: string) => (data: Pick<Assignment, 'name' | 'point'>) =>
+    axios.put(API + '/class/assignment/' + id, data)
+
+export const deleteAssignment = (id: string) =>
+  axios.delete(API + '/class/assignment/' + id)
+
 export const getClass = (id: string) => () =>
   axios.get<Class>(API + '/class/' + id).then((res) => res.data)

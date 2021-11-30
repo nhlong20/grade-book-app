@@ -24,7 +24,10 @@ export class AuthService {
   }
 
   async login(dto: DTO.Auth.Login, res: Response) {
-    const user = await this.userRepo.findOne({ email: dto.email })
+    const user = await this.userRepo.createQueryBuilder("user")
+    .addSelect('user.password')
+    .where("user.email = :email", {email: dto.email })
+    .getOne()
 
     if (!user) throw new BadRequestException('Email or password is wrong')
     if (!(await compare(dto.password, user.password)))

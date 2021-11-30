@@ -5,6 +5,7 @@ import { GetServerSideProps } from 'next'
 import { dehydrate, QueryClient, useQuery } from 'react-query'
 import { useModal } from '@utils/hooks/useModal'
 import CreateCourseModal from '@components/CreateCourseModal'
+import Link from 'next/link'
 import { getUser } from '@utils/service/user'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
@@ -24,7 +25,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
 export default function Index() {
   const { data: user } = useQuery('user', getUser())
-  const courses = user?.subscriptedClasses
+  const courses = [
+    ...(user?.subscriptedClasses || []),
+    ...(user?.ownerClasses || []),
+  ]
 
   const [visible, open, close] = useModal()
 
@@ -47,7 +51,7 @@ export default function Index() {
           }}
           className="grid gap-2"
         >
-          {courses?.map(({ id, name, teacher }) => (
+          {courses?.map(({ id, name }) => (
             <div
               className="h-[260px] border rounded-md p-4 hover:shadow-md cr-transition overflow-hidden"
               key={id}
@@ -59,10 +63,11 @@ export default function Index() {
                     'url(https://gstatic.com/classroom/themes/Economics.jpg)',
                 }}
               />
-              <div className="truncate w-full text-xl font-medium mt-2">
-                {name}
-              </div>
-              <div className="truncate w-full">Teacher: {teacher[0].name}</div>
+              <Link href={`/class/${id}`}>
+                <a className="truncate w-full text-xl font-medium mt-2">
+                  {name}
+                </a>
+              </Link>
             </div>
           ))}
         </div>

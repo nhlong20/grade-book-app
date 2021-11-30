@@ -25,6 +25,9 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', select: false })
   password: string
 
+  @ManyToMany(() => Class, (c) => c.teachers)
+  ownerClasses: Class[]
+
   @ManyToMany(() => Class, (c) => c.students)
   subscriptedClasses: Class[]
 }

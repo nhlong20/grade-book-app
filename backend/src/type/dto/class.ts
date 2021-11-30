@@ -18,7 +18,7 @@ export class CCreate {
   @IsNotEmpty()
   name: string
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsString()
   @IsNotEmpty()
   @IsOptional()
@@ -73,7 +73,7 @@ export class CreateGradeStructure {
   @ApiProperty()
   @IsString()
   title?: string
-  
+
   @ApiProperty()
   @IsString()
   detail?: string

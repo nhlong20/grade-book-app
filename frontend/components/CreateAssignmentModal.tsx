@@ -1,42 +1,46 @@
 import { useInput } from '@utils/hooks/useInput'
-import { createCourse as createCourseService } from '@utils/service/class'
+import { createAssignment } from '@utils/service/class'
 import { Modal, notification } from 'antd'
+import { useRouter } from 'next/router'
 import { useCallback, useEffect } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
 
-interface Props {
+type Props = {
   visible: boolean
   close: () => void
 }
 
-export default function CreateCourseModal({ close, visible }: Props) {
+export default function CreateAssigment({ close, visible }: Props) {
+  const { query } = useRouter()
   const [name, changeName] = useInput('')
-  const [description, changeDescription] = useInput('')
+  const [point, changePoint] = useInput(0)
+
   const client = useQueryClient()
 
   const { mutateAsync, isLoading } = useMutation(
-    'create-course',
-    createCourseService,
+    'add-assignment',
+    createAssignment(query.id as string),
     {
-      onSuccess(_, { name }) {
-        notification.success({ message: `Create course ${name} successfully` })
-        client.invalidateQueries('user')
+      onSuccess() {
+        client.invalidateQueries('class')
+        notification.success({ message: `Create assignment successfully` })
         close()
       },
       onError() {
-        notification.error({ message: 'Create course unsuccessfully' })
+        notification.error({ message: 'Create assignment unsuccessfully' })
       },
     },
   )
 
   useEffect(() => {
     changeName({ target: { value: '' } } as any)
-    changeDescription({ target: { value: '' } } as any)
+    changePoint({ target: { value: 0 } } as any)
   }, [visible])
 
-  const createCourse = useCallback(async () => {
-    await mutateAsync({ name, description })
-  }, [name, description])
+  const create = useCallback(() => {
+    //@ts-ignore
+    mutateAsync({ name, point })
+  }, [name, point])
 
   return (
     <Modal visible={visible} onCancel={close} footer={null} centered>
@@ -57,24 +61,20 @@ export default function CreateCourseModal({ close, visible }: Props) {
       </div>
 
       <div className="mb-4">
-        <label htmlFor="desc" className="cr-label">
+        <label htmlFor="point" className="cr-label">
           Description
         </label>
         <input
-          type="text"
-          value={description}
-          onChange={changeDescription}
-          id="desc"
+          type="number"
+          value={point}
+          onChange={changePoint}
+          id="point"
           className="cr-input w-full"
         />
       </div>
 
       <div className="mb-4 flex gap-2">
-        <button
-          onClick={createCourse}
-          disabled={isLoading}
-          className="cr-button"
-        >
+        <button onClick={create} disabled={isLoading} className="cr-button">
           {isLoading ? 'Creating' : 'Create'}
         </button>
 

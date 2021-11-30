@@ -4,13 +4,16 @@ import {
   IsDate,
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
+  IsPositive,
   IsString,
   IsUUID,
 } from 'class-validator'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Paginate } from './util';
 import { CodeType } from '@/class/class.entity';
+import { Type } from 'class-transformer';
 
 export class CCreate {
   @ApiProperty()
@@ -29,6 +32,19 @@ export class CGetOne {
   @ApiProperty()
   @IsUUID()
   id: string
+}
+
+export class CreateAssignment {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  name: string
+
+  @ApiProperty()
+  @IsNumber()
+  @IsPositive()
+  @Type(() => Number)
+  point: number
 }
 
 export class CCreateCode {

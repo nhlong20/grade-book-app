@@ -24,7 +24,6 @@ export class Class extends BaseEntity {
   gradeStructure: GradeStructure[];
 
   @OneToMany(() => Assignment, (a) => a.class)
-  @JoinColumn()
   assignments: Assignment[]
 }
 
@@ -37,7 +36,11 @@ export class Assignment extends BaseEntity {
   @Column()
   point: number
 
+  @Column({ type: "uuid", select: false })
+  classId: string
+
   @ManyToOne(() => Class, c => c.assignments)
+  @JoinColumn()
   class: Class
 }
 

@@ -21,7 +21,7 @@ export class ClassService {
     @InjectRepository(GradeStructure)
     private readonly gradeStructureRepo: Repository<GradeStructure>,
     private readonly mailService: MailService,
-  ) {}
+  ) { }
 
   async create(dto: DTO.Class.CCreate, req: AuthRequest) {
     const user = await this.userRepo.findOne({ where: { id: req.user.id } })
@@ -46,6 +46,27 @@ export class ClassService {
     }
 
     return paginate(qb, { limit: query.limit, page: query.page })
+  }
+
+  createAssignment(classId: string, dto: DTO.Class.CreateAssignment) {
+    return this.assignmentRepo.save({ ...dto, classId })
+  }
+
+  async updateAssignment(id: string, dto: DTO.Class.CreateAssignment) {
+    const assignment = await this.assignmentRepo.findOne({ where: { id } })
+    if (!assignment) throw new BadRequestException('Assignment does not exist')
+
+    return this.assignmentRepo.save({
+      ...assignment,
+      ...dto,
+    })
+  }
+
+  async removeAssignment(id: string) {
+    const assignment = await this.assignmentRepo.findOne({ where: { id } })
+    if (!assignment) throw new BadRequestException('Assignment does not exist')
+
+    return this.assignmentRepo.remove(assignment)
   }
 
   async getOne(dto: DTO.Class.CGetOne, req?: AuthRequest) {

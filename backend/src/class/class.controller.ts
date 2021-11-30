@@ -28,6 +28,30 @@ export class ClassController {
     return this.service.create(dto, req)
   }
 
+  @Post(':id/assignment')
+  @ApiOperation({ summary: 'to create assignment' })
+  createAssignment(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: DTO.Class.CreateAssignment,
+  ) {
+    return this.service.createAssignment(id, dto)
+  }
+
+  @Put('assignment/:id')
+  @ApiOperation({ summary: 'to update assignment' })
+  updateAssignmet(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: DTO.Class.CreateAssignment,
+  ) {
+    return this.service.updateAssignment(id, dto)
+  }
+
+  @Delete('assignment/:id')
+  @ApiOperation({ summary: 'to delete assignment' })
+  deleteAssignment(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.removeAssignment(id)
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'to get one class' })
   getClass(
@@ -65,9 +89,7 @@ export class ClassController {
 
   @Get(':id/grade-structure')
   @ApiOperation({ summary: 'to get all grade structure of a class' })
-  getGradeStructure(
-    @Param('id', ParseUUIDPipe) classId: string
-  ) {
+  getGradeStructure(@Param('id', ParseUUIDPipe) classId: string) {
     return this.service.getManyGradeStructure(classId)
   }
 
@@ -75,7 +97,7 @@ export class ClassController {
   @ApiOperation({ summary: 'to add a new grade structure' })
   creatGradeStructure(
     @Param('id', ParseUUIDPipe) classId: string,
-    @Body() dto: DTO.Class.CreateGradeStructure
+    @Body() dto: DTO.Class.CreateGradeStructure,
   ) {
     return this.service.creatGradeStructure(classId, dto)
   }
@@ -85,7 +107,7 @@ export class ClassController {
   updateGradeStructure(
     @Param('id', ParseUUIDPipe) classId: string,
     @Param('gsId', ParseUUIDPipe) gradeStructureId: string,
-    @Body() dto: DTO.Class.CreateGradeStructure
+    @Body() dto: DTO.Class.CreateGradeStructure,
   ) {
     return this.service.patchGradeStructure(classId, gradeStructureId, dto)
   }
@@ -94,9 +116,8 @@ export class ClassController {
   @ApiOperation({ summary: 'to delete a grade structure' })
   deleteGradeStructure(
     @Param('id', ParseUUIDPipe) classId: string,
-    @Param('gsId', ParseUUIDPipe) gradeStructureId: string
+    @Param('gsId', ParseUUIDPipe) gradeStructureId: string,
   ) {
     return this.service.deleteGradeStructure(classId, gradeStructureId)
   }
-
 }

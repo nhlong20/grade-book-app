@@ -1,3 +1,4 @@
+import { Assignment } from "./assignment";
 import { User } from "./user";
 
 export interface Class {
@@ -5,12 +6,8 @@ export interface Class {
   createdAt: Date
   updatedAt: Date
   name: string
-  indentityCode: string
   description: string
-  credit: number,
-  semester: string
-  academicYear: string
-  department: string
-  teacher: User[]
+  teachers: User[]
   students: User[]
+  assignments: Assignment[]
 }

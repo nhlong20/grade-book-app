@@ -1,7 +1,7 @@
 import { User } from '@/user/user.entity'
 import { GradeStructure } from '@/gradestructure/grade-structure.entity'
 import { BaseEntity } from '@/utils/base.entity'
-import { Column, Entity, Index, JoinTable, ManyToMany, OneToMany } from 'typeorm'
+import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm'
 
 @Entity({ name: 'class' })
 export class Class extends BaseEntity {
@@ -12,7 +12,7 @@ export class Class extends BaseEntity {
   @Column({ type: 'varchar', default: null })
   description: string
 
-  @ManyToMany(() => User)
+  @ManyToMany(() => User, u => u.ownerClasses)
   @JoinTable()
   teachers: User[]
 
@@ -22,6 +22,23 @@ export class Class extends BaseEntity {
 
   @OneToMany(() => GradeStructure, gradeStructure => gradeStructure.class)
   gradeStructure: GradeStructure[];
+
+  @OneToMany(() => Assignment, (a) => a.class)
+  @JoinColumn()
+  assignments: Assignment[]
+}
+
+
+@Entity()
+export class Assignment extends BaseEntity {
+  @Column()
+  name: string
+
+  @Column()
+  point: number
+
+  @ManyToOne(() => Class, c => c.assignments)
+  class: Class
 }
 
 export enum CodeType {

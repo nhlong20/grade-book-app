@@ -11,9 +11,10 @@ interface Props {
   children: ReactNode
   requireLogin?: boolean
   header?: boolean
+  classTitle?: string
 }
 
-function Layout({ children, title, requireLogin, header }: Props) {
+function Layout({ children, title, requireLogin, header, classTitle }: Props) {
   const [session] = useSession()
   return (
     <>
@@ -24,7 +25,7 @@ function Layout({ children, title, requireLogin, header }: Props) {
       {requireLogin && <RequireLogin />}
       {session && (
         <>
-          {header && <Header />}
+          {header && <Header title={classTitle} />}
           <main>{children}</main>{' '}
         </>
       )}

@@ -25,7 +25,7 @@ export class UserService {
   getUserClasses(req: AuthRequest) {
     return this.userRepo.findOne({
       where: { id: req.user.id },
-      relations: ['subscriptedClasses'],
+      relations: ['subscriptedClasses', 'ownerClasses'],
     })
   }
 }

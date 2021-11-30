@@ -1,5 +1,6 @@
 import { Assignment } from '@utils/models/assignment'
 import { Class } from '@utils/models/class'
+import { Invitation } from '@utils/models/invitation'
 import axios from 'axios'
 import { API } from 'environment'
 
@@ -18,6 +19,13 @@ export const createAssignment =
   (id: string) => (data: Pick<Assignment, 'name' | 'point'>) =>
     axios.post(API + '/class/' + id + '/assignment', data).then((r) => r.data)
 
+export const createInvitation =
+  (id: string) => (data: Pick<Invitation, 'emails' | 'type'>) =>
+    {
+      console.log(data)
+      return axios.post(API + '/class/' + id + '/invite', data).then((r) => r.data)
+    }
+
 export const updateAssignment =
   (id: string) => (data: Pick<Assignment, 'name' | 'point'>) =>
     axios.put(API + '/class/assignment/' + id, data)
@@ -27,3 +35,4 @@ export const deleteAssignment = (id: string) =>
 
 export const getClass = (id: string) => () =>
   axios.get<Class>(API + '/class/' + id).then((res) => res.data)
+

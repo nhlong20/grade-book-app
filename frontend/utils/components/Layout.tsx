@@ -23,7 +23,7 @@ function Layout({ children, title, requireLogin, header, classTitle }: Props) {
       </Head>
 
       {requireLogin && <RequireLogin />}
-      {session && (
+      {(!requireLogin || session) && (
         <>
           {header && <Header title={classTitle} />}
           <main>{children}</main>{' '}

@@ -1,11 +1,7 @@
 import { Avatar } from 'antd'
 import { useTypedSession } from '@utils/hooks/useTypedSession'
-import { signOut } from 'next-auth/client'
-import { useModal } from '@utils/hooks/useModal'
-import { motion, AnimatePresence } from 'framer-motion'
-import { MouseEvent, useCallback, useEffect, useState } from 'react'
-import Link from 'next/link'
-import Confirm from './Confirm'
+import { signout } from 'next-auth/client'
+import { MouseEvent, useCallback, useState } from 'react'
 
 type Props = {
   title?: string
@@ -18,7 +14,6 @@ export default function Header({ title }: Props) {
   const [session] = useTypedSession()
   const [seed] = useState(Math.random())
   const [visible, setVisible] = useState(false)
-  const [confirm, openConfirm, closeConfirm] = useModal()
 
   const toggle = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
@@ -35,41 +30,19 @@ export default function Header({ title }: Props) {
           <Avatar src={`https://avatars.dicebear.com/api/bottts/${seed}.svg`} />
         </button>
 
-        <Confirm
-          visible={confirm}
-          close={closeConfirm}
-          message="You are about to sign out"
-          onYes={signOut}
-        />
-
-        <AnimatePresence exitBeforeEnter>
-          {visible && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="absolute border top-[120%] right-0 bg-white rounded-md shadow-md py-2 min-w-[150px] whitespace-nowrap flex flex-col h-auto"
+        {visible && (
+          <div className="absolute border top-[120%] right-0 bg-white rounded-md shadow-md py-2 min-w-[150px] whitespace-nowrap flex flex-col h-auto">
+            <div
+              onClick={() => signout()}
+              tabIndex={0}
+              role="button"
+              className={menuItemClass}
             >
-              <Link href="/profile">
-                <a className={menuItemClass}>
-                  <span className="fa fa-user mr-2" />
-                  Profile
-                </a>
-              </Link>
-
-              <div
-                onClick={openConfirm}
-                tabIndex={0}
-                role="button"
-                className={menuItemClass}
-              >
-                <span className="fa fa-sign-out-alt mr-2" />
-                Sign Out
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              <span className="fa fa-sign-out-alt mr-2" />
+              Sign Out
+            </div>
+          </div>
+        )}
       </div>
     </header>
   )

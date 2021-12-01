@@ -1,7 +1,15 @@
 import { User } from '@/user/user.entity'
-import { GradeStructure } from '@/gradestructure/grade-structure.entity'
 import { BaseEntity } from '@/utils/base.entity'
-import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm'
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm'
 
 @Entity({ name: 'class' })
 export class Class extends BaseEntity {
@@ -12,7 +20,7 @@ export class Class extends BaseEntity {
   @Column({ type: 'varchar', default: null })
   description: string
 
-  @ManyToMany(() => User, u => u.ownerClasses)
+  @ManyToMany(() => User, (u) => u.ownerClasses)
   @JoinTable()
   teachers: User[]
 
@@ -20,13 +28,31 @@ export class Class extends BaseEntity {
   @JoinTable()
   students: User[]
 
-  @OneToMany(() => GradeStructure, gradeStructure => gradeStructure.class)
-  gradeStructure: GradeStructure[];
-
-  @OneToMany(() => Assignment, (a) => a.class)
-  assignments: Assignment[]
+  @OneToMany(() => GradeStructure, (gradeStructure) => gradeStructure.class)
+  @JoinColumn()
+  gradeStructure: GradeStructure[]
 }
 
+@Entity()
+export class GradeStructure extends BaseEntity {
+  @Column({ type: 'varchar' })
+  title: string
+
+  @Column({ type: 'varchar' })
+  detail: string
+
+  @Column({ type: 'uuid', select: false })
+  classId: string
+
+  @ManyToOne(() => Class, (clazz) => clazz.gradeStructure)
+  class: Class
+
+  @OneToMany(() => Assignment, (a) => a.gradeStruct, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  assignments: Assignment[]
+}
 
 @Entity()
 export class Assignment extends BaseEntity {
@@ -36,12 +62,14 @@ export class Assignment extends BaseEntity {
   @Column()
   point: number
 
-  @Column({ type: "uuid", select: false })
-  classId: string
+  @Column({ default: 0 })
+  order: number
 
-  @ManyToOne(() => Class, c => c.assignments)
-  @JoinColumn()
-  class: Class
+  @Column({ type: 'uuid', select: false })
+  gradeStructId: string
+
+  @ManyToOne(() => GradeStructure, (g) => g.assignments)
+  gradeStruct: GradeStructure
 }
 
 export enum CodeType {

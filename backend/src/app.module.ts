@@ -8,7 +8,6 @@ import { PassportModule } from '@nestjs/passport'
 import { JwtModule } from '@nestjs/jwt'
 import { JwtStrategy } from './jwt.strategy'
 import { ClassModule } from './class/class.module'
-import { GradeStructureModule } from '@/gradestructure/grade-structure.module'
 
 @Module({
   imports: [
@@ -27,7 +26,6 @@ import { GradeStructureModule } from '@/gradestructure/grade-structure.module'
     AuthModule,
     ClassModule,
     PassportModule,
-    GradeStructureModule,
     JwtModule.register({ secret: process.env.JWT_SECRET }),
   ],
   providers: [

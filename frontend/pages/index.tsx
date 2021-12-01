@@ -64,7 +64,7 @@ export default function Index() {
                 }}
               />
               <Link href={`/class/${id}`}>
-                <a className="truncate w-full text-xl font-medium mt-2">
+                <a className="truncate w-full block text-xl font-medium mt-2">
                   {name}
                 </a>
               </Link>

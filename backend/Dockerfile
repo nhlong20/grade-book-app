@@ -20,6 +20,6 @@ COPY --from=builder /app/.env ./
 
 ENV DB_HOST dev-db.cjqy64ggirgx.ap-southeast-1.rds.amazonaws.com
 
-EXPOSE 8000
+EXPOSE 8080
 
 CMD ["node", "dist/main"]

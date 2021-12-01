@@ -14,14 +14,20 @@ services:
       DB_PASSWORD: postgres
       DB_NAME: gradebook
       NODE_ENV: development
+      FE_URL: https://nextjs-ten-beta-55.vercel.app/
+      MAIL_HOST: smtp.gmail.com
+      MAIL_PORT: 587
+      MAIL_USER: hcmusmods@gmail.com
+      MAIL_PASSWORD: Admin@123
+      MAIL_FROM: "GradeBook"no-reply@gradebook.com
       PORT: 3000
     ports:
-      - '8000:3000'
+      - '8080:3000'
 
   postgres:
-    image: postgres:10.4
+    image: postgres:alpine
     ports:
-      - '5432:5432'
+      - '5433:5432'
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

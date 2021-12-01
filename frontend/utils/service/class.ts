@@ -1,6 +1,7 @@
 import { Assignment } from '@utils/models/assignment'
 import { Class } from '@utils/models/class'
 import { GradeStruct } from '@utils/models/gradeStruct'
+import { Invitation } from '@utils/models/invitation'
 import axios from 'axios'
 import { API } from 'environment'
 
@@ -18,6 +19,11 @@ export const createCourse = (
 export const createAssignment =
   (id: string) => (data: Pick<Assignment, 'name' | 'point'>) =>
     axios.post(API + '/class/' + id + '/assignment', data).then((r) => r.data)
+
+export const createInvitation =
+  (id: string) => (data: Pick<Invitation, 'emails' | 'type'>) =>
+    axios.post(API + '/class/' + id + '/invite', data).then((r) => r.data)
+
 
 export const updateAssignment =
   (id: string) => (data: Pick<Assignment, 'name' | 'point'>) =>

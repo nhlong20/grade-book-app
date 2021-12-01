@@ -151,7 +151,7 @@ export default function ClassDetail() {
               ]
                 .filter(({ id }) => id !== query.id)
                 .map(({ id, name }) => (
-                  <Link href={'/class/' + id}>
+                  <Link href={`/class/${id}`}>
                     <div className="hover:bg-gray-300 rounded-md p-2" key={id}>
                       {name}
                     </div>

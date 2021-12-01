@@ -149,7 +149,12 @@ export class ClassService {
           .sendMail({
             to: email,
             subject: 'You are invited to a class at GradeBook',
-            html: process.env.FE_URL + '/invite?token=' + code.id,
+            html:
+              process.env.FE_URL +
+              '/invite?token=' +
+              code.id +
+              '&accessId=' +
+              classId,
           })
           .catch((e) => {
             Logger.log('Send email failed to ' + email)

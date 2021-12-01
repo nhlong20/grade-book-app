@@ -70,7 +70,7 @@ export default function CreateAssigment({
     changePoint({ target: { value: assignmentData?.point || 0 } } as any)
     changeGradeStructId({
       target: {
-        value: assignmentData ? structId || '' : clas?.gradeStructure[0].id,
+        value: assignmentData ? structId || '' : clas?.gradeStructure?.[0]?.id,
       },
     } as any)
   }, [visible])

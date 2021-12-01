@@ -16,6 +16,7 @@ interface Props {
 
 function Layout({ children, title, requireLogin, header, classTitle }: Props) {
   const [session] = useSession()
+
   return (
     <>
       <Head>

@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  api:
+    # image: thomas-oliver/nestjs-dockerized
+    build:
+      dockerfile: Dockerfile
+      context: .
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: gradebook
+      NODE_ENV: development
+      PORT: 3000
+    ports:
+      - '8000:3000'
+
+  postgres:
+    image: postgres:10.4
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: gradebook

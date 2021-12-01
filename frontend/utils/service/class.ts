@@ -1,5 +1,6 @@
 import { Assignment } from '@utils/models/assignment'
 import { Class } from '@utils/models/class'
+import { GradeStruct } from '@utils/models/gradeStruct'
 import axios from 'axios'
 import { API } from 'environment'
 
@@ -27,3 +28,6 @@ export const deleteAssignment = (id: string) =>
 
 export const getClass = (id: string) => () =>
   axios.get<Class>(API + '/class/' + id).then((res) => res.data)
+
+export const createGradeStruct = (data: Pick<GradeStruct, 'detail' | 'title'>) =>
+  axios.post(API + '/class/grade-structure', data)

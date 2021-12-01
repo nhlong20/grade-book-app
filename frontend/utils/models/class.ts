@@ -1,4 +1,5 @@
 import { Assignment } from "./assignment";
+import { GradeStruct } from "./gradeStruct";
 import { User } from "./user";
 
 export interface Class {
@@ -9,5 +10,5 @@ export interface Class {
   description: string
   teachers: User[]
   students: User[]
-  assignments: Assignment[]
+  gradeStructure: GradeStruct[]
 }

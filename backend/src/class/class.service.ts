@@ -75,12 +75,16 @@ export class ClassService {
   }
 
   async getOne(dto: DTO.Class.CGetOne, req?: AuthRequest) {
-    const [c, user] = await Promise.all([
+    const [c, user, gradeStructure] = await Promise.all([
       this.classRepo.findOne({
         where: { id: dto.id },
-        relations: ['teachers', 'students', 'gradeStructure', 'gradeStructure.assignments'],
+        relations: ['teachers', 'students'],
       }),
       this.userRepo.findOne({ where: { email: req.user.email } }),
+      this.gradeStructureRepo.find({
+        where: { classId: dto.id },
+        relations: ['assignments'],
+      }),
     ])
 
     if (!user) throw new BadRequestException('User does not exist')
@@ -88,6 +92,7 @@ export class ClassService {
       c.teachers.some((t) => t.id === user.id) ||
       c.students.some((s) => s.id === user.id)
     ) {
+      c.gradeStructure = gradeStructure
       return c
     }
 
@@ -201,7 +206,8 @@ export class ClassService {
 
   getManyGradeStructure(classId: string) {
     return this.gradeStructureRepo.find({
-      where: { classId }, relations: ['assignments'],
+      where: { classId },
+      relations: ['assignments'],
     })
   }
 

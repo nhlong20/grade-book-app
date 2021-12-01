@@ -50,6 +50,7 @@ export class GradeStructure extends BaseEntity {
   @OneToMany(() => Assignment, (a) => a.gradeStruct, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn()
   assignments: Assignment[]
 }
 

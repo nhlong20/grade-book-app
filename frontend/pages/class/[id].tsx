@@ -121,7 +121,7 @@ export default function ClassDetail() {
               Create Assignment
             </button>
           </div>
-          <div className="flex flex-col gap-2 mt-6">
+          {/* <div className="flex flex-col gap-2 mt-6">
             {clas?.assignments.map(({ id, name, point }) => (
               <div
                 className="p-4 border rounded-md flex justify-between"
@@ -158,7 +158,7 @@ export default function ClassDetail() {
             {!clas?.assignments.length && (
               <div>This class has no assignments</div>
             )}
-          </div>
+          </div> */}
         </div>
 
         <div>

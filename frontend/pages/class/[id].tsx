@@ -1,4 +1,5 @@
 import CreateAssigment from '@components/CreateAssignmentModal'
+import Link from 'next/link'
 import CreateGradeStructModal from '@components/CreateGradeStruct'
 import CreateInvitationModal from '@components/CreateInvitationModal'
 import Layout from '@utils/components/Layout'
@@ -150,9 +151,11 @@ export default function ClassDetail() {
               ]
                 .filter(({ id }) => id !== query.id)
                 .map(({ id, name }) => (
-                  <div className="hover:bg-gray-300 rounded-md p-2" key={id}>
-                    {name}
-                  </div>
+                  <Link href={'/class/' + id}>
+                    <div className="hover:bg-gray-300 rounded-md p-2" key={id}>
+                      {name}
+                    </div>
+                  </Link>
                 ))}
             </div>
           </div>

@@ -10,7 +10,6 @@ export class UserPatching {
 
   @ApiPropertyOptional()
   @IsString()
-  @IsNotEmpty()
   @IsOptional()
   phone?: string
 
@@ -31,4 +30,9 @@ export class UserPatching {
   @IsNotEmpty()
   @IsOptional()
   facebookId?: string
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  mssv?: string
 }

@@ -6,6 +6,7 @@ export interface User {
   email: string,
   role: string,
   phone: string,
+  mssv: string,
   subscriptedClasses: Class[]
   ownerClasses: Class[]
 }

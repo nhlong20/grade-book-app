@@ -1,5 +1,4 @@
 import Layout from '@utils/components/Layout'
-import Loading from '@utils/components/Loading'
 import { getSessionToken } from '@utils/libs/getToken'
 import { getUser, updateUserInfo } from '@utils/service/user'
 import { notification } from 'antd'
@@ -166,7 +165,7 @@ export default function Profile() {
 
             <div className="col-span-2 flex gap-3 mt-2 justify-center">
               <button type="submit" disabled={isLoading} className="cr-button w-64 text-base">
-                <Loading on={isLoading}>Save</Loading>
+                Save
               </button>
             </div>
 

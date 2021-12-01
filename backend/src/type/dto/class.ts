@@ -45,6 +45,10 @@ export class CreateAssignment {
   @IsPositive()
   @Type(() => Number)
   point: number
+
+  @ApiProperty()
+  @IsUUID()
+  gradeStructId: string
 }
 
 export class CCreateCode {

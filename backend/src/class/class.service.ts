@@ -3,12 +3,17 @@ import { AuthRequest } from '@/utils/interface'
 import { BadRequestException, Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
-import { Assignment, Class, Code, CodeType } from './class.entity'
+import {
+  Assignment,
+  Class,
+  Code,
+  CodeType,
+  GradeStructure,
+} from './class.entity'
 import { User } from '@/user/user.entity'
 import { paginate } from 'nestjs-typeorm-paginate'
 import { MailService } from '@/mail/mail.service'
 import moment from 'moment'
-import { GradeStructure } from '@/gradestructure/grade-structure.entity'
 
 @Injectable()
 export class ClassService {
@@ -48,8 +53,8 @@ export class ClassService {
     return paginate(qb, { limit: query.limit, page: query.page })
   }
 
-  createAssignment(classId: string, dto: DTO.Class.CreateAssignment) {
-    return this.assignmentRepo.save({ ...dto, classId })
+  createAssignment(dto: DTO.Class.CreateAssignment) {
+    return this.assignmentRepo.save(dto)
   }
 
   async updateAssignment(id: string, dto: DTO.Class.CreateAssignment) {
@@ -73,7 +78,7 @@ export class ClassService {
     const [c, user] = await Promise.all([
       this.classRepo.findOne({
         where: { id: dto.id },
-        relations: ['teachers', 'students', 'assignments', 'gradeStructure'],
+        relations: ['teachers', 'students', 'gradeStructure', 'gradeStructure.assignments'],
       }),
       this.userRepo.findOne({ where: { email: req.user.email } }),
     ])
@@ -188,64 +193,38 @@ export class ClassService {
 
     if (!clazz) throw new BadRequestException('Class does not exist')
 
-    const result = await this.gradeStructureRepo.save({
+    return this.gradeStructureRepo.save({
       ...dto,
       class: clazz,
     })
-
-    return {
-      id: result.id,
-    }
   }
-  async getManyGradeStructure(classId: string) {
-    const clazz = await this.classRepo.findOne({
-      where: { id: classId },
-    })
 
-    if (!clazz) throw new BadRequestException('Class does not exist')
-
+  getManyGradeStructure(classId: string) {
     return this.gradeStructureRepo.find({
-      where: { class: classId },
+      where: { classId }, relations: ['assignments'],
     })
   }
 
   async patchGradeStructure(
-    classId: string,
     gradeStructureId: string,
     dto: DTO.Class.CreateGradeStructure,
   ) {
-    const clazz = await this.classRepo.findOne({
-      where: { id: classId },
+    const gradeStruct = await this.gradeStructureRepo.findOne({
+      where: { id: gradeStructureId },
     })
+    if (!gradeStruct)
+      throw new BadRequestException('Grade Struct does not exist')
 
-    if (!clazz) throw new BadRequestException('Class does not exist')
-
-    const gradeStructure = await this.gradeStructureRepo.update(
-      { id: gradeStructureId, class: clazz },
-      { ...dto },
-    )
-
-    if (gradeStructure.affected === 0)
-      throw new BadRequestException('Failed to update')
-
-    return gradeStructure.affected
+    return this.gradeStructureRepo.save({ ...gradeStruct, ...dto })
   }
 
-  async deleteGradeStructure(classId: string, gradeStructureId: string) {
-    const clazz = await this.classRepo.findOne({
-      where: { id: classId },
+  async deleteGradeStructure(gradeStructureId: string) {
+    const gradeStruct = await this.gradeStructureRepo.findOne({
+      where: { id: gradeStructureId },
     })
+    if (!gradeStruct)
+      throw new BadRequestException('Grade Struct does not exist')
 
-    if (!clazz) throw new BadRequestException('Class does not exist')
-
-    const gradeStructure = await this.gradeStructureRepo.delete({
-      id: gradeStructureId,
-      class: clazz,
-    })
-
-    if (gradeStructure.affected === 0)
-      throw new BadRequestException('Failed to delete')
-
-    return gradeStructure
+    return this.gradeStructureRepo.remove(gradeStruct)
   }
 }

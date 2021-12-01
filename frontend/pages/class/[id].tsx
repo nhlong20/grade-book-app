@@ -1,4 +1,5 @@
 import CreateAssigment from '@components/CreateAssignmentModal'
+import CreateInvitationModal from '@components/CreateInvitationModal'
 import Layout from '@utils/components/Layout'
 import { useModal } from '@utils/hooks/useModal'
 import { getSessionToken } from '@utils/libs/getToken'
@@ -43,6 +44,7 @@ export default function ClassDetail() {
   const { data: clas } = useQuery('class', getClass(query.id as string))
   const { data: user } = useQuery('user', getUser())
   const [createAssignment, openAssignment, closeAssignment] = useModal()
+  const [createInvitation, openInvitation, closeInvitation] = useModal()
 
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment>()
 
@@ -76,7 +78,10 @@ export default function ClassDetail() {
         visible={createAssignment}
         close={closeAssignment}
       />
-
+      <CreateInvitationModal
+        visible={createInvitation}
+        close={closeInvitation}
+      />
       <div className="cr-container py-4 mb-6 grid grid-cols-[250px,1fr,250px] gap-4">
         <div>
           <div className="border rounded-md shadow-md p-4 mb-4">
@@ -162,7 +167,11 @@ export default function ClassDetail() {
         </div>
 
         <div>
-          <button className="cr-button w-full">Invite</button>
+          <button className="cr-button w-full"
+            onClick={() => {
+              openInvitation()
+            }}
+          >Invite</button>
 
           <div className="border rounded-md shadow-md p-4 my-4">
             <div className="font-medium">Grade Structure</div>

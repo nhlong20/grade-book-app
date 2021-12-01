@@ -1,31 +1,35 @@
 import { useInput } from '@utils/hooks/useInput'
 import { Assignment } from '@utils/models/assignment'
+import { Class } from '@utils/models/class'
 import { createAssignment, updateAssignment } from '@utils/service/class'
 import { Modal, notification } from 'antd'
-import { useRouter } from 'next/router'
 import { useCallback, useEffect } from 'react'
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 
 type Props = {
   visible: boolean
   close: () => void
   assignmentData: Assignment | undefined
+  structId: string
 }
 
 export default function CreateAssigment({
   close,
   visible,
   assignmentData,
+  structId,
 }: Props) {
-  const { query } = useRouter()
   const [name, changeName] = useInput('')
+  const [gradeStructId, changeGradeStructId] = useInput('')
   const [point, changePoint] = useInput(0)
 
   const client = useQueryClient()
 
+  const { data: clas } = useQuery<Class>('class', { enabled: false })
+
   const { mutateAsync, isLoading } = useMutation(
     'add-assignment',
-    createAssignment(query.id as string),
+    createAssignment,
     {
       onSuccess() {
         client.invalidateQueries('class')
@@ -60,12 +64,12 @@ export default function CreateAssigment({
 
   const create = useCallback(() => {
     if (assignmentData) {
-      mutateAsyncUpdate({ name, point })
+      mutateAsyncUpdate({ name, point, gradeStructId })
       return
     }
 
-    mutateAsync({ name, point })
-  }, [name, point, assignmentData])
+    mutateAsync({ name, point, gradeStructId })
+  }, [name, point, assignmentData, gradeStructId])
 
   return (
     <Modal visible={visible} onCancel={close} footer={null} centered>
@@ -98,6 +102,28 @@ export default function CreateAssigment({
           id="point"
           className="cr-input w-full"
         />
+      </div>
+
+      <div className="mb-4">
+        <label htmlFor="grade" className="cr-label">
+          Grade
+        </label>
+        <select
+          value={gradeStructId}
+          onChange={changeGradeStructId}
+          id="grade"
+          className="cr-input w-full"
+        >
+          {clas?.gradeStructure.map(({ id, title }, index) => (
+            <option
+              selected={assignmentData ? id === structId : index === 0}
+              value={id}
+              key={id}
+            >
+              {title}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="mb-4 flex gap-2">

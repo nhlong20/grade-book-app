@@ -1,6 +1,7 @@
 import { useInput } from '@utils/hooks/useInput'
 import { createGradeStruct } from '@utils/service/class'
 import { Modal, notification } from 'antd'
+import { useRouter } from 'next/router'
 import { useCallback, useEffect } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
 
@@ -9,7 +10,8 @@ type Props = {
   close: () => void
 }
 
-export default function CreateAssigment({ close, visible }: Props) {
+export default function CreateGradeStruct({ close, visible }: Props) {
+  const { query } = useRouter()
   const [title, changeTitle] = useInput('')
   const [detail, changeDetail] = useInput('')
 
@@ -17,7 +19,7 @@ export default function CreateAssigment({ close, visible }: Props) {
 
   const { mutateAsync, isLoading } = useMutation(
     'create-grade-struct',
-    createGradeStruct,
+    createGradeStruct(query.id as string),
     {
       onSuccess() {
         client.invalidateQueries('class')
@@ -32,7 +34,7 @@ export default function CreateAssigment({ close, visible }: Props) {
 
   useEffect(() => {
     changeTitle({ target: { value: '' } } as any)
-    changeDetail({ target: { value: 0 } } as any)
+    changeDetail({ target: { value: '' } } as any)
   }, [visible])
 
   const create = useCallback(() => {

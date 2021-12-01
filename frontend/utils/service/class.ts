@@ -17,23 +17,27 @@ export const createCourse = (
 ) => axios.post(API + '/class', data)
 
 export const createAssignment =
-  (id: string) => (data: Pick<Assignment, 'name' | 'point'>) =>
-    axios.post(API + '/class/' + id + '/assignment', data).then((r) => r.data)
+  (data: Pick<Assignment, 'name' | 'point'> & { gradeStructId: string }) =>
+    axios.post(API + '/class/assignment', data).then((r) => r.data)
 
 export const createInvitation =
   (id: string) => (data: Pick<Invitation, 'emails' | 'type'>) =>
     axios.post(API + '/class/' + id + '/invite', data).then((r) => r.data)
 
-
 export const updateAssignment =
-  (id: string) => (data: Pick<Assignment, 'name' | 'point'>) =>
+  (id: string) => (data: Pick<Assignment, 'name' | 'point'> & { gradeStructId: string }) =>
     axios.put(API + '/class/assignment/' + id, data)
 
 export const deleteAssignment = (id: string) =>
   axios.delete(API + '/class/assignment/' + id)
 
-export const getClass = (id: string) => () =>
-  axios.get<Class>(API + '/class/' + id).then((res) => res.data)
+export const getClass = (id: string, token?: string) => () =>
+  axios
+    .get<Class>(API + '/class/' + id, {
+      headers: { authorization: 'Bearer ' + token },
+    })
+    .then((res) => res.data)
 
-export const createGradeStruct = (data: Pick<GradeStruct, 'detail' | 'title'>) =>
-  axios.post(API + '/class/grade-structure', data)
+export const createGradeStruct =
+  (id: string) => (data: Pick<GradeStruct, 'detail' | 'title'>) =>
+    axios.post(API + '/class/' + id + '/grade-structure', data)

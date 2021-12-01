@@ -26,7 +26,7 @@ export class ClassService {
     @InjectRepository(GradeStructure)
     private readonly gradeStructureRepo: Repository<GradeStructure>,
     private readonly mailService: MailService,
-  ) { }
+  ) {}
 
   async create(dto: DTO.Class.CCreate, req: AuthRequest) {
     const user = await this.userRepo.findOne({ where: { id: req.user.id } })
@@ -75,16 +75,17 @@ export class ClassService {
   }
 
   async getOne(dto: DTO.Class.CGetOne, req?: AuthRequest) {
-    const [c, user, gradeStructure] = await Promise.all([
+    const [c, user] = await Promise.all([
       this.classRepo.findOne({
         where: { id: dto.id },
-        relations: ['teachers', 'students'],
+        relations: [
+          'teachers',
+          'students',
+          'gradeStructure',
+          'gradeStructure.assignments',
+        ],
       }),
       this.userRepo.findOne({ where: { email: req.user.email } }),
-      this.gradeStructureRepo.find({
-        where: { classId: dto.id },
-        relations: ['assignments'],
-      }),
     ])
 
     if (!user) throw new BadRequestException('User does not exist')
@@ -92,7 +93,6 @@ export class ClassService {
       c.teachers.some((t) => t.id === user.id) ||
       c.students.some((s) => s.id === user.id)
     ) {
-      c.gradeStructure = gradeStructure
       return c
     }
 

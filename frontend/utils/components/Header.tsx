@@ -1,7 +1,7 @@
 import { Avatar } from 'antd'
 import { useTypedSession } from '@utils/hooks/useTypedSession'
 import { signout } from 'next-auth/client'
-import { MouseEvent, useCallback, useState } from 'react'
+import { MouseEvent, useCallback, useEffect, useState } from 'react'
 
 type Props = {
   title?: string
@@ -18,6 +18,15 @@ export default function Header({ title }: Props) {
   const toggle = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
     setVisible((v) => !v)
+  }, [])
+
+  useEffect(() => {
+    const close = () => setVisible(false)
+    document.addEventListener('click', close)
+
+    return () => {
+      document.removeEventListener('click', close)
+    }
   }, [])
 
   return (

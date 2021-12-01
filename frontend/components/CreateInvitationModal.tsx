@@ -35,11 +35,13 @@ export default function CreateInvitation({ close, visible }: Props) {
       },
     },
   )
+
   function changeEmails(e: any) {
-      e.preventDefault();
-      const inputEmails = e.target.value.split(",");
-      setEmails(inputEmails)
+    e.preventDefault()
+    const inputEmails = e.target.value.split(',')
+    setEmails(inputEmails)
   }
+
   useEffect(() => {
     changeType({ target: { value: CodeType.Student } } as any)
   }, [visible])
@@ -47,7 +49,7 @@ export default function CreateInvitation({ close, visible }: Props) {
   const createInvitation = useCallback(async () => {
     await mutateAsync({
       emails,
-      type
+      type,
     })
   }, [emails, type])
 
@@ -68,17 +70,22 @@ export default function CreateInvitation({ close, visible }: Props) {
           className="cr-input w-full"
         />
       </div>
+
       <div className="mb-4">
         <label htmlFor="type" className="cr-label">
-          Invitation Type
+          Invite As
         </label>
         <select
           className="cr-input w-full"
           id="type"
           defaultValue={CodeType.Student}
-          onChange={changeType}>
-          <option value={CodeType.Student}>Student</option>
-          <option value={CodeType.Teacher}>Teaccher</option>
+          onChange={changeType}
+        >
+          {Object.values(CodeType).map((code) => (
+            <option className="capitalize" key={code} value={code}>
+              {code}
+            </option>
+          ))}
         </select>
       </div>
 

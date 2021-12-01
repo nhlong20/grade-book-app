@@ -65,7 +65,7 @@ export class Assignment extends BaseEntity {
   @Column({ type: 'uuid', select: false })
   gradeStructId: string
 
-  @OneToMany(() => GradeStructure, (g) => g.assignments)
+  @ManyToOne(() => GradeStructure, (g) => g.assignments)
   gradeStruct: GradeStructure
 }
 

@@ -62,6 +62,9 @@ export class Assignment extends BaseEntity {
   @Column()
   point: number
 
+  @Column({ default: 0 })
+  order: number
+
   @Column({ type: 'uuid', select: false })
   gradeStructId: string
 

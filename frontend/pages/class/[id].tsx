@@ -6,7 +6,7 @@ import { useModal } from '@utils/hooks/useModal'
 import { useTeacher } from '@utils/hooks/useTeacher'
 import { getSessionToken } from '@utils/libs/getToken'
 import { Assignment } from '@utils/models/assignment'
-import { deleteAssignment, getClass } from '@utils/service/class'
+import { deleteAssignment, getClass, updateOrder } from '@utils/service/class'
 import { getUser } from '@utils/service/user'
 import { notification, Dropdown, Menu } from 'antd'
 import { GetServerSideProps } from 'next'
@@ -19,6 +19,13 @@ import {
   useQuery,
   useQueryClient,
 } from 'react-query'
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  OnDragEndResponder,
+  OnDragStartResponder,
+} from 'react-beautiful-dnd'
 
 const MenuItem = Menu.Item
 
@@ -73,6 +80,38 @@ export default function ClassDetail() {
       mutateAsync(id)
     },
     [],
+  )
+
+  const { mutateAsync: updateMutate, isLoading: isUpdate } = useMutation(
+    'update-order',
+    updateOrder,
+    {
+      onSuccess(res) {
+        client.invalidateQueries('class')
+        notification.success({ message: `Update order successfully` })
+      },
+      onError() {
+        notification.error({ message: 'Update order unsuccessfully' })
+      },
+    },
+  )
+
+  const handleDragEnd: OnDragEndResponder = useCallback(
+    (res) => {
+      updateMutate({
+        id1:
+          clas?.gradeStructure
+            .find((g) => g.id === res.source.droppableId)
+            ?.assignments.find((_, index) => index === res.destination?.index)
+            ?.id || '',
+        id2:
+          clas?.gradeStructure
+            .find((g) => g.id === res.source.droppableId)
+            ?.assignments.find((_, index) => index === res.source.index)?.id ||
+          '',
+      })
+    },
+    [clas],
   )
 
   return (
@@ -137,50 +176,81 @@ export default function ClassDetail() {
           <div className="mt-6 flex flex-col gap-4">
             {clas?.gradeStructure.map(
               ({ assignments, title, id: structId }) => (
-                <div key={structId}>
-                  <div className="text-xl">Grade: {title}</div>
-                  <div className="mt-3">
-                    {assignments.map(({ id, name, point }) => (
-                      <div
-                        className="rounded-md border p-4 flex justify-between"
-                        key={id}
-                      >
-                        <div>
-                          <div>Assignment: {name}</div>
-                          <span className="italic">{point} points</span>
+                <DragDropContext onDragEnd={handleDragEnd} key={structId}>
+                  <Droppable droppableId={structId}>
+                    {(provided) => (
+                      <div {...provided.droppableProps} ref={provided.innerRef}>
+                        <div className="text-xl">Grade: {title}</div>
+                        <div className="mt-3 flex flex-col gap-2">
+                          {assignments
+                            .sort((a, b) => a.order - b.order)
+                            .map(({ id, name, point, ...rest }, index) => (
+                              <Draggable
+                                key={id}
+                                index={index}
+                                draggableId={id}
+                              >
+                                {(provided, snapshot) => (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    className="rounded-md border p-4 flex justify-between"
+                                  >
+                                    <div>
+                                      <div>Assignment: {name}</div>
+                                      <span className="italic">
+                                        {point} points
+                                      </span>
+                                    </div>
+                                    {isTeacher && (
+                                      <Dropdown
+                                        trigger={['click']}
+                                        overlay={
+                                          <Menu>
+                                            <MenuItem
+                                              onClick={() => {
+                                                setSelectedAssignment({
+                                                  id,
+                                                  name,
+                                                  point,
+                                                  ...rest,
+                                                })
+                                                setSelectedStruct(structId)
+                                                openAssignment()
+                                              }}
+                                            >
+                                              Update
+                                            </MenuItem>
+                                            <MenuItem
+                                              danger
+                                              onClick={removeAssignment(id)}
+                                            >
+                                              Delete
+                                            </MenuItem>
+                                          </Menu>
+                                        }
+                                      >
+                                        <button className="w-8 h-8 rounded-full hover:bg-gray-300">
+                                          <span className="fa fa-ellipsis-v" />
+                                        </button>
+                                      </Dropdown>
+                                    )}
+                                  </div>
+                                )}
+                              </Draggable>
+                            ))}
+                          {provided.placeholder}
+                          {!assignments.length && (
+                            <div>
+                              There has not been any assignment in this grade
+                            </div>
+                          )}
                         </div>
-                        {isTeacher && (
-                          <Dropdown
-                            trigger={['click']}
-                            overlay={
-                              <Menu>
-                                <MenuItem
-                                  onClick={() => {
-                                    setSelectedAssignment({ id, name, point })
-                                    setSelectedStruct(structId)
-                                    openAssignment()
-                                  }}
-                                >
-                                  Update
-                                </MenuItem>
-                                <MenuItem danger onClick={removeAssignment(id)}>
-                                  Delete
-                                </MenuItem>
-                              </Menu>
-                            }
-                          >
-                            <button className="w-8 h-8 rounded-full hover:bg-gray-300">
-                              <span className="fa fa-ellipsis-v" />
-                            </button>
-                          </Dropdown>
-                        )}
                       </div>
-                    ))}
-                    {!assignments.length && (
-                      <div>There has not been any assignment in this grade</div>
                     )}
-                  </div>
-                </div>
+                  </Droppable>
+                </DragDropContext>
               ),
             )}
           </div>

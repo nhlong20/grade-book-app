@@ -26,7 +26,7 @@ export class ClassService {
     @InjectRepository(GradeStructure)
     private readonly gradeStructureRepo: Repository<GradeStructure>,
     private readonly mailService: MailService,
-  ) {}
+  ) { }
 
   async create(dto: DTO.Class.CCreate, req: AuthRequest) {
     const user = await this.userRepo.findOne({ where: { id: req.user.id } })
@@ -53,11 +53,30 @@ export class ClassService {
     return paginate(qb, { limit: query.limit, page: query.page })
   }
 
+  async updateOrder(dto: DTO.Class.UpdateOrder) {
+    const [a1, a2] = await Promise.all([
+      this.assignmentRepo.findOne(dto.id1),
+      this.assignmentRepo.findOne(dto.id2),
+    ])
+
+    if (!a1 || !a2) throw new BadRequestException('Assignment does not exist')
+
+    const a2order = a2.order
+
+    a2.order = a1.order
+    a1.order = a2order
+
+    return Promise.all([
+      this.assignmentRepo.save(a1),
+      this.assignmentRepo.save(a2),
+    ])
+  }
+
   createAssignment(dto: DTO.Class.CreateAssignment) {
     return this.assignmentRepo.save(dto)
   }
 
-  async updateAssignment(id: string, dto: DTO.Class.CreateAssignment) {
+  async updateAssignment(id: string, dto: DTO.Class.UpdateAssignment) {
     const assignment = await this.assignmentRepo.findOne({ where: { id } })
     if (!assignment) throw new BadRequestException('Assignment does not exist')
 

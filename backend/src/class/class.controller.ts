@@ -38,9 +38,15 @@ export class ClassController {
   @ApiOperation({ summary: 'to update assignment' })
   updateAssignmet(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() dto: DTO.Class.CreateAssignment,
+    @Body() dto: DTO.Class.UpdateAssignment,
   ) {
     return this.service.updateAssignment(id, dto)
+  }
+
+  @Patch('assignment/order')
+  @ApiOperation({ summary: 'to update order' })
+  updateOrder(@Body() dto: DTO.Class.UpdateOrder) {
+    return this.service.updateOrder(dto)
   }
 
   @Delete('assignment/:id')

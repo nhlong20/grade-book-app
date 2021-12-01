@@ -10,10 +10,10 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator'
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Paginate } from './util';
-import { CodeType } from '@/class/class.entity';
-import { Type } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+import { Paginate } from './util'
+import { CodeType } from '@/class/class.entity'
+import { Type } from 'class-transformer'
 
 export class CCreate {
   @ApiProperty()
@@ -33,8 +33,17 @@ export class CGetOne {
   @IsUUID()
   id: string
 }
+export class UpdateOrder {
+  @ApiProperty()
+  @IsUUID()
+  id1: string
 
-export class CreateAssignment {
+  @ApiProperty()
+  @IsUUID()
+  id2: string
+}
+
+export class UpdateAssignment {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -50,6 +59,28 @@ export class CreateAssignment {
   @IsUUID()
   gradeStructId: string
 }
+export class CreateAssignment {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  name: string
+
+  @ApiProperty()
+  @IsNumber()
+  @IsPositive()
+  @Type(() => Number)
+  point: number
+
+  @ApiProperty()
+  @IsUUID()
+  gradeStructId: string
+
+  @ApiProperty()
+  @IsNumber()
+  @IsPositive()
+  @Type(() => Number)
+  order: number
+}
 
 export class CCreateCode {
   @ApiProperty()
@@ -57,7 +88,6 @@ export class CCreateCode {
   @IsOptional()
   expiration?: Date
 }
-
 
 export class CGetManyQuery extends Paginate {
   @ApiPropertyOptional()
@@ -87,7 +117,6 @@ export class JoinClass {
   @IsUUID()
   token: string
 }
-
 
 export class CreateGradeStructure {
   @ApiProperty()

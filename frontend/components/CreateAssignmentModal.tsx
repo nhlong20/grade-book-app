@@ -3,7 +3,7 @@ import { Assignment } from '@utils/models/assignment'
 import { Class } from '@utils/models/class'
 import { createAssignment, updateAssignment } from '@utils/service/class'
 import { Modal, notification } from 'antd'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 
 type Props = {
@@ -26,6 +26,14 @@ export default function CreateAssigment({
   const client = useQueryClient()
 
   const { data: clas } = useQuery<Class>('class', { enabled: false })
+
+  const order = useMemo(() => {
+    const struc = clas?.gradeStructure.find(({ id }) => id === gradeStructId)
+    const orders = struc?.assignments.map(({ order }) => order)
+    orders?.push(0)
+
+    return Number(Math.max(...(orders || [])) + 1)
+  }, [clas, gradeStructId])
 
   const { mutateAsync, isLoading } = useMutation(
     'add-assignment',
@@ -60,6 +68,11 @@ export default function CreateAssigment({
   useEffect(() => {
     changeName({ target: { value: assignmentData?.name || '' } } as any)
     changePoint({ target: { value: assignmentData?.point || 0 } } as any)
+    changeGradeStructId({
+      target: {
+        value: assignmentData ? structId || '' : clas?.gradeStructure[0].id,
+      },
+    } as any)
   }, [visible])
 
   const create = useCallback(() => {
@@ -68,8 +81,8 @@ export default function CreateAssigment({
       return
     }
 
-    mutateAsync({ name, point, gradeStructId })
-  }, [name, point, assignmentData, gradeStructId])
+    mutateAsync({ name, point, gradeStructId, order })
+  }, [name, point, assignmentData, gradeStructId, order])
 
   return (
     <Modal visible={visible} onCancel={close} footer={null} centered>
@@ -115,11 +128,7 @@ export default function CreateAssigment({
           className="cr-input w-full"
         >
           {clas?.gradeStructure.map(({ id, title }, index) => (
-            <option
-              selected={assignmentData ? id === structId : index === 0}
-              value={id}
-              key={id}
-            >
+            <option value={id} key={id}>
               {title}
             </option>
           ))}

@@ -15,13 +15,11 @@ const errorMapping: Record<string, string> = {
 }
 
 export default function SignUp() {
-  const { register, handleSubmit, watch } = useForm<FormData>()
+  const { register, handleSubmit } = useForm<FormData>()
   const { query } = useRouter()
   const [success, setSuccess] = useState(false)
 
-  const email = watch('email')
-
-  const { mutateAsync, isLoading } = useMutation(
+  const { mutateAsync } = useMutation(
     ['signup'],
     (data: FormData) => axios.post(`${API}/auth/signup`, data),
     {
@@ -64,9 +62,7 @@ export default function SignUp() {
 
           {success ? (
             <div className="h-56 grid place-content-center text-center text-gray-400">
-              The email has been sent. Please carefully check your inbox or spam
-              in order to obtain the password to log in to Gradebook
-              <br />
+              Register succescfully, login to continue
               <br />
               <Link href="/login">Return to Login</Link>
             </div>

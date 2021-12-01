@@ -65,7 +65,7 @@ export default function Profile() {
         reset({ phone: data.phone })
         reset({ mssv: data.mssv })
         
-        client.invalidateQueries('self-info')
+        client.invalidateQueries('user')
       },
       onError() {
         notification.error({

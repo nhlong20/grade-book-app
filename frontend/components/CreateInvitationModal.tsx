@@ -4,6 +4,7 @@ import { Modal, notification } from 'antd'
 import { useCallback, useEffect, useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
 import { useRouter } from 'next/router'
+import { useTeacher } from '@utils/hooks/useTeacher'
 // import { CodeType } from '@utils/models/invitation'
 export enum CodeType {
   Student = 'student',
@@ -20,6 +21,7 @@ export default function CreateInvitation({ close, visible }: Props) {
   const [type, changeType] = useInput('')
   const client = useQueryClient()
   const { query } = useRouter()
+  const isTeacher = useTeacher()
 
   const { mutateAsync, isLoading } = useMutation(
     'create-invitation',
@@ -82,7 +84,12 @@ export default function CreateInvitation({ close, visible }: Props) {
           onChange={changeType}
         >
           {Object.values(CodeType).map((code) => (
-            <option className="capitalize" key={code} value={code}>
+            <option
+              disabled={!isTeacher && code === CodeType.Teacher}
+              className="capitalize"
+              key={code}
+              value={code}
+            >
               {code}
             </option>
           ))}

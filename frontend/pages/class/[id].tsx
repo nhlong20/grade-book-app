@@ -3,6 +3,7 @@ import CreateGradeStructModal from '@components/CreateGradeStruct'
 import CreateInvitationModal from '@components/CreateInvitationModal'
 import Layout from '@utils/components/Layout'
 import { useModal } from '@utils/hooks/useModal'
+import { useTeacher } from '@utils/hooks/useTeacher'
 import { getSessionToken } from '@utils/libs/getToken'
 import { Assignment } from '@utils/models/assignment'
 import { deleteAssignment, getClass } from '@utils/service/class'
@@ -45,6 +46,8 @@ export default function ClassDetail() {
   const { query } = useRouter()
   const { data: clas } = useQuery('class', getClass(query.id as string))
   const { data: user } = useQuery('user', getUser())
+
+  const isTeacher = useTeacher()
 
   const [createAssignment, openAssignment, closeAssignment] = useModal()
   const [createInvitation, openInvitation, closeInvitation] = useModal()
@@ -146,29 +149,31 @@ export default function ClassDetail() {
                           <div>Assignment: {name}</div>
                           <span className="italic">{point} points</span>
                         </div>
-                        <Dropdown
-                          trigger={['click']}
-                          overlay={
-                            <Menu>
-                              <MenuItem
-                                onClick={() => {
-                                  setSelectedAssignment({ id, name, point })
-                                  setSelectedStruct(structId)
-                                  openAssignment()
-                                }}
-                              >
-                                Update
-                              </MenuItem>
-                              <MenuItem danger onClick={removeAssignment(id)}>
-                                Delete
-                              </MenuItem>
-                            </Menu>
-                          }
-                        >
-                          <button className="w-8 h-8 rounded-full hover:bg-gray-300">
-                            <span className="fa fa-ellipsis-v" />
-                          </button>
-                        </Dropdown>
+                        {isTeacher && (
+                          <Dropdown
+                            trigger={['click']}
+                            overlay={
+                              <Menu>
+                                <MenuItem
+                                  onClick={() => {
+                                    setSelectedAssignment({ id, name, point })
+                                    setSelectedStruct(structId)
+                                    openAssignment()
+                                  }}
+                                >
+                                  Update
+                                </MenuItem>
+                                <MenuItem danger onClick={removeAssignment(id)}>
+                                  Delete
+                                </MenuItem>
+                              </Menu>
+                            }
+                          >
+                            <button className="w-8 h-8 rounded-full hover:bg-gray-300">
+                              <span className="fa fa-ellipsis-v" />
+                            </button>
+                          </Dropdown>
+                        )}
                       </div>
                     ))}
                     {!assignments.length && (
@@ -186,9 +191,11 @@ export default function ClassDetail() {
             Invite
           </button>
 
-          <button className="cr-button w-full mt-2" onClick={openGradeStruct}>
-            Create Grade Structure
-          </button>
+          {isTeacher && (
+            <button className="cr-button w-full mt-2" onClick={openGradeStruct}>
+              Create Grade Structure
+            </button>
+          )}
 
           <div className="border rounded-md shadow-md p-4 my-4">
             <div className="font-medium">Grade Structure</div>

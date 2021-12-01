@@ -8,6 +8,11 @@ import { API } from 'environment'
 
 export default NextAuth({
   providers: [
+    Providers.Google({
+      id: 'google',
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
     Providers.Credentials({
       id: 'login',
       name: 'Credentials',

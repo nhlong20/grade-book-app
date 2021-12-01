@@ -2,7 +2,7 @@ import { Avatar } from 'antd'
 import { useTypedSession } from '@utils/hooks/useTypedSession'
 import { signout } from 'next-auth/client'
 import { MouseEvent, useCallback, useEffect, useState } from 'react'
-
+import Link from 'next/link'
 type Props = {
   title?: string
 }
@@ -41,6 +41,13 @@ export default function Header({ title }: Props) {
 
         {visible && (
           <div className="absolute border top-[120%] right-0 bg-white rounded-md shadow-md py-2 min-w-[150px] whitespace-nowrap flex flex-col h-auto">
+             <Link href="/profile">
+                <a className={menuItemClass}>
+                  <span className="fa fa-user mr-2" />
+                  Profile
+                </a>
+              </Link>
+
             <div
               onClick={() => signout()}
               tabIndex={0}

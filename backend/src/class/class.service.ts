@@ -26,7 +26,7 @@ export class ClassService {
     @InjectRepository(GradeStructure)
     private readonly gradeStructureRepo: Repository<GradeStructure>,
     private readonly mailService: MailService,
-  ) { }
+  ) {}
 
   async create(dto: DTO.Class.CCreate, req: AuthRequest) {
     const user = await this.userRepo.findOne({ where: { id: req.user.id } })
@@ -212,10 +212,18 @@ export class ClassService {
 
     return newC
   }
+
   async creatGradeStructure(
     classId: string,
     dto: DTO.Class.CreateGradeStructure,
   ) {
+    const maxOrder: number = (
+      await this.gradeStructureRepo
+        .createQueryBuilder('g')
+        .select('MAX(g.order)', 'max')
+        .getRawOne()
+    ).max
+
     const clazz = await this.classRepo.findOne({
       where: { id: classId },
     })
@@ -224,6 +232,7 @@ export class ClassService {
 
     return this.gradeStructureRepo.save({
       ...dto,
+      order: maxOrder + 1,
       class: clazz,
     })
   }

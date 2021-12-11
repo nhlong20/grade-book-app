@@ -17,7 +17,7 @@ export const createCourse = (
 ) => axios.post(API + '/class', data)
 
 export const createAssignment = (
-  data: Pick<Assignment, 'name' | 'point' | 'order'> & {
+  data: Pick<Assignment, 'name' | 'point'> & {
     gradeStructId: string
   },
 ) => axios.post(API + '/class/assignment', data).then((r) => r.data)
@@ -46,4 +46,4 @@ export const createGradeStruct =
     axios.post(API + '/class/' + id + '/grade-structure', data)
 
 export const updateOrder = (data: { id1: string; id2: string }) =>
-  axios.patch(API + '/class/assignment/order', data)
+  axios.patch(API + '/class/grade-structure/order', data)

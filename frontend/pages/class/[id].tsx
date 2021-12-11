@@ -99,17 +99,15 @@ export default function ClassDetail() {
 
   const handleDragEnd: OnDragEndResponder = useCallback(
     (res) => {
+      if (!res?.destination) return
+
+      const temp = [...(clas?.gradeStructure || [])].sort(
+        (a, b) => (a.order = b.order),
+      )
+
       updateMutate({
-        id1:
-          clas?.gradeStructure
-            .find((g) => g.id === res.source.droppableId)
-            ?.assignments.find((_, index) => index === res.destination?.index)
-            ?.id || '',
-        id2:
-          clas?.gradeStructure
-            .find((g) => g.id === res.source.droppableId)
-            ?.assignments.find((_, index) => index === res.source.index)?.id ||
-          '',
+        id1: temp[res.source.index].id,
+        id2: temp[res.destination?.index].id,
       })
     },
     [clas],
@@ -177,85 +175,91 @@ export default function ClassDetail() {
           </div>
 
           <div className="mt-6 flex flex-col gap-4">
-            {clas?.gradeStructure.map(
-              ({ assignments, title, id: structId }) => (
-                <DragDropContext onDragEnd={handleDragEnd} key={structId}>
-                  <Droppable droppableId={structId}>
-                    {(provided) => (
-                      <div {...provided.droppableProps} ref={provided.innerRef}>
-                        <div className="text-xl">Grade: {title}</div>
-                        <div className="mt-3 flex flex-col gap-2">
-                          {assignments
-                            .sort((a, b) => a.order - b.order)
-                            .map(({ id, name, point, ...rest }, index) => (
-                              <Draggable
-                                key={id}
-                                index={index}
-                                draggableId={id}
-                              >
-                                {(provided, snapshot) => (
-                                  <div
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                    className="rounded-md border p-4 flex justify-between"
-                                  >
-                                    <div>
-                                      <div>Assignment: {name}</div>
-                                      <span className="italic">
-                                        {point} points
-                                      </span>
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <Droppable droppableId={'droppable'}>
+                {(provided) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    className="flex flex-col gap-3"
+                  >
+                    {clas?.gradeStructure
+                      .sort((a, b) => a.order - b.order)
+                      .map(({ assignments, title, id: structId }, index) => (
+                        <Draggable
+                          key={structId}
+                          index={index}
+                          draggableId={structId}
+                        >
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                            >
+                              <div className="text-xl">Grade: {title}</div>
+                              <div className="mt-3 flex flex-col gap-2">
+                                {assignments.map(
+                                  ({ id, name, point, ...rest }) => (
+                                    <div className="rounded-md border p-4 flex justify-between">
+                                      <div>
+                                        <div>Assignment: {name}</div>
+                                        <span className="italic">
+                                          {point} points
+                                        </span>
+                                      </div>
+                                      {isTeacher && (
+                                        <Dropdown
+                                          trigger={['click']}
+                                          overlay={
+                                            <Menu>
+                                              <MenuItem
+                                                onClick={() => {
+                                                  setSelectedAssignment({
+                                                    id,
+                                                    name,
+                                                    point,
+                                                    ...rest,
+                                                  })
+                                                  setSelectedStruct(structId)
+                                                  openAssignment()
+                                                }}
+                                              >
+                                                Update
+                                              </MenuItem>
+                                              <MenuItem
+                                                danger
+                                                onClick={removeAssignment(id)}
+                                              >
+                                                Delete
+                                              </MenuItem>
+                                            </Menu>
+                                          }
+                                        >
+                                          <button className="w-8 h-8 rounded-full hover:bg-gray-300">
+                                            <span className="fa fa-ellipsis-v" />
+                                          </button>
+                                        </Dropdown>
+                                      )}
                                     </div>
-                                    {isTeacher && (
-                                      <Dropdown
-                                        trigger={['click']}
-                                        overlay={
-                                          <Menu>
-                                            <MenuItem
-                                              onClick={() => {
-                                                setSelectedAssignment({
-                                                  id,
-                                                  name,
-                                                  point,
-                                                  ...rest,
-                                                })
-                                                setSelectedStruct(structId)
-                                                openAssignment()
-                                              }}
-                                            >
-                                              Update
-                                            </MenuItem>
-                                            <MenuItem
-                                              danger
-                                              onClick={removeAssignment(id)}
-                                            >
-                                              Delete
-                                            </MenuItem>
-                                          </Menu>
-                                        }
-                                      >
-                                        <button className="w-8 h-8 rounded-full hover:bg-gray-300">
-                                          <span className="fa fa-ellipsis-v" />
-                                        </button>
-                                      </Dropdown>
-                                    )}
+                                  ),
+                                )}
+                                {!assignments.length && (
+                                  <div>
+                                    There has not been any assignment in this
+                                    grade
                                   </div>
                                 )}
-                              </Draggable>
-                            ))}
-                          {provided.placeholder}
-                          {!assignments.length && (
-                            <div>
-                              There has not been any assignment in this grade
+                              </div>
                             </div>
                           )}
-                        </div>
-                      </div>
-                    )}
-                  </Droppable>
-                </DragDropContext>
-              ),
-            )}
+                        </Draggable>
+                      ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
           </div>
         </div>
 

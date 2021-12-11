@@ -6,5 +6,6 @@ export type GradeStruct = {
   title: string,
   detail: string,
   class: Class,
+  order: number
   assignments: Assignment[]
 }

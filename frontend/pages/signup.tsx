@@ -43,13 +43,8 @@ export default function SignUp() {
     mutateAsync(data)
   }, [])
 
-
   return (
-    <Layout
-      header={false}
-      requireLogin={false}
-      title="Sign Up - Classroom"
-    >
+    <Layout header={false} requireLogin={false} title="Sign Up - Classroom">
       <div className="min-h-screen m-[-16px] grid place-content-center w-full">
         <form
           onSubmit={handleSubmit(signUp)}
@@ -68,11 +63,6 @@ export default function SignUp() {
             </div>
           ) : (
             <>
-              <p className="text-center text-gray-400">Bạn đã có tài khoản?{" "}
-                <Link href="/login">
-                  <span className="underline cursor-pointer">Đăng nhập</span>
-                </Link>
-              </p>
 
               <div className="mb-4">
                 <label htmlFor="email" className="cr-label">
@@ -126,10 +116,17 @@ export default function SignUp() {
                 />
               </div>
 
-              <div className="mt-2">
-                <button type="submit" className="cr-button w-full py-3 uppercase font-bold">
+              <div className="mt-2 flex flex-col gap-2">
+                <button
+                  type="submit"
+                  className="cr-button w-full"
+                >
                   Signup
                 </button>
+
+              <Link href="/login">
+                <a className="underline block text-center">Log in</a>
+              </Link>
               </div>
             </>
           )}

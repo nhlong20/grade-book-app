@@ -43,7 +43,7 @@ export class ClassController {
     return this.service.updateAssignment(id, dto)
   }
 
-  @Patch('assignment/order')
+  @Patch('grade-structure/order')
   @ApiOperation({ summary: 'to update order' })
   updateOrder(@Body() dto: DTO.Class.UpdateOrder) {
     return this.service.updateOrder(dto)

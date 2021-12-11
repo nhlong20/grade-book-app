@@ -55,11 +55,11 @@ export class ClassService {
 
   async updateOrder(dto: DTO.Class.UpdateOrder) {
     const [a1, a2] = await Promise.all([
-      this.assignmentRepo.findOne(dto.id1),
-      this.assignmentRepo.findOne(dto.id2),
+      this.gradeStructureRepo.findOne(dto.id1),
+      this.gradeStructureRepo.findOne(dto.id2),
     ])
 
-    if (!a1 || !a2) throw new BadRequestException('Assignment does not exist')
+    if (!a1 || !a2) throw new BadRequestException('Struct does not exist')
 
     const a2order = a2.order
 
@@ -67,8 +67,8 @@ export class ClassService {
     a1.order = a2order
 
     return Promise.all([
-      this.assignmentRepo.save(a1),
-      this.assignmentRepo.save(a2),
+      this.gradeStructureRepo.save(a1),
+      this.gradeStructureRepo.save(a2),
     ])
   }
 

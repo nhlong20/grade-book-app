@@ -2,7 +2,7 @@ import { DTO } from '@/type'
 import { AuthRequest } from '@/utils/interface'
 import { BadRequestException, Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { In, Repository } from 'typeorm'
 import { Class, Code, CodeType, GradeStructure } from './class.entity'
 import { User } from '@/user/user.entity'
 import { paginate } from 'nestjs-typeorm-paginate'
@@ -68,12 +68,7 @@ export class ClassService {
     const [c, user] = await Promise.all([
       this.classRepo.findOne({
         where: { id: dto.id },
-        relations: [
-          'teachers',
-          'students',
-          'gradeStructure',
-          'gradeStructure.assignments',
-        ],
+        relations: ['teachers', 'students', 'gradeStructure'],
       }),
       this.userRepo.findOne({ where: { email: req.user.email } }),
     ])
@@ -208,10 +203,31 @@ export class ClassService {
     })
   }
 
+  async returnStruct(id: string) {
+    const struct = await this.gradeStructureRepo.findOne({
+      where: { id, isReturn: false },
+    })
+    if (!struct) throw new BadRequestException('Struct does not exist')
+
+    return this.gradeStructureRepo.save({
+      ...struct,
+      isReturn: true,
+    })
+  }
+
+  async batchReturnStruct(dto: DTO.Class.BatchReturnStruct) {
+    const structs = await this.gradeStructureRepo.find({
+      where: { id: In(dto.ids), isReturn: false },
+    })
+
+    return this.gradeStructureRepo.save(
+      structs.map((struct) => ({ ...struct, isReturn: true })),
+    )
+  }
+
   getManyGradeStructure(classId: string) {
     return this.gradeStructureRepo.find({
       where: { classId },
-      relations: ['assignments'],
     })
   }
 

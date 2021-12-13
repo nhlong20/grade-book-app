@@ -44,6 +44,9 @@ export class GradeStructure extends BaseEntity {
   @Column({ type: 'uuid', select: false })
   classId: string
 
+  @Column({ default: false })
+  isReturn: boolean
+
   @Column({ default: 0 })
   order: number
 

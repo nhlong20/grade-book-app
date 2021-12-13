@@ -8,6 +8,7 @@ import {
   IsOptional,
   IsPositive,
   IsString,
+  isUUID,
   IsUUID,
 } from 'class-validator'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
@@ -126,4 +127,10 @@ export class CreateGradeStructure {
   @ApiProperty()
   @IsString()
   detail?: string
+}
+
+export class BatchReturnStruct {
+  @ApiProperty()
+  @IsUUID(undefined, { each: true })
+  ids: string[]
 }

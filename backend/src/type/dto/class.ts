@@ -128,9 +128,3 @@ export class CreateGradeStructure {
   @IsString()
   detail?: string
 }
-
-export class BatchReturnStruct {
-  @ApiProperty()
-  @IsUUID(undefined, { each: true })
-  ids: string[]
-}

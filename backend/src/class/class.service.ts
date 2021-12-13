@@ -203,28 +203,6 @@ export class ClassService {
     })
   }
 
-  async returnStruct(id: string) {
-    const struct = await this.gradeStructureRepo.findOne({
-      where: { id, isReturn: false },
-    })
-    if (!struct) throw new BadRequestException('Struct does not exist')
-
-    return this.gradeStructureRepo.save({
-      ...struct,
-      isReturn: true,
-    })
-  }
-
-  async batchReturnStruct(dto: DTO.Class.BatchReturnStruct) {
-    const structs = await this.gradeStructureRepo.find({
-      where: { id: In(dto.ids), isReturn: false },
-    })
-
-    return this.gradeStructureRepo.save(
-      structs.map((struct) => ({ ...struct, isReturn: true })),
-    )
-  }
-
   getManyGradeStructure(classId: string) {
     return this.gradeStructureRepo.find({
       where: { classId },

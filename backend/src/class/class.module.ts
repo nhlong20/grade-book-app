@@ -3,12 +3,12 @@ import { User } from '@/user/user.entity'
 import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ClassController } from './class.controller'
-import { Assignment, Class, Code, GradeStructure } from './class.entity'
+import { Class, Code, GradeStructure } from './class.entity'
 import { ClassService } from './class.service'
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Class, User, Code, GradeStructure, Assignment]),
+    TypeOrmModule.forFeature([Class, User, Code, GradeStructure]),
     MailModule,
   ],
   providers: [ClassService],

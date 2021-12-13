@@ -49,28 +49,6 @@ export class GradeStructure extends BaseEntity {
 
   @ManyToOne(() => Class, (clazz) => clazz.gradeStructure)
   class: Class
-
-  @OneToMany(() => Assignment, (a) => a.gradeStruct, {
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn()
-  assignments: Assignment[]
-}
-
-@Entity()
-export class Assignment extends BaseEntity {
-  @Column()
-  name: string
-
-  @Column()
-  point: number
-
-
-  @Column({ type: 'uuid', select: false })
-  gradeStructId: string
-
-  @ManyToOne(() => GradeStructure, (g) => g.assignments)
-  gradeStruct: GradeStructure
 }
 
 export enum CodeType {

@@ -28,33 +28,6 @@ export class ClassController {
     return this.service.create(dto, req)
   }
 
-  @Post('assignment')
-  @ApiOperation({ summary: 'to create assignment' })
-  createAssignment(@Body() dto: DTO.Class.CreateAssignment) {
-    return this.service.createAssignment(dto)
-  }
-
-  @Put('assignment/:id')
-  @ApiOperation({ summary: 'to update assignment' })
-  updateAssignmet(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() dto: DTO.Class.UpdateAssignment,
-  ) {
-    return this.service.updateAssignment(id, dto)
-  }
-
-  @Patch('grade-structure/order')
-  @ApiOperation({ summary: 'to update order' })
-  updateOrder(@Body() dto: DTO.Class.UpdateOrder) {
-    return this.service.updateOrder(dto)
-  }
-
-  @Delete('assignment/:id')
-  @ApiOperation({ summary: 'to delete assignment' })
-  deleteAssignment(@Param('id', ParseUUIDPipe) id: string) {
-    return this.service.removeAssignment(id)
-  }
-
   @Get(':id')
   @ApiOperation({ summary: 'to get one class' })
   getClass(

@@ -3,13 +3,7 @@ import { AuthRequest } from '@/utils/interface'
 import { BadRequestException, Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
-import {
-  Assignment,
-  Class,
-  Code,
-  CodeType,
-  GradeStructure,
-} from './class.entity'
+import { Class, Code, CodeType, GradeStructure } from './class.entity'
 import { User } from '@/user/user.entity'
 import { paginate } from 'nestjs-typeorm-paginate'
 import { MailService } from '@/mail/mail.service'
@@ -21,8 +15,6 @@ export class ClassService {
     @InjectRepository(Class) private readonly classRepo: Repository<Class>,
     @InjectRepository(User) private readonly userRepo: Repository<User>,
     @InjectRepository(Code) private readonly codeRepo: Repository<Code>,
-    @InjectRepository(Assignment)
-    private readonly assignmentRepo: Repository<Assignment>,
     @InjectRepository(GradeStructure)
     private readonly gradeStructureRepo: Repository<GradeStructure>,
     private readonly mailService: MailService,
@@ -70,27 +62,6 @@ export class ClassService {
       this.gradeStructureRepo.save(a1),
       this.gradeStructureRepo.save(a2),
     ])
-  }
-
-  createAssignment(dto: DTO.Class.CreateAssignment) {
-    return this.assignmentRepo.save(dto)
-  }
-
-  async updateAssignment(id: string, dto: DTO.Class.UpdateAssignment) {
-    const assignment = await this.assignmentRepo.findOne({ where: { id } })
-    if (!assignment) throw new BadRequestException('Assignment does not exist')
-
-    return this.assignmentRepo.save({
-      ...assignment,
-      ...dto,
-    })
-  }
-
-  async removeAssignment(id: string) {
-    const assignment = await this.assignmentRepo.findOne({ where: { id } })
-    if (!assignment) throw new BadRequestException('Assignment does not exist')
-
-    return this.assignmentRepo.remove(assignment)
   }
 
   async getOne(dto: DTO.Class.CGetOne, req?: AuthRequest) {

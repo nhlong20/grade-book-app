@@ -21,7 +21,7 @@ export class ClassService {
   ) {}
 
   async create(dto: DTO.Class.CCreate, req: AuthRequest) {
-    const user = await this.userRepo.findOne({ where: { id: req.user.id } })
+    const user = await this.userRepo.findOne({ where: { email: req.user.email } })
     if (!user) throw new BadRequestException('User does not exist')
 
     return this.classRepo.save({

@@ -2,7 +2,7 @@ import { DTO } from '@/type'
 import { AuthRequest } from '@/utils/interface'
 import { BadRequestException, Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { In, Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { Class, Code, CodeType, GradeStructure } from './class.entity'
 import { User } from '@/user/user.entity'
 import { paginate } from 'nestjs-typeorm-paginate'
@@ -21,7 +21,9 @@ export class ClassService {
   ) {}
 
   async create(dto: DTO.Class.CCreate, req: AuthRequest) {
-    const user = await this.userRepo.findOne({ where: { email: req.user.email } })
+    const user = await this.userRepo.findOne({
+      where: { email: req.user.email },
+    })
     if (!user) throw new BadRequestException('User does not exist')
 
     return this.classRepo.save({

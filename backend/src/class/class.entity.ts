@@ -41,11 +41,11 @@ export class GradeStructure extends BaseEntity {
   @Column({ type: 'varchar' })
   detail: string
 
-  @Column({ type: 'uuid', select: false })
-  classId: string
-
   @Column({ default: 0 })
   order: number
+
+  @Column({ type: 'uuid', select: false })
+  classId: string
 
   @ManyToOne(() => Class, (clazz) => clazz.gradeStructure)
   class: Class

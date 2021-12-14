@@ -7,6 +7,8 @@ import { CsvParser } from 'nest-csv-parser'
 import fs from 'fs'
 import { AuthRequest } from '@/utils/interface'
 import { Class, GradeStructure } from '@/class/class.entity'
+import { Response } from 'express'
+import { parseAsync } from 'json2csv'
 
 class UpdatePointEntity {
   id: string
@@ -28,6 +30,67 @@ export class StudentService {
     @InjectRepository(Grade) private gradeRepo: Repository<Grade>,
     private readonly csvParser: CsvParser,
   ) {}
+
+  async sendDefaultTemplateToCreate(res: Response) {
+    const csv = await parseAsync([], { fields: ['id', 'name'] })
+
+    res.set('Content-Type', 'application/octet-stream')
+    res.send(csv)
+  }
+
+  async sendTemplateForScoring(res: Response, classId: string) {
+    const students = await this.studentRepo.find({
+      where: { classId },
+    })
+
+    const csv = await parseAsync(
+      students.map(({ academicId, name }) => ({
+        id: academicId,
+        name,
+      })),
+      { fields: ['id', 'name', 'point'] },
+    )
+
+    res.set('Content-Type', 'application/octet-stream')
+    res.send(csv)
+  }
+
+  async sendScoreBoard(classId: string, res: Response) {
+    const [students, structs] = await Promise.all([
+      this.studentRepo.find({ where: { classId } }),
+      this.structRepo.find({ where: { classId } }),
+    ])
+
+    const grades = await this.gradeRepo
+      .createQueryBuilder('g')
+      .leftJoinAndSelect('g.student', 'student', 'student.classId=:classId', {
+        classId,
+      })
+      .getMany()
+
+    const rawData = students.map(({ academicId, name, id }) => ({
+      id: academicId,
+      name,
+      ...structs.reduce(
+        (sum, curr) => ({
+          ...sum,
+          [curr.title]:
+            grades.find(
+              ({ structId, studentId }) =>
+                id === studentId && structId === curr.id,
+            )?.point || 'NA',
+        }),
+        {},
+      ),
+    }))
+
+    const csv = await parseAsync(rawData, {
+      fields: ['id', 'name', ...structs.map(({ title }) => title)],
+    })
+
+    res.set('Content-Type', 'application/octet-stream')
+    res.send(csv)
+  }
 
   async getGradeOfClass(classId: string) {
     let students = await this.studentRepo.find({
@@ -67,11 +130,13 @@ export class StudentService {
       CreateStudentEntity,
     )) as any
 
-    return this.studentRepo.save(entities.map(({name, id}) => ({
-      classId,
-      name,
-      academicId: id,
-    })))
+    return this.studentRepo.save(
+      entities.map(({ name, id }) => ({
+        classId,
+        name,
+        academicId: id,
+      })),
+    )
   }
 
   async bulkUpdatePoint(file: Buffer, structId: string, req: AuthRequest) {

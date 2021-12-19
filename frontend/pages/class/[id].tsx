@@ -1,4 +1,3 @@
-import CreateAssigment from '@components/CreateAssignmentModal'
 import Link from 'next/link'
 import CreateGradeStructModal from '@components/CreateGradeStruct'
 import CreateInvitationModal from '@components/CreateInvitationModal'
@@ -6,13 +5,12 @@ import Layout from '@utils/components/Layout'
 import { useModal } from '@utils/hooks/useModal'
 import { useTeacher } from '@utils/hooks/useTeacher'
 import { getSessionToken } from '@utils/libs/getToken'
-import { Assignment } from '@utils/models/assignment'
-import { deleteAssignment, getClass, updateOrder } from '@utils/service/class'
+import { getClass, updateOrder } from '@utils/service/class'
 import { getUser } from '@utils/service/user'
-import { notification, Dropdown, Menu } from 'antd'
+import { notification } from 'antd'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import {
   dehydrate,
   QueryClient,
@@ -25,10 +23,7 @@ import {
   Droppable,
   Draggable,
   OnDragEndResponder,
-  OnDragStartResponder,
 } from 'react-beautiful-dnd'
-
-const MenuItem = Menu.Item
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const token = getSessionToken(ctx.req.cookies)
@@ -57,31 +52,10 @@ export default function ClassDetail() {
 
   const isTeacher = useTeacher()
 
-  const [createAssignment, openAssignment, closeAssignment] = useModal()
   const [createInvitation, openInvitation, closeInvitation] = useModal()
   const [gradeStruct, openGradeStruct, closeGradeStruct] = useModal()
 
-  const [selectedAssignment, setSelectedAssignment] = useState<Assignment>()
-  const [selectedStruct, setSelectedStruct] = useState('')
-
   const client = useQueryClient()
-
-  const { mutateAsync } = useMutation('delete assignment', deleteAssignment, {
-    onSuccess() {
-      client.invalidateQueries('class')
-      notification.success({ message: `Delete assignment successfully` })
-    },
-    onError() {
-      notification.error({ message: 'Delete assignment unsuccessfully' })
-    },
-  })
-
-  const removeAssignment = useCallback(
-    (id: string) => () => {
-      mutateAsync(id)
-    },
-    [],
-  )
 
   const { mutateAsync: updateMutate, isLoading: isUpdate } = useMutation(
     'update-order',
@@ -115,12 +89,6 @@ export default function ClassDetail() {
 
   return (
     <Layout classTitle={clas?.name} requireLogin>
-      <CreateAssigment
-        structId={selectedStruct}
-        assignmentData={selectedAssignment}
-        visible={createAssignment}
-        close={closeAssignment}
-      />
       <CreateInvitationModal
         visible={createInvitation}
         close={closeInvitation}
@@ -161,19 +129,6 @@ export default function ClassDetail() {
         <div className="p-4">
           <div className="border-b pb-2">Description: {clas?.description}</div>
 
-          <div className="mt-4 flex justify-between items-center">
-            <div />
-            <button
-              onClick={() => {
-                setSelectedAssignment(undefined)
-                openAssignment()
-              }}
-              className="cr-button"
-            >
-              Create Assignment
-            </button>
-          </div>
-
           <div className="mt-6 flex flex-col gap-4">
             <DragDropContext onDragEnd={handleDragEnd}>
               <Droppable droppableId={'droppable'}>
@@ -185,7 +140,7 @@ export default function ClassDetail() {
                   >
                     {clas?.gradeStructure
                       .sort((a, b) => a.order - b.order)
-                      .map(({ assignments, title, id: structId }, index) => (
+                      .map(({ title, id: structId }, index) => (
                         <Draggable
                           key={structId}
                           index={index}
@@ -198,59 +153,6 @@ export default function ClassDetail() {
                               {...provided.dragHandleProps}
                             >
                               <div className="text-xl">Grade: {title}</div>
-                              <div className="mt-3 flex flex-col gap-2">
-                                {assignments.map(
-                                  ({ id, name, point, ...rest }) => (
-                                    <div className="rounded-md border p-4 flex justify-between">
-                                      <div>
-                                        <div>Assignment: {name}</div>
-                                        <span className="italic">
-                                          {point} points
-                                        </span>
-                                      </div>
-                                      {isTeacher && (
-                                        <Dropdown
-                                          trigger={['click']}
-                                          overlay={
-                                            <Menu>
-                                              <MenuItem
-                                                onClick={() => {
-                                                  setSelectedAssignment({
-                                                    id,
-                                                    name,
-                                                    point,
-                                                    ...rest,
-                                                  })
-                                                  setSelectedStruct(structId)
-                                                  openAssignment()
-                                                }}
-                                              >
-                                                Update
-                                              </MenuItem>
-                                              <MenuItem
-                                                danger
-                                                onClick={removeAssignment(id)}
-                                              >
-                                                Delete
-                                              </MenuItem>
-                                            </Menu>
-                                          }
-                                        >
-                                          <button className="w-8 h-8 rounded-full hover:bg-gray-300">
-                                            <span className="fa fa-ellipsis-v" />
-                                          </button>
-                                        </Dropdown>
-                                      )}
-                                    </div>
-                                  ),
-                                )}
-                                {!assignments.length && (
-                                  <div>
-                                    There has not been any assignment in this
-                                    grade
-                                  </div>
-                                )}
-                              </div>
                             </div>
                           )}
                         </Draggable>

@@ -1,4 +1,3 @@
-import { Assignment } from "./assignment";
 import { GradeStruct } from "./gradeStruct";
 import { User } from "./user";
 

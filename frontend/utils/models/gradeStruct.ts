@@ -1,4 +1,3 @@
-import { Assignment } from "./assignment";
 import { Class } from "./class";
 
 export type GradeStruct = {
@@ -7,5 +6,4 @@ export type GradeStruct = {
   detail: string,
   class: Class,
   order: number
-  assignments: Assignment[]
 }

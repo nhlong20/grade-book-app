@@ -44,7 +44,7 @@ export class StudentService {
     return csv
   }
 
-  async sendTemplateForScoring(res: Response, classId: string) {
+  async sendTemplateForScoring(classId: string) {
     const students = await this.studentRepo.find({
       where: { classId },
     })
@@ -57,11 +57,10 @@ export class StudentService {
       { fields: ['id', 'name', 'point'] },
     )
 
-    res.set('Content-Type', 'application/octet-stream')
-    res.send(csv)
+    return csv
   }
 
-  async sendScoreBoard(classId: string, res: Response) {
+  async sendScoreBoard(classId: string) {
     const [students, structs] = await Promise.all([
       this.studentRepo.find({ where: { classId } }),
       this.structRepo.find({ where: { classId } }),
@@ -94,8 +93,7 @@ export class StudentService {
       fields: ['id', 'name', ...structs.map(({ title }) => title)],
     })
 
-    res.set('Content-Type', 'application/octet-stream')
-    res.send(csv)
+    return csv
   }
 
   async getGradeOfClass(classId: string) {
@@ -162,10 +160,13 @@ export class StudentService {
     }
 
     const stream = toStream(file)
-    const entities: UpdatePointEntity[] = (await this.csvParser.parse(
+    const entities = (await this.csvParser.parse(
       stream,
       UpdatePointEntity,
-    )) as any
+      undefined,
+      undefined,
+      { strict: true, separator: ',' },
+    )) as ParsedData<UpdatePointEntity>
 
     const grades = await this.gradeRepo
       .createQueryBuilder('g')
@@ -174,7 +175,7 @@ export class StudentService {
         'g.student',
         'student',
         'student.academicId IN(:...ids)',
-        { ids: entities.map((e) => e.id) },
+        { ids: entities.list.map((e) => e.id) },
       )
       .getMany()
 
@@ -183,7 +184,8 @@ export class StudentService {
         ...rest,
         student,
         point:
-          entities.find((e) => e.id === student.academicId)?.point || point,
+          entities.list.find((e) => e.id === student.academicId)?.point ||
+          point,
       })),
     )
   }

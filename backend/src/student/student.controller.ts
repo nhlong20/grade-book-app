@@ -24,8 +24,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger'
-import { Response as Res, Request as Req } from 'express'
-import { memoryStorage } from 'multer'
+import { Response as Res } from 'express'
 import { StudentService } from './student.service'
 
 @Controller('student')
@@ -53,20 +52,30 @@ export class StudentController {
 
   @Get('csv/scoring')
   @ApiOperation({ summary: 'to get the csv template for scoring' })
-  getScoringTemplate(
+  async getScoringTemplate(
     @Query('classId', ParseUUIDPipe) classId: string,
     @Response({ passthrough: true }) res: Res,
   ) {
-    return this.service.sendTemplateForScoring(res, classId)
+    const csv = await this.service.sendTemplateForScoring(classId)
+
+    res.set('Content-Type', 'text/csv')
+    res.set('Content-Disposition', 'attachment; filename="template.csv"')
+
+    return new StreamableFile(Buffer.from(csv))
   }
 
   @Get('csv/scoreboard')
   @ApiOperation({ summary: 'to get the score board csv' })
-  getScoreboard(
+  async getScoreboard(
     @Response({ passthrough: true }) res: Res,
     @Query('classId', ParseUUIDPipe) classId: string,
   ) {
-    return this.service.sendScoreBoard(classId, res)
+    const csv = await this.service.sendScoreBoard(classId)
+
+    res.set('Content-Type', 'text/csv')
+    res.set('Content-Disposition', 'attachment; filename="template.csv"')
+
+    return new StreamableFile(Buffer.from(csv))
   }
 
   @Put('expose/:id')

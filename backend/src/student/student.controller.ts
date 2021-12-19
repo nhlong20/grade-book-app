@@ -12,6 +12,7 @@ import {
   Query,
   Request,
   Response,
+  StreamableFile,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common'
@@ -34,8 +35,13 @@ export class StudentController {
 
   @Get('csv/default')
   @ApiOperation({ summary: 'to get the csv template for creating student' })
-  getDefaultTemplate(@Response({ passthrough: true }) res: Res) {
-    return this.service.sendDefaultTemplateToCreate(res)
+  async getDefaultTemplate(@Response({ passthrough: true }) res: Res) {
+    const csv = await this.service.sendDefaultTemplateToCreate()
+
+    res.set('Content-Type', 'text/csv')
+    res.set('Content-Disposition', 'attachment; filename="template.csv"')
+
+    return new StreamableFile(Buffer.from(csv))
   }
 
   @Get('csv/scoring')

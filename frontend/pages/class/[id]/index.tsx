@@ -95,6 +95,19 @@ export default function ClassDetail() {
       />
       <CreateGradeStructModal visible={gradeStruct} close={closeGradeStruct} />
 
+      <div className="cr-container pt-4 flex gap-2">
+        <button className="cr-button">
+          <Link href={`/class/${query.id}`}>
+            <a className='text-current'>Overview</a>
+          </Link>
+        </button>
+        <button className="cr-button-outline">
+          <Link href={`/class/${query.id}/grade`}>
+            <a className='text-current'>Grade</a>
+          </Link>
+        </button>
+      </div>
+
       <div className="cr-container py-4 mb-6 grid grid-cols-[250px,1fr,250px] gap-4">
         <div>
           <div className="border rounded-md shadow-md p-4 mb-4">

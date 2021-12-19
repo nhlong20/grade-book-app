@@ -31,11 +31,9 @@ export class StudentService {
     private readonly csvParser: CsvParser,
   ) {}
 
-  async sendDefaultTemplateToCreate(res: Response) {
+  async sendDefaultTemplateToCreate() {
     const csv = await parseAsync([], { fields: ['id', 'name'] })
-
-    res.set('Content-Type', 'application/octet-stream')
-    res.send(csv)
+    return csv
   }
 
   async sendTemplateForScoring(res: Response, classId: string) {

@@ -43,6 +43,12 @@ export class ClassController {
     return this.service.getMany(query)
   }
 
+  @Patch('grade-structure/order')
+  @ApiOperation({ summary: 'to update order' })
+  updateOrder(@Body() dto: DTO.Class.UpdateOrder) {
+    return this.service.updateOrder(dto)
+  }
+
   @Post(':id/invite')
   @ApiOperation({ summary: 'to send invitation' })
   sendInvitation(

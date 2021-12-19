@@ -3,12 +3,20 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { In, Repository } from 'typeorm'
 import { Grade, Student } from './student.entity'
-import { CsvParser } from 'nest-csv-parser'
-import fs from 'fs'
+import { CsvParser, ParsedData } from 'nest-csv-parser'
 import { AuthRequest } from '@/utils/interface'
 import { Class, GradeStructure } from '@/class/class.entity'
 import { Response } from 'express'
 import { parseAsync } from 'json2csv'
+import { Duplex } from 'stream'
+
+function toStream(buffer: Buffer) {
+  let tmp = new Duplex()
+
+  tmp.push(buffer)
+  tmp.push(null)
+  return tmp
+}
 
 class UpdatePointEntity {
   id: string
@@ -122,14 +130,17 @@ export class StudentService {
       throw new BadRequestException('You can create student in this class')
     }
 
-    const stream = fs.createReadStream(file)
-    const entities: CreateStudentEntity[] = (await this.csvParser.parse(
+    const stream = toStream(file)
+    const entities = (await this.csvParser.parse(
       stream,
       CreateStudentEntity,
-    )) as any
+      undefined,
+      undefined,
+      { strict: true, separator: ',' },
+    )) as ParsedData<CreateStudentEntity>
 
     return this.studentRepo.save(
-      entities.map(({ name, id }) => ({
+      entities.list.map(({ name, id }) => ({
         classId,
         name,
         academicId: id,
@@ -150,7 +161,7 @@ export class StudentService {
       )
     }
 
-    const stream = fs.createReadStream(file)
+    const stream = toStream(file)
     const entities: UpdatePointEntity[] = (await this.csvParser.parse(
       stream,
       UpdatePointEntity,

@@ -9,6 +9,8 @@ import { JwtModule } from '@nestjs/jwt'
 import { JwtStrategy } from './jwt.strategy'
 import { ClassModule } from './class/class.module'
 import { StudentModule } from './student/student.module'
+import { MulterModule } from '@nestjs/platform-express'
+import { memoryStorage } from 'multer'
 
 @Module({
   imports: [
@@ -29,6 +31,9 @@ import { StudentModule } from './student/student.module'
     PassportModule,
     StudentModule,
     JwtModule.register({ secret: process.env.JWT_SECRET }),
+    MulterModule.register({
+      storage: memoryStorage()
+    }),
   ],
   providers: [
     JwtStrategy,

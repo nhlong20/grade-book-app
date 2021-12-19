@@ -17,8 +17,15 @@ import {
   UseInterceptors,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger'
 import { Response as Res, Request as Req } from 'express'
+import { memoryStorage } from 'multer'
 import { StudentService } from './student.service'
 
 @Controller('student')
@@ -84,8 +91,20 @@ export class StudentController {
   }
 
   @Post(':id')
-  @ApiOperation({ summary: 'to input list of class student via uploading' })
   @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'to input list of class student via uploading' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   batchCreateStudent(
     @UploadedFile() file: Express.Multer.File,
     @Request() req: AuthRequest,

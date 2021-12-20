@@ -24,8 +24,6 @@ export default function GradeInput({ id, point, studentId, structId }: Props) {
     },
   })
 
-  console.log(id)
-
   const [input, setInput] = useState(false)
 
   const { mutateAsync } = useMutation(
@@ -39,28 +37,31 @@ export default function GradeInput({ id, point, studentId, structId }: Props) {
   )
 
   const props = register('point')
-  const hanldeSubmit = useCallback(
-    handleSubmit((data) => {
-      ;(document.getElementById(id + 'point') as HTMLInputElement)?.blur()
+  const onSubmit = useCallback(
+    (blur: boolean = true) =>
+      handleSubmit((data) => {
+        blur &&
+          (document.getElementById(id + 'point') as HTMLInputElement)?.blur()
 
-      setInput(false)
+        setInput(false)
 
-      if (!id) {
-        data.studentId = studentId
-        data.structId = structId
-      }
+        if (!id) {
+          data.studentId = studentId
+          data.structId = structId
+        }
 
-      mutateAsync(data)
-    }),
+        mutateAsync(data)
+      }),
     [id],
   )
 
   return (
-    <form onSubmit={hanldeSubmit} className="mr-2">
+    <form onSubmit={onSubmit()} className="mr-2">
       <input
         onFocus={() => setInput(true)}
         onBlur={(e) => {
           props.onBlur(e)
+          onSubmit(false)()
           setInput(false)
         }}
         type="number"

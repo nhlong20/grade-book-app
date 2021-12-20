@@ -27,14 +27,14 @@ export class Grade extends BaseEntity {
   @JoinColumn()
   student: Student
 
-  @Column({ type: 'uuid', select: false })
+  @Column({ type: 'uuid' })
   studentId: string
 
   @ManyToOne(() => GradeStructure)
   @JoinColumn()
   struct: GradeStructure
 
-  @Column({ type: 'uuid', select: false })
+  @Column({ type: 'uuid' })
   structId: string
 
   @Column({ nullable: true, default: null })

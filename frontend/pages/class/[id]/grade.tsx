@@ -10,12 +10,19 @@ import {
   useQueryClient,
 } from 'react-query'
 import { getSessionToken } from '@utils/libs/getToken'
+import { Dropdown, Menu } from 'antd'
 import { getClass, getStudents } from '@utils/service/class'
 import { useCallback } from 'react'
-import { downloadTemplate } from '@utils/service/download'
-import { uploadStudent } from '@utils/service/upload'
+import {
+  downloadGrade,
+  downloadScoreTemplate,
+  downloadTemplate,
+} from '@utils/service/download'
+import { uploadScore, uploadStudent } from '@utils/service/upload'
 import UploadButton from '@components/Upload'
 import GradeInput from '@components/GradeInput'
+
+const MenuItem = Menu.Item
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const client = new QueryClient()
@@ -55,6 +62,16 @@ export default function ClassGrade() {
     },
   })
 
+  const { mutateAsync: mutateUploadScore } = useMutation(
+    'upload-score',
+    uploadScore,
+    {
+      onSuccess() {
+        client.invalidateQueries(['students', id])
+      },
+    },
+  )
+
   return (
     <Layout requireLogin>
       <div className="cr-container py-4">
@@ -83,6 +100,13 @@ export default function ClassGrade() {
             <button onClick={downloadDefaultTemplate} className="cr-button">
               Download Template
             </button>
+
+            <button
+              onClick={() => downloadGrade(clas?.name || '', id)}
+              className="cr-button"
+            >
+              Download Grade
+            </button>
           </div>
         </div>
 
@@ -96,14 +120,44 @@ export default function ClassGrade() {
             <div className="border-r" />
             <div className="border-r" />
             <div className="border-r" />
-            {clas?.gradeStructure.map(({ id, title }) => (
-              <div className="border-r" key={id}>
-                {title}
+            {clas?.gradeStructure.map(({ id: structId, title }) => (
+              <div
+                className="border-r flex justify-between items-center"
+                key={structId}
+              >
+                <div>{title}</div>
+                <Dropdown
+                  trigger={['click']}
+                  overlay={
+                    <Menu>
+                      <MenuItem
+                        onClick={() => downloadScoreTemplate(title, id)}
+                        key="download-template"
+                      >
+                        <span className="fa fa-download mr-2" /> Download Score
+                        Template
+                      </MenuItem>
+                      <MenuItem key="upload-score">
+                        <UploadButton
+                          effect={(file) =>
+                            mutateUploadScore({ id: structId, file })
+                          }
+                        >
+                          <span className="fa fa-upload mr-2" /> Upload Score
+                        </UploadButton>
+                      </MenuItem>
+                    </Menu>
+                  }
+                >
+                  <button className="w-8 h-8 rounded-full hover:bg-gray-200">
+                    <span className="fa fa-ellipsis-v" />
+                  </button>
+                </Dropdown>
               </div>
             ))}
           </div>
 
-          {students?.map(({ id: studentId, name, grades, academicId }, idx) => (
+          {students?.map(({ id: studentId, name, grades, academicId }) => (
             <div
               style={{
                 gridTemplateColumns: 'repeat(auto-fit, minmax(80px,150px))',
@@ -111,15 +165,13 @@ export default function ClassGrade() {
               className="grid gap-2 py-2 border-b"
               key={studentId}
             >
-              <div className="border-r">{academicId}</div>
-              <div className="border-r">{name}</div>
-              <div className="border-r">
-                {(Object.values(grades).reduce(
+              <div className="border-r flex items-center">{academicId}</div>
+              <div className="border-r flex items-center">{name}</div>
+              <div className="border-r flex items-center">
+                {Object.values(grades).reduce(
                   (sum, curr) => sum + Number(curr.point),
                   0,
-                ) *
-                  100) /
-                  (Object.values(grades).length * 100) || '0'}
+                ) / Object.values(grades).length || '0'}
                 %
               </div>
               {clas?.gradeStructure.map(({ id }) => (

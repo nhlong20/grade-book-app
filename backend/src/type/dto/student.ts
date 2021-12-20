@@ -17,3 +17,20 @@ export class BatchExpose {
   @IsUUID(undefined, { each: true })
   ids: string[]
 }
+
+export class CreatePoint {
+  @ApiProperty()
+  @IsUUID()
+  studentId: string
+
+  @ApiProperty()
+  @IsUUID()
+  structId: string
+
+  @ApiProperty()
+  @IsNumber()
+  @Max(100)
+  @Min(0)
+  @Type(() => Number)
+  point: number
+}

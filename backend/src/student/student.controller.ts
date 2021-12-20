@@ -99,6 +99,14 @@ export class StudentController {
     return this.service.updatePoint(id, dto)
   }
 
+  @Post('grade')
+  @ApiOperation({ summary: 'to update one individually grade' })
+  createGrade(
+    @Body() dto: DTO.Student.CreatePoint,
+  ) {
+    return this.service.createPoint(dto)
+  }
+
   @Post(':id')
   @UseInterceptors(FileInterceptor('file'))
   @ApiOperation({ summary: 'to input list of class student via uploading' })

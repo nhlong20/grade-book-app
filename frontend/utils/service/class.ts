@@ -42,3 +42,12 @@ export const getStudents = (classId: string, token?: string) => () =>
       },
     })
     .then((res) => res.data)
+
+export const updatePoint = (id: string) => (data: { point: number }) =>
+  axios.patch(API + '/student/grade/' + id, data).then((res) => res.data)
+
+export const createPoint = (data: {
+  point: number
+  studentId: string
+  structId: string
+}) => axios.post(API + '/student/grade', data).then((res) => res.data)

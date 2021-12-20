@@ -2,13 +2,20 @@ import Layout from '@utils/components/Layout'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
-import { dehydrate, QueryClient, useMutation, useQuery } from 'react-query'
+import {
+  dehydrate,
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from 'react-query'
 import { getSessionToken } from '@utils/libs/getToken'
 import { getClass, getStudents } from '@utils/service/class'
 import { useCallback } from 'react'
 import { downloadTemplate } from '@utils/service/download'
 import { uploadStudent } from '@utils/service/upload'
 import UploadButton from '@components/Upload'
+import GradeInput from '@components/GradeInput'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const client = new QueryClient()
@@ -33,6 +40,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 export default function ClassGrade() {
   const { query } = useRouter()
   const id = query.id as string
+  const client = useQueryClient()
+
   const { data: clas } = useQuery(['class', id], getClass(id))
   const { data: students } = useQuery(['students', id], getStudents(id))
 
@@ -40,7 +49,11 @@ export default function ClassGrade() {
     downloadTemplate(clas?.name || 'Template')
   }, [clas])
 
-  const { mutateAsync } = useMutation('upload-student', uploadStudent(id), {})
+  const { mutateAsync } = useMutation('upload-student', uploadStudent(id), {
+    onSuccess() {
+      client.invalidateQueries(['students', id])
+    },
+  })
 
   return (
     <Layout requireLogin>
@@ -90,20 +103,33 @@ export default function ClassGrade() {
             ))}
           </div>
 
-          {students?.map(({ id, name, grades, academicId }, idx) => (
+          {students?.map(({ id: studentId, name, grades, academicId }, idx) => (
             <div
               style={{
                 gridTemplateColumns: 'repeat(auto-fit, minmax(80px,150px))',
               }}
               className="grid gap-2 py-2 border-b"
-              key={id}
+              key={studentId}
             >
               <div className="border-r">{academicId}</div>
               <div className="border-r">{name}</div>
-              <div className="border-r"></div>
+              <div className="border-r">
+                {(Object.values(grades).reduce(
+                  (sum, curr) => sum + Number(curr.point),
+                  0,
+                ) *
+                  100) /
+                  (Object.values(grades).length * 100) || '0'}
+                %
+              </div>
               {clas?.gradeStructure.map(({ id }) => (
                 <div key={grades[id]?.id} className="border-r">
-                  {grades[id]?.point || 'NA'}
+                  <GradeInput
+                    structId={id}
+                    studentId={studentId}
+                    id={grades[id]?.id}
+                    point={Number(grades[id]?.point || '0')}
+                  />
                 </div>
               ))}
             </div>

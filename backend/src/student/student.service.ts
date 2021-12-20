@@ -200,6 +200,17 @@ export class StudentService {
     })
   }
 
+  async createPoint(dto: DTO.Student.CreatePoint) {
+    if (
+      await this.gradeRepo.findOne({
+        where: { studentId: dto.studentId, structId: dto.structId },
+      })
+    )
+      throw new BadRequestException('Grade existed')
+
+    return this.gradeRepo.save(dto)
+  }
+
   async expose(id: string) {
     const grade = await this.gradeRepo.findOne({ where: { id, expose: false } })
     if (!grade) throw new BadRequestException('Grade does not exist')

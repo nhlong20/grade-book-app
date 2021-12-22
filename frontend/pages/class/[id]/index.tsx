@@ -3,7 +3,6 @@ import CreateGradeStructModal from '@components/CreateGradeStruct'
 import CreateInvitationModal from '@components/CreateInvitationModal'
 import Layout from '@utils/components/Layout'
 import { useModal } from '@utils/hooks/useModal'
-import { useTeacher } from '@utils/hooks/useTeacher'
 import { getSessionToken } from '@utils/libs/getToken'
 import { getClass, updateOrder } from '@utils/service/class'
 import { getUser } from '@utils/service/user'
@@ -24,6 +23,7 @@ import {
   Draggable,
   OnDragEndResponder,
 } from 'react-beautiful-dnd'
+import { useAuth } from '@utils/hooks/useAuth'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const token = getSessionToken(ctx.req.cookies)
@@ -33,7 +33,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   if (token) {
     await Promise.all([
-      client.prefetchQuery('class', getClass(id as string, token)),
+      client.prefetchQuery(['class', id], getClass(id as string, token)),
       client.prefetchQuery('user', getUser(token)),
     ])
   }
@@ -47,10 +47,12 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
 export default function ClassDetail() {
   const { query } = useRouter()
-  const { data: clas } = useQuery('class', getClass(query.id as string))
+  const { data: clas } = useQuery(
+    ['class', query.id],
+    getClass(query.id as string),
+  )
   const { data: user } = useQuery('user', getUser())
-
-  const isTeacher = useTeacher()
+  const { isStudent, isTeacher } = useAuth()
 
   const [createInvitation, openInvitation, closeInvitation] = useModal()
   const [gradeStruct, openGradeStruct, closeGradeStruct] = useModal()
@@ -62,7 +64,7 @@ export default function ClassDetail() {
     updateOrder,
     {
       onSuccess(res) {
-        client.invalidateQueries('class')
+        client.invalidateQueries(['class', query.id])
         notification.success({ message: `Update order successfully` })
       },
       onError() {
@@ -79,12 +81,13 @@ export default function ClassDetail() {
         (a, b) => (a.order = b.order),
       )
 
-      updateMutate({
-        id1: temp[res.source.index].id,
-        id2: temp[res.destination?.index].id,
-      })
+      isTeacher &&
+        updateMutate({
+          id1: temp[res.source.index].id,
+          id2: temp[res.destination?.index].id,
+        })
     },
-    [clas],
+    [clas, isTeacher],
   )
 
   return (

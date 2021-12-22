@@ -23,6 +23,8 @@ import UploadButton from '@components/Upload'
 import GradeInput from '@components/GradeInput'
 import axios from 'axios'
 import { API } from 'environment'
+import { useAuth } from '@utils/hooks/useAuth'
+import { useTypedSession } from '@utils/hooks/useTypedSession'
 
 const MenuItem = Menu.Item
 
@@ -47,12 +49,15 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 }
 
 export default function ClassGrade() {
+  const [session] = useTypedSession()
   const { query } = useRouter()
   const id = query.id as string
   const client = useQueryClient()
 
   const { data: clas } = useQuery(['class', id], getClass(id))
   const { data: students } = useQuery(['students', id], getStudents(id))
+
+  const { isTeacher } = useAuth()
 
   const downloadDefaultTemplate = useCallback(() => {
     downloadTemplate(clas?.name || 'Template')
@@ -85,7 +90,7 @@ export default function ClassGrade() {
       },
       onError() {
         notification.error({ message: 'Batch expose unsuccessfully' })
-      }
+      },
     },
   )
 
@@ -107,23 +112,27 @@ export default function ClassGrade() {
           </div>
 
           <div className="flex gap-2">
-            <UploadButton
-              effect={(file) => mutateAsync(file)}
-              className="cr-button"
-            >
-              <span className="fa fa-upload mr-2" /> Upload Student
-            </UploadButton>
+            {isTeacher && (
+              <>
+                <UploadButton
+                  effect={(file) => mutateAsync(file)}
+                  className="cr-button"
+                >
+                  <span className="fa fa-upload mr-2" /> Upload Student
+                </UploadButton>
 
-            <button onClick={downloadDefaultTemplate} className="cr-button">
-              Download Template
-            </button>
+                <button onClick={downloadDefaultTemplate} className="cr-button">
+                  Download Template
+                </button>
 
-            <button
-              onClick={() => downloadGrade(clas?.name || '', id)}
-              className="cr-button"
-            >
-              Download Grade
-            </button>
+                <button
+                  onClick={() => downloadGrade(clas?.name || '', id)}
+                  className="cr-button"
+                >
+                  Download Grade
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -145,6 +154,7 @@ export default function ClassGrade() {
                 <div>{title}</div>
                 <Dropdown
                   trigger={['click']}
+                  disabled={!isTeacher}
                   overlay={
                     <Menu>
                       <MenuItem
@@ -169,7 +179,8 @@ export default function ClassGrade() {
                             studentIds: students?.map((s) => s.id) || [],
                             structId,
                             ids:
-                              students?.map((s) => s.grades[structId]?.id) || [],
+                              students?.map((s) => s.grades[structId]?.id) ||
+                              [],
                           })
                         }
                         key="batch-expose"
@@ -188,8 +199,9 @@ export default function ClassGrade() {
             ))}
           </div>
 
-          {students?.map(
-            ({ id: studentId, name, grades, academicId, userId }) => (
+          {students
+            ?.filter((s) => isTeacher || s.academicId === session?.user.mssv)
+            .map(({ id: studentId, name, grades, academicId, userId }) => (
               <div
                 style={{
                   gridTemplateColumns: 'repeat(auto-fit, minmax(80px,180px))',
@@ -224,8 +236,7 @@ export default function ClassGrade() {
                   </div>
                 ))}
               </div>
-            ),
-          )}
+            ))}
         </div>
       </div>
     </Layout>

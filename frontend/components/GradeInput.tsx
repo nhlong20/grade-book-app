@@ -1,3 +1,4 @@
+import { useAuth } from '@utils/hooks/useAuth'
 import { createPoint, updatePoint } from '@utils/service/class'
 import { notification } from 'antd'
 import axios from 'axios'
@@ -35,6 +36,7 @@ export default function GradeInput({
   })
 
   const [input, setInput] = useState(false)
+  const { isTeacher } = useAuth()
 
   const { mutateAsync } = useMutation(
     'update-point',
@@ -91,23 +93,26 @@ export default function GradeInput({
   return (
     <div className="flex gap-2 px-2 justify-between items-center">
       <form onSubmit={onSubmit()} className="mr-2 w-full">
-        <input
-          onFocus={() => setInput(true)}
-          onBlur={(e) => {
-            props.onBlur(e)
-            onSubmit(false)()
-            setInput(false)
-          }}
-          type="number"
-          id={id + 'point'}
-          ref={props.ref}
-          name={props.name}
-          onChange={props.onChange}
-          className={`cr-input w-full ${input ? '' : 'border-none'}`}
-        />
+        {(isTeacher || expose) && (
+          <input
+            disabled={!isTeacher}
+            onFocus={() => setInput(true)}
+            onBlur={(e) => {
+              props.onBlur(e)
+              onSubmit(false)()
+              setInput(false)
+            }}
+            type="number"
+            id={id + 'point'}
+            ref={props.ref}
+            name={props.name}
+            onChange={props.onChange}
+            className={`cr-input w-full ${input ? '' : 'border-none'}`}
+          />
+        )}
       </form>
 
-      {!expose && (
+      {!expose && isTeacher && (
         <div>
           <button
             onClick={() => mutateExpose(id)}

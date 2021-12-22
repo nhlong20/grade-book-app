@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
 import { useRouter } from 'next/router'
 import { useTeacher } from '@utils/hooks/useTeacher'
+import { useAuth } from '@utils/hooks/useAuth'
 // import { CodeType } from '@utils/models/invitation'
 export enum CodeType {
   Student = 'student',
@@ -21,7 +22,7 @@ export default function CreateInvitation({ close, visible }: Props) {
   const [type, changeType] = useInput('')
   const client = useQueryClient()
   const { query } = useRouter()
-  const isTeacher = useTeacher()
+  const { isStudent, isTeacher } = useAuth()
 
   const { mutateAsync, isLoading } = useMutation(
     'create-invitation',

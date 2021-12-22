@@ -10,4 +10,5 @@ export interface JwtPayload {
   name: string
   roles: Role
   sub: string
+  mssv: string
 }

@@ -12,7 +12,7 @@ import {
 import { getSessionToken } from '@utils/libs/getToken'
 import { Dropdown, Menu, notification } from 'antd'
 import { getClass, getStudents } from '@utils/service/class'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import {
   downloadGrade,
   downloadScoreTemplate,
@@ -25,6 +25,8 @@ import axios from 'axios'
 import { API } from 'environment'
 import { useAuth } from '@utils/hooks/useAuth'
 import { useTypedSession } from '@utils/hooks/useTypedSession'
+import ViewGradeDetail from '@components/ViewGradeDetail'
+import { useModal } from '@utils/hooks/useModal'
 
 const MenuItem = Menu.Item
 
@@ -94,8 +96,16 @@ export default function ClassGrade() {
     },
   )
 
+  const [visible, open, close] = useModal()
+  const [selectedId, setSelectedId] = useState<string>()
+
   return (
     <Layout requireLogin>
+      <ViewGradeDetail
+        visible={visible}
+        close={close}
+        selectedStudentId={selectedId!}
+      />
       <div className="cr-container py-4">
         <div className="flex justify-between">
           <div className="flex gap-2">
@@ -211,6 +221,14 @@ export default function ClassGrade() {
               >
                 <div className="border-r flex items-center">{academicId}</div>
                 <div
+                  onClick={
+                    userId
+                      ? () => {
+                          open()
+                          setSelectedId(studentId)
+                        }
+                      : undefined
+                  }
                   className={`border-r flex items-center ${
                     userId ? 'underline hover:text-blue-600 cursor-pointer' : ''
                   }`}

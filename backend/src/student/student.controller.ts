@@ -78,17 +78,21 @@ export class StudentController {
     return new StreamableFile(Buffer.from(csv))
   }
 
-  @Put('expose/:id')
-  @ApiOperation({ summary: 'to expose one individually grade' })
-  expose(@Param('id', ParseUUIDPipe) id: string) {
-    return this.service.expose(id)
-  }
-
   @Put('expose/batch')
   @ApiOperation({ summary: 'to expose one individually grade' })
   batchExpose(@Body() dto: DTO.Student.BatchExpose) {
     return this.service.batchExpose(dto)
   }
+
+  @Put('expose/:id*')
+  @ApiOperation({ summary: 'to expose one individually grade' })
+  expose(
+    @Param('id') id: string,
+    @Body() dto: DTO.Student.Expose,
+  ) {
+    return this.service.expose(id, dto)
+  }
+
 
   @Patch('grade/:id')
   @ApiOperation({ summary: 'to update one individually grade' })
@@ -101,9 +105,7 @@ export class StudentController {
 
   @Post('grade')
   @ApiOperation({ summary: 'to update one individually grade' })
-  createGrade(
-    @Body() dto: DTO.Student.CreatePoint,
-  ) {
+  createGrade(@Body() dto: DTO.Student.CreatePoint) {
     return this.service.createPoint(dto)
   }
 

@@ -1,4 +1,7 @@
 import { createPoint, updatePoint } from '@utils/service/class'
+import { notification } from 'antd'
+import axios from 'axios'
+import { API } from 'environment'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -8,10 +11,17 @@ type Props = {
   point: number
   id?: string
   studentId: string
+  expose?: boolean
   structId: string
 }
 
-export default function GradeInput({ id, point, studentId, structId }: Props) {
+export default function GradeInput({
+  id,
+  point,
+  studentId,
+  expose,
+  structId,
+}: Props) {
   const { query } = useRouter()
   const client = useQueryClient()
   const { register, handleSubmit } = useForm<
@@ -30,8 +40,14 @@ export default function GradeInput({ id, point, studentId, structId }: Props) {
     'update-point',
     id ? updatePoint(id) : createPoint,
     {
-      onSuccess() {
-        client.invalidateQueries(['students', query.id])
+      onSuccess(res, { point }) {
+        if (res.point != point) {
+          client.invalidateQueries(['students', query.id])
+          notification.success({ message: 'Update grade successfully' })
+        }
+      },
+      onError() {
+        notification.error({ message: 'Update grade unsuccessfully' })
       },
     },
   )
@@ -55,22 +71,53 @@ export default function GradeInput({ id, point, studentId, structId }: Props) {
     [id],
   )
 
+  const { mutateAsync: mutateExpose } = useMutation(
+    'expose',
+    (id?: string) =>
+      axios
+        .put(API + '/student/expose/' + id, { studentId, structId })
+        .then((res) => res.data),
+    {
+      onSuccess() {
+        client.invalidateQueries(['students', query.id])
+        notification.success({ message: 'Mark as finallized successfully' })
+      },
+      onError() {
+        notification.error({ message: 'Mark as finallized unsuccessfully' })
+      },
+    },
+  )
+
   return (
-    <form onSubmit={onSubmit()} className="mr-2">
-      <input
-        onFocus={() => setInput(true)}
-        onBlur={(e) => {
-          props.onBlur(e)
-          onSubmit(false)()
-          setInput(false)
-        }}
-        type="number"
-        id={id + 'point'}
-        ref={props.ref}
-        name={props.name}
-        onChange={props.onChange}
-        className={`cr-input w-full ${input ? '' : 'border-none'}`}
-      />
-    </form>
+    <div className="flex gap-2 px-2 justify-between items-center">
+      <form onSubmit={onSubmit()} className="mr-2 w-full">
+        <input
+          onFocus={() => setInput(true)}
+          onBlur={(e) => {
+            props.onBlur(e)
+            onSubmit(false)()
+            setInput(false)
+          }}
+          type="number"
+          id={id + 'point'}
+          ref={props.ref}
+          name={props.name}
+          onChange={props.onChange}
+          className={`cr-input w-full ${input ? '' : 'border-none'}`}
+        />
+      </form>
+
+      {!expose && (
+        <div>
+          <button
+            onClick={() => mutateExpose(id)}
+            title="Mark this grade as finalized"
+            className="w-8 h-8 rounded-full hover:bg-gray-200"
+          >
+            <span className="fa fa-share" />
+          </button>
+        </div>
+      )}
+    </div>
   )
 }

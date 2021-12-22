@@ -10,7 +10,7 @@ import {
   useQueryClient,
 } from 'react-query'
 import { getSessionToken } from '@utils/libs/getToken'
-import { Dropdown, Menu } from 'antd'
+import { Dropdown, Menu, notification } from 'antd'
 import { getClass, getStudents } from '@utils/service/class'
 import { useCallback } from 'react'
 import {
@@ -21,6 +21,8 @@ import {
 import { uploadScore, uploadStudent } from '@utils/service/upload'
 import UploadButton from '@components/Upload'
 import GradeInput from '@components/GradeInput'
+import axios from 'axios'
+import { API } from 'environment'
 
 const MenuItem = Menu.Item
 
@@ -72,6 +74,21 @@ export default function ClassGrade() {
     },
   )
 
+  const { mutateAsync: mutateBatchExpose } = useMutation(
+    'batch expose',
+    (data: { ids: string[]; studentIds: string[]; structId: string }) =>
+      axios.put(API + '/student/expose/batch', data).then((res) => res.data),
+    {
+      onSuccess() {
+        client.invalidateQueries(['students', id])
+        notification.success({ message: 'Batch expose successfully' })
+      },
+      onError() {
+        notification.error({ message: 'Batch expose unsuccessfully' })
+      }
+    },
+  )
+
   return (
     <Layout requireLogin>
       <div className="cr-container py-4">
@@ -113,7 +130,7 @@ export default function ClassGrade() {
         <div className="mt-4 p-4 border rounded-md">
           <div
             style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(80px,150px))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(80px,180px))',
             }}
             className="grid gap-2 py-2 border-b"
           >
@@ -122,7 +139,7 @@ export default function ClassGrade() {
             <div className="border-r" />
             {clas?.gradeStructure.map(({ id: structId, title }) => (
               <div
-                className="border-r flex justify-between items-center"
+                className="border-r flex justify-between items-center px-2"
                 key={structId}
               >
                 <div>{title}</div>
@@ -146,6 +163,20 @@ export default function ClassGrade() {
                           <span className="fa fa-upload mr-2" /> Upload Score
                         </UploadButton>
                       </MenuItem>
+                      <MenuItem
+                        onClick={() =>
+                          mutateBatchExpose({
+                            studentIds: students?.map((s) => s.id) || [],
+                            structId,
+                            ids:
+                              students?.map((s) => s.grades[structId]?.id) || [],
+                          })
+                        }
+                        key="batch-expose"
+                      >
+                        <span className="fa fa-share mr-2" /> Expose all grades
+                        of this struct
+                      </MenuItem>
                     </Menu>
                   }
                 >
@@ -157,35 +188,44 @@ export default function ClassGrade() {
             ))}
           </div>
 
-          {students?.map(({ id: studentId, name, grades, academicId }) => (
-            <div
-              style={{
-                gridTemplateColumns: 'repeat(auto-fit, minmax(80px,150px))',
-              }}
-              className="grid gap-2 py-2 border-b"
-              key={studentId}
-            >
-              <div className="border-r flex items-center">{academicId}</div>
-              <div className="border-r flex items-center">{name}</div>
-              <div className="border-r flex items-center">
-                {Object.values(grades).reduce(
-                  (sum, curr) => sum + Number(curr.point),
-                  0,
-                ) / Object.values(grades).length || '0'}
-                %
-              </div>
-              {clas?.gradeStructure.map(({ id }) => (
-                <div key={grades[id]?.id} className="border-r">
-                  <GradeInput
-                    structId={id}
-                    studentId={studentId}
-                    id={grades[id]?.id}
-                    point={Number(grades[id]?.point || '0')}
-                  />
+          {students?.map(
+            ({ id: studentId, name, grades, academicId, userId }) => (
+              <div
+                style={{
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(80px,180px))',
+                }}
+                className="grid gap-2 py-2 border-b"
+                key={studentId}
+              >
+                <div className="border-r flex items-center">{academicId}</div>
+                <div
+                  className={`border-r flex items-center ${
+                    userId ? 'underline hover:text-blue-600 cursor-pointer' : ''
+                  }`}
+                >
+                  {name}
                 </div>
-              ))}
-            </div>
-          ))}
+                <div className="border-r flex items-center">
+                  {Object.values(grades).reduce(
+                    (sum, curr) => sum + Number(curr.point),
+                    0,
+                  ) / Object.values(grades).length || '0'}
+                  %
+                </div>
+                {clas?.gradeStructure.map(({ id }) => (
+                  <div key={grades[id]?.id} className="border-r">
+                    <GradeInput
+                      structId={id}
+                      studentId={studentId}
+                      id={grades[id]?.id}
+                      point={Number(grades[id]?.point || '0')}
+                      expose={grades[id]?.expose}
+                    />
+                  </div>
+                ))}
+              </div>
+            ),
+          )}
         </div>
       </div>
     </Layout>

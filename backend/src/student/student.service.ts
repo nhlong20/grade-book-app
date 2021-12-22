@@ -6,7 +6,6 @@ import { Grade, Student } from './student.entity'
 import { CsvParser, ParsedData } from 'nest-csv-parser'
 import { AuthRequest } from '@/utils/interface'
 import { Class, GradeStructure } from '@/class/class.entity'
-import { Response } from 'express'
 import { parseAsync } from 'json2csv'
 import { Duplex } from 'stream'
 
@@ -99,17 +98,28 @@ export class StudentService {
   }
 
   async getGradeOfClass(classId: string) {
-    let students = await this.studentRepo.find({
-      where: { classId },
-      relations: ['grades', 'grades.struct'],
-    })
+    let [students, clas] = await Promise.all([
+      this.studentRepo.find({
+        where: { classId },
+        relations: ['grades', 'grades.struct'],
+      }),
+      this.classRepo.findOne({
+        where: { id: classId },
+        relations: ['students'],
+      }),
+    ])
 
     students = students.map(({ grades, ...rest }) => ({
       ...rest,
+      userId: clas.students.find((s) => s.mssv === rest.academicId)?.id,
       grades: grades.reduce(
         (sum, current) => ({
           ...sum,
-          [current.struct.id]: { point: current.point, id: current.id },
+          [current.struct.id]: {
+            point: current.point,
+            id: current.id,
+            expose: current.expose,
+          },
         }),
         {},
       ),
@@ -217,13 +227,12 @@ export class StudentService {
     return this.gradeRepo.save(dto)
   }
 
-  async expose(id: string) {
-    const grade = await this.gradeRepo.findOne({ where: { id, expose: false } })
-    if (!grade) throw new BadRequestException('Grade does not exist')
-
+  async expose(id: string, dto: DTO.Student.Expose) {
+    const grade = id !== 'undefined' ? await this.gradeRepo.findOne({ where: { id } }) : null
     return this.gradeRepo.save({
-      ...grade,
+      ...(grade || dto),
       expose: true,
+      point: grade?.point || 0,
     })
   }
 
@@ -232,8 +241,18 @@ export class StudentService {
       where: { id: In(dto.ids), expose: false },
     })
 
-    return this.gradeRepo.save(
-      grades.map((grade) => ({ ...grade, expose: true })),
+    const missingIds = dto.studentIds.filter((id) =>
+      grades.every((g) => g.studentId !== id),
     )
+
+    return this.gradeRepo.save([
+      ...grades.map((grade) => ({ ...grade, expose: true })),
+      ...missingIds.map((id) => ({
+        studentId: id,
+        structId: dto.structId,
+        expose: true,
+        point: 0,
+      })),
+    ])
   }
 }

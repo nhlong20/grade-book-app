@@ -25,7 +25,7 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', select: false })
   password: string
 
-  @Column({ type: 'varchar', default: null  })
+  @Column({ type: 'varchar', default: null, unique: true  })
   mssv: string
 
   @ManyToMany(() => Class, (c) => c.teachers)

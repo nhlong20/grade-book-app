@@ -7,7 +7,7 @@ export class Student extends BaseEntity {
   @Column()
   name: string
 
-  @Column()
+  @Column({ unique: true })
   academicId: string
 
   @Column({ type: 'uuid', select: false })

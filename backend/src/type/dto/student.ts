@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsNumber, IsUUID, Max, Min } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger'
+import { Type } from 'class-transformer'
+import { IsArray, IsNumber, IsUUID, Max, Min, MinLength } from 'class-validator'
 
 export class UpdatePoint {
   @ApiProperty()
@@ -11,11 +11,28 @@ export class UpdatePoint {
   point: number
 }
 
-
 export class BatchExpose {
   @ApiProperty()
-  @IsUUID(undefined, { each: true })
+  @IsArray()
   ids: string[]
+
+  @ApiProperty()
+  @IsUUID(undefined, { each: true })
+  studentIds: string[]
+
+  @ApiProperty()
+  @IsUUID()
+  structId: string
+}
+
+export class Expose {
+  @ApiProperty()
+  @IsUUID()
+  studentId: string
+
+  @ApiProperty()
+  @IsUUID()
+  structId: string
 }
 
 export class CreatePoint {

@@ -132,6 +132,18 @@ export class StudentController {
 
   @Post('grade/batch/:id')
   @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @ApiOperation({ summary: 'to batch update grade of students via uploading' })
   batchUpdateGrade(
     @UploadedFile() file: Express.Multer.File,

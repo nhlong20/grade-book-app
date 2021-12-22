@@ -21,6 +21,7 @@ function toStream(buffer: Buffer) {
 class UpdatePointEntity {
   id: string
   point: number
+  internalId: string
 }
 
 class CreateStudentEntity {
@@ -50,11 +51,12 @@ export class StudentService {
     })
 
     const csv = await parseAsync(
-      students.map(({ academicId, name }) => ({
+      students.map(({ academicId, name, id }) => ({
         id: academicId,
         name,
+        internalId: id,
       })),
-      { fields: ['id', 'name', 'point'] },
+      { fields: ['internalId', 'id', 'name', 'point'] },
     )
 
     return csv
@@ -171,23 +173,27 @@ export class StudentService {
     const grades = await this.gradeRepo
       .createQueryBuilder('g')
       .where('g.structId=:structId', { structId })
-      .leftJoinAndSelect(
-        'g.student',
-        'student',
-        'student.academicId IN(:...ids)',
-        { ids: entities.list.map((e) => e.id) },
-      )
+      .leftJoinAndSelect('g.student', 'student', 'student.id IN(:...ids)', {
+        ids: entities.list.map((e) => e.internalId),
+      })
       .getMany()
 
-    return this.gradeRepo.save(
-      grades.map(({ point, student, ...rest }) => ({
+    return this.gradeRepo.save([
+      ...grades.map(({ point, student, ...rest }) => ({
         ...rest,
         student,
         point:
           entities.list.find((e) => e.id === student.academicId)?.point ||
           point,
       })),
-    )
+      ...entities.list
+        .filter((e) => grades.every((g) => g.student.id !== e.internalId))
+        .map((e) => ({
+          structId,
+          studentId: e.internalId,
+          point: e.point,
+        })),
+    ])
   }
 
   async updatePoint(id: string, dto: DTO.Student.UpdatePoint) {

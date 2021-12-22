@@ -98,12 +98,12 @@ export default function ClassDetail() {
       <div className="cr-container pt-4 flex gap-2">
         <button className="cr-button">
           <Link href={`/class/${query.id}`}>
-            <a className='text-current'>Overview</a>
+            <a className="text-current">Overview</a>
           </Link>
         </button>
         <button className="cr-button-outline">
           <Link href={`/class/${query.id}/grade`}>
-            <a className='text-current'>Grade</a>
+            <a className="text-current">Grade</a>
           </Link>
         </button>
       </div>
@@ -188,24 +188,6 @@ export default function ClassDetail() {
               Create Grade Structure
             </button>
           )}
-
-          <div className="border rounded-md shadow-md p-4 my-4">
-            <div className="font-medium">Grade Structure</div>
-            <div className="flex flex-col gap-2 mt-3">
-              {clas?.gradeStructure.map(({ id, title, detail }) => (
-                <div
-                  className="hover:bg-gray-300 rounded-md p-2 flex justify-between"
-                  key={id}
-                >
-                  <div>{title}</div>
-                  <div>{detail}</div>
-                </div>
-              ))}
-              {!clas?.gradeStructure.length && (
-                <div>You haven't defined the grade struct of this class</div>
-              )}
-            </div>
-          </div>
 
           <div className="border rounded-md shadow-md p-4 my-4">
             <div className="font-medium">Students</div>

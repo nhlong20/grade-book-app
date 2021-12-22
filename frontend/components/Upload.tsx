@@ -1,10 +1,4 @@
-import {
-  ButtonHTMLAttributes,
-  DetailedHTMLProps,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import { ButtonHTMLAttributes, DetailedHTMLProps, useRef } from 'react'
 
 interface Props
   extends Omit<
@@ -17,14 +11,8 @@ interface Props
   effect: (file: File) => any
 }
 
-export default function UploadButton({effect, ...props}: Props) {
-  const [file, setFile] = useState<File>()
+export default function UploadButton({ effect, ...props }: Props) {
   const ref = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    if (!file) return 
-    effect(file)
-  } , [file, effect])
 
   return (
     <div>
@@ -32,7 +20,7 @@ export default function UploadButton({effect, ...props}: Props) {
       <input
         ref={ref}
         type="file"
-        onChange={(f) => setFile(f.target.files?.item(0) || undefined)}
+        onChange={(f) => effect(f.target.files?.item(0)!)}
         accept=".csv"
         className="hidden"
       />

@@ -68,6 +68,10 @@ export default function ClassGrade() {
   const { mutateAsync } = useMutation('upload-student', uploadStudent(id), {
     onSuccess() {
       client.invalidateQueries(['students', id])
+      notification.success({ message: 'Upload successfully' })
+    },
+    onError() {
+      notification.error({ message: 'Upload unsuccessfully' })
     },
   })
 
@@ -77,6 +81,10 @@ export default function ClassGrade() {
     {
       onSuccess() {
         client.invalidateQueries(['students', id])
+        notification.success({ message: 'Upload successfully' })
+      },
+      onError() {
+        notification.error({ message: 'Upload unsuccessfully' })
       },
     },
   )

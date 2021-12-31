@@ -4,7 +4,7 @@ import { notification } from 'antd'
 import axios from 'axios'
 import { API } from 'environment'
 import { useRouter } from 'next/router'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from 'react-query'
 
@@ -25,7 +25,7 @@ export default function GradeInput({
 }: Props) {
   const { query } = useRouter()
   const client = useQueryClient()
-  const { register, handleSubmit } = useForm<
+  const { register, handleSubmit, setValue } = useForm<
     { point: number } & Pick<Props, 'structId' | 'studentId'>
   >({
     defaultValues: {
@@ -34,6 +34,10 @@ export default function GradeInput({
       studentId,
     },
   })
+
+  useEffect(() => {
+    setValue('point', point)
+  }, [point])
 
   const [input, setInput] = useState(false)
   const { isTeacher } = useAuth()

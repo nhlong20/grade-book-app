@@ -24,6 +24,7 @@ export class ClassService {
     const user = await this.userRepo.findOne({
       where: { email: req.user.email },
     })
+
     if (!user) throw new BadRequestException('User does not exist')
 
     return this.classRepo.save({

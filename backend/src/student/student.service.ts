@@ -149,12 +149,18 @@ export class StudentService {
       { strict: true, separator: ',' },
     )) as ParsedData<CreateStudentEntity>
 
+    const duplicateStudents = await this.studentRepo.find({
+      where: { classId, academicId: In(entities.list.map((e) => e.id)) },
+    })
+
     return this.studentRepo.save(
-      entities.list.map(({ name, id }) => ({
-        classId,
-        name,
-        academicId: id,
-      })),
+      entities.list
+        .filter((e) => duplicateStudents.every((s) => s.academicId !== e.id))
+        .map(({ name, id }) => ({
+          classId,
+          name,
+          academicId: id,
+        })),
     )
   }
 
@@ -228,7 +234,10 @@ export class StudentService {
   }
 
   async expose(id: string, dto: DTO.Student.Expose) {
-    const grade = id !== 'undefined' ? await this.gradeRepo.findOne({ where: { id } }) : null
+    const grade =
+      id !== 'undefined'
+        ? await this.gradeRepo.findOne({ where: { id } })
+        : null
     return this.gradeRepo.save({
       ...(grade || dto),
       expose: true,

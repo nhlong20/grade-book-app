@@ -39,6 +39,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
 
   return {
+    notFound: !client.getQueryData(['class', id]),
     props: {
       dehydratedState: dehydrate(client),
     },
@@ -59,13 +60,13 @@ export default function ClassDetail() {
 
   const client = useQueryClient()
 
-  const { mutateAsync: updateMutate, isLoading: isUpdate } = useMutation(
+  const { mutateAsync: updateMutate } = useMutation(
     'update-order',
     updateOrder,
     {
-      onSuccess(res) {
+      onSuccess() {
         client.invalidateQueries(['class', query.id])
-        notification.success({ message: `Update order successfully` })
+        notification.success({ message: 'Update order successfully' })
       },
       onError() {
         notification.error({ message: 'Update order unsuccessfully' })

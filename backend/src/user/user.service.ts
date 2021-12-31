@@ -8,7 +8,7 @@ import { User } from './user.entity'
 
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(User) private userRepo: Repository<User>) { }
+  constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
 
   async patch(req: AuthRequest, dto: DTO.User.UserPatching) {
     const user = await this.userRepo.findOne({
@@ -24,7 +24,7 @@ export class UserService {
 
   getUserClasses(req: AuthRequest) {
     return this.userRepo.findOne({
-      where: { id: req.user.id },
+      where: { email: req.user.email },
       relations: ['subscriptedClasses', 'ownerClasses'],
     })
   }

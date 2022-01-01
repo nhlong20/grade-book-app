@@ -31,6 +31,13 @@ export const createGradeStruct =
   (id: string) => (data: Pick<GradeStruct, 'detail' | 'title'>) =>
     axios.post(API + '/class/' + id + '/grade-structure', data)
 
+export const updateGradeStruct =
+  (id: string) => (data: Pick<GradeStruct, 'detail' | 'title'>) =>
+    axios.patch(API + '/class/grade-structure/' + id, data)
+
+export const deleteGradeStruct = (id: string) => () =>
+  axios.delete(API + '/class/grade-structure/' + id)
+
 export const updateOrder = (data: { id1: string; id2: string }) =>
   axios.patch(API + '/class/grade-structure/order', data)
 

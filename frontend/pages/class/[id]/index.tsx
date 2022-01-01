@@ -24,6 +24,7 @@ import {
   OnDragEndResponder,
 } from 'react-beautiful-dnd'
 import { useAuth } from '@utils/hooks/useAuth'
+import Grade from '@components/Grade'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const token = getSessionToken(ctx.req.cookies)
@@ -157,23 +158,32 @@ export default function ClassDetail() {
                   >
                     {clas?.gradeStructure
                       .sort((a, b) => a.order - b.order)
-                      .map(({ title, id: structId }, index) => (
-                        <Draggable
-                          key={structId}
-                          index={index}
-                          draggableId={structId}
-                        >
-                          {(provided) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            >
-                              <div className="text-xl">Grade: {title}</div>
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
+                      .map(
+                        ({ title, id: structId, detail, ...rest }, index) => (
+                          <Draggable
+                            key={structId}
+                            index={index}
+                            draggableId={structId}
+                          >
+                            {(provided) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                <Grade
+                                  data={{
+                                    title,
+                                    detail,
+                                    id: structId,
+                                    ...rest,
+                                  }}
+                                />
+                              </div>
+                            )}
+                          </Draggable>
+                        ),
+                      )}
                     {provided.placeholder}
                   </div>
                 )}

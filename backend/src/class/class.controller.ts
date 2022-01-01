@@ -84,7 +84,7 @@ export class ClassController {
     return this.service.creatGradeStructure(classId, dto)
   }
 
-  @Patch('grade-structure/id')
+  @Patch('grade-structure/:id')
   @ApiOperation({ summary: 'to update a grade structure' })
   updateGradeStructure(
     @Param('id', ParseUUIDPipe) id: string,
@@ -93,7 +93,7 @@ export class ClassController {
     return this.service.patchGradeStructure(id, dto)
   }
 
-  @Delete('grade-structure/id')
+  @Delete('grade-structure/:id')
   @ApiOperation({ summary: 'to delete a grade structure' })
   deleteGradeStructure(@Param('id', ParseUUIDPipe) id: string) {
     return this.service.deleteGradeStructure(id)

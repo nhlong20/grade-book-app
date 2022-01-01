@@ -1,5 +1,6 @@
 import { useInput } from '@utils/hooks/useInput'
-import { createGradeStruct } from '@utils/service/class'
+import { GradeStruct } from '@utils/models/gradeStruct'
+import { createGradeStruct, updateGradeStruct } from '@utils/service/class'
 import { Modal, notification } from 'antd'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect } from 'react'
@@ -8,12 +9,19 @@ import { useMutation, useQueryClient } from 'react-query'
 type Props = {
   visible: boolean
   close: () => void
+  update?: boolean
+  data?: GradeStruct
 }
 
-export default function CreateGradeStruct({ close, visible }: Props) {
+export default function CreateGradeStruct({
+  close,
+  visible,
+  update,
+  data,
+}: Props) {
   const { query } = useRouter()
-  const [title, changeTitle] = useInput('')
-  const [detail, changeDetail] = useInput('')
+  const [title, changeTitle] = useInput(data?.title || '')
+  const [detail, changeDetail] = useInput(data?.detail || '')
 
   const client = useQueryClient()
 
@@ -32,18 +40,45 @@ export default function CreateGradeStruct({ close, visible }: Props) {
     },
   )
 
+  const { mutateAsync: updateMutateAsync, isLoading: isUpating } = useMutation(
+    'update-struct',
+    updateGradeStruct(data?.id || ''),
+    {
+      onSuccess() {
+        notification.success({ message: 'Update struct successfully' })
+        client.invalidateQueries('class')
+        close()
+      },
+      onError() {
+        notification.error({ message: 'Update struct unsuccessfully' })
+      },
+    },
+  )
+
   useEffect(() => {
     changeTitle({ target: { value: '' } } as any)
     changeDetail({ target: { value: '' } } as any)
   }, [visible])
 
+  useEffect(() => {
+    changeTitle({ target: { value: data?.title } } as any)
+    changeDetail({ target: { value: data?.detail } } as any)
+  }, [data])
+
   const create = useCallback(() => {
+    if (update) {
+      updateMutateAsync({ title, detail })
+      return
+    }
+
     mutateAsync({ title, detail })
   }, [title, detail])
 
   return (
     <Modal visible={visible} onCancel={close} footer={null} centered>
-      <div className="text-semibold text-2xl mb-6">Create A Grade Struct</div>
+      <div className="text-semibold text-2xl mb-6">
+        {update ? 'Update' : 'Create A Struct'}
+      </div>
 
       <div className="mb-4">
         <label htmlFor="name" className="cr-label">
@@ -74,7 +109,8 @@ export default function CreateGradeStruct({ close, visible }: Props) {
 
       <div className="mb-4 flex gap-2">
         <button onClick={create} disabled={isLoading} className="cr-button">
-          {isLoading ? 'Creating' : 'Create'}
+          {!update && (isLoading ? 'Creating' : 'Create')}
+          {update && (isUpating ? 'Updating' : 'Update')}
         </button>
 
         <button onClick={close} className="cr-button-outline">

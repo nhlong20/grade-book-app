@@ -10,6 +10,11 @@ import { parseAsync } from 'json2csv'
 import { Duplex } from 'stream'
 
 function bufferToStream(buffer: Buffer) {
+  // Remove BOM in buffer 
+  if (buffer[0] === 0xEF && buffer[1] === 0xBB && buffer[2] === 0xBF)
+    buffer = buffer.slice(3)
+  
+
   let duplexStream = new Duplex({encoding: 'utf-8'})
   duplexStream.push(buffer)
   duplexStream.push(null)
@@ -137,11 +142,6 @@ export class StudentService {
       ).teachers.some((t) => t.email === req.user.email)
     ) {
       throw new BadRequestException('You can create student in this class')
-    }
-
-    // Remove BOM in buffer 
-    if (filBuffer[0] === 0xEF && filBuffer[1] === 0xBB && filBuffer[2] === 0xBF) {
-      filBuffer = filBuffer.slice(3)
     }
 
     const stream = bufferToStream(filBuffer)

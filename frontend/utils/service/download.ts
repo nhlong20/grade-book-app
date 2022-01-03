@@ -2,11 +2,9 @@ import axios from 'axios'
 import { API } from 'environment'
 
 const handleReponse = (name: string) => (res: any) => {
-  const url = window.URL.createObjectURL(new Blob([res.data]))
-
+  var universalBOM = "\uFEFF";
   const link = document.createElement('a')
-
-  link.href = url
+  link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(universalBOM + res.data)
   link.download = name + '.csv'
   link.click()
   link.remove()

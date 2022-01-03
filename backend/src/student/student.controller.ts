@@ -43,9 +43,11 @@ export class StudentController {
   @ApiOperation({ summary: 'to get the csv template for creating student' })
   async getDefaultTemplate(@Response({ passthrough: true }) res: Res) {
     const csv = await this.service.sendDefaultTemplateToCreate()
-
-    res.set('Content-Type', 'text/csv')
-    res.set('Content-Disposition', 'attachment; filename="template.csv"')
+ 
+    res.set({
+      'Content-Type': "data:text/csv;charset=utf-8",
+      'Content-Disposition': 'attachment; filename="template.csv"'
+    })
 
     return new StreamableFile(Buffer.from(csv))
   }

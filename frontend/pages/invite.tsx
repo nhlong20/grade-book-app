@@ -10,7 +10,6 @@ export default function Invite() {
 
   const token = query.token as string
   const classId = query.accessId as string
-  console.log(classId)
 
   useEffect(() => {
     if (!classId) return

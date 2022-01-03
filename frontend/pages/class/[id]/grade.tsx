@@ -161,9 +161,9 @@ export default function ClassGrade() {
             }}
             className="grid gap-2 py-2 border-b"
           >
-            <div className="border-r" />
-            <div className="border-r" />
-            <div className="border-r" />
+            <div className="border-r"> MSSV </div>
+            <div className="border-r"> Fullname </div>
+            <div className="border-r"> Overall grade </div>
             {clas?.gradeStructure.map(({ id: structId, title }) => (
               <div
                 className="border-r flex justify-between items-center px-2"

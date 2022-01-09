@@ -41,6 +41,7 @@ export class GradeStructure extends BaseEntity {
   @Column({ type: 'varchar' })
   detail: string
 
+
   @Column({ default: 0 })
   order: number
 

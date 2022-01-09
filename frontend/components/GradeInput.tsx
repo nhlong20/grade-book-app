@@ -25,7 +25,7 @@ export default function GradeInput({
 }: Props) {
   const { query } = useRouter()
   const client = useQueryClient()
-  const { register, handleSubmit, setValue } = useForm<
+  const { register, handleSubmit, reset } = useForm<
     { point: number } & Pick<Props, 'structId' | 'studentId'>
   >({
     defaultValues: {
@@ -36,7 +36,11 @@ export default function GradeInput({
   })
 
   useEffect(() => {
-    setValue('point', point)
+    reset({
+      point,
+      structId,
+      studentId,
+    })
   }, [point])
 
   const [input, setInput] = useState(false)
@@ -46,11 +50,10 @@ export default function GradeInput({
     'update-point',
     id ? updatePoint(id) : createPoint,
     {
-      onSuccess(res, { point }) {
-        if (res.point != point) {
-          client.invalidateQueries(['students', query.id])
-          notification.success({ message: 'Update grade successfully' })
-        }
+      onSuccess() {
+        client.invalidateQueries('students')
+        client.invalidateQueries('class')
+        notification.success({ message: 'Update grade successfully' })
       },
       onError() {
         notification.error({ message: 'Update grade unsuccessfully' })
@@ -59,6 +62,7 @@ export default function GradeInput({
   )
 
   const props = register('point')
+
   const onSubmit = useCallback(
     (blur: boolean = true) =>
       handleSubmit((data) => {

@@ -10,7 +10,7 @@ import {
   useQueryClient,
 } from 'react-query'
 import { getSessionToken } from '@utils/libs/getToken'
-import { Dropdown, Menu, notification } from 'antd'
+import { Divider, Dropdown, Menu, notification } from 'antd'
 import { getClass, getStudents } from '@utils/service/class'
 import { useCallback, useState } from 'react'
 import {
@@ -164,57 +164,62 @@ export default function ClassGrade() {
             <div className="border-r" />
             <div className="border-r" />
             <div className="border-r" />
-            {clas?.gradeStructure.map(({ id: structId, title }) => (
-              <div
-                className="border-r flex justify-between items-center px-2"
-                key={structId}
-              >
-                <div>{title}</div>
-                <Dropdown
-                  trigger={['click']}
-                  disabled={!isTeacher}
-                  overlay={
-                    <Menu>
-                      <MenuItem
-                        onClick={() => downloadScoreTemplate(title, id)}
-                        key="download-template"
-                      >
-                        <span className="fa fa-download mr-2" /> Download Score
-                        Template
-                      </MenuItem>
-                      <MenuItem key="upload-score">
-                        <UploadButton
-                          effect={(file) =>
-                            mutateUploadScore({ id: structId, file })
-                          }
-                        >
-                          <span className="fa fa-upload mr-2" /> Upload Score
-                        </UploadButton>
-                      </MenuItem>
-                      <MenuItem
-                        onClick={() =>
-                          mutateBatchExpose({
-                            studentIds: students?.map((s) => s.id) || [],
-                            structId,
-                            ids:
-                              students?.map((s) => s.grades[structId]?.id) ||
-                              [],
-                          })
-                        }
-                        key="batch-expose"
-                      >
-                        <span className="fa fa-share mr-2" /> Expose all grades
-                        of this struct
-                      </MenuItem>
-                    </Menu>
-                  }
+            {clas?.gradeStructure
+              .sort((a, b) => a.order - b.order)
+              .map(({ id: structId, title, detail }) => (
+                <div
+                  className="border-r flex justify-between items-center px-2"
+                  key={structId}
                 >
-                  <button className="w-8 h-8 rounded-full hover:bg-gray-200">
-                    <span className="fa fa-ellipsis-v" />
-                  </button>
-                </Dropdown>
-              </div>
-            ))}
+                <div>
+                  <div className='font-medium'>{title}</div>
+                  <div className='italic'>{detail}</div>
+                </div>
+                  <Dropdown
+                    trigger={['click']}
+                    disabled={!isTeacher}
+                    overlay={
+                      <Menu>
+                        <MenuItem
+                          onClick={() => downloadScoreTemplate(title, id)}
+                          key="download-template"
+                        >
+                          <span className="fa fa-download mr-2" /> Download
+                          Score Template
+                        </MenuItem>
+                        <MenuItem key="upload-score">
+                          <UploadButton
+                            effect={(file) =>
+                              mutateUploadScore({ id: structId, file })
+                            }
+                          >
+                            <span className="fa fa-upload mr-2" /> Upload Score
+                          </UploadButton>
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() =>
+                            mutateBatchExpose({
+                              studentIds: students?.map((s) => s.id) || [],
+                              structId,
+                              ids:
+                                students?.map((s) => s.grades[structId]?.id) ||
+                                [],
+                            })
+                          }
+                          key="batch-expose"
+                        >
+                          <span className="fa fa-share mr-2" /> Expose all
+                          grades of this struct
+                        </MenuItem>
+                      </Menu>
+                    }
+                  >
+                    <button className="w-8 h-8 rounded-full hover:bg-gray-200">
+                      <span className="fa fa-ellipsis-v" />
+                    </button>
+                  </Dropdown>
+                </div>
+              ))}
           </div>
 
           {students
@@ -245,7 +250,7 @@ export default function ClassGrade() {
                 </div>
                 <div className="border-r flex items-center">
                   {Object.values(grades).reduce(
-                    (sum, curr) => sum + Number(curr.point),
+                    (sum, curr) => sum + (curr.expose ? Number(curr.point) : 0),
                     0,
                   ) / Object.values(grades).length || '0'}
                   %
@@ -259,6 +264,13 @@ export default function ClassGrade() {
                       point={Number(grades[id]?.point || '0')}
                       expose={grades[id]?.expose}
                     />
+                    <Divider />
+                    <div className="flex justify-between items-center">
+                      <div></div>
+                      <div className="italic pr-4">
+                        {grades[id]?.expose ? 'Finalized' : 'Draft'}
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>

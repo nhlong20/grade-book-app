@@ -161,9 +161,9 @@ export default function ClassGrade() {
             }}
             className="grid gap-2 py-2 border-b"
           >
-            <div className="border-r" />
-            <div className="border-r" />
-            <div className="border-r" />
+            <div className="border-r"> MSSV </div>
+            <div className="border-r"> Fullname </div>
+            <div className="border-r"> Overall grade </div>
             {clas?.gradeStructure
               .sort((a, b) => a.order - b.order)
               .map(({ id: structId, title, detail }) => (
@@ -171,10 +171,10 @@ export default function ClassGrade() {
                   className="border-r flex justify-between items-center px-2"
                   key={structId}
                 >
-                <div>
-                  <div className='font-medium'>{title}</div>
-                  <div className='italic'>{detail}</div>
-                </div>
+                  <div>
+                    <div className="font-medium">{title}</div>
+                    <div className="italic">{detail}</div>
+                  </div>
                   <Dropdown
                     trigger={['click']}
                     disabled={!isTeacher}

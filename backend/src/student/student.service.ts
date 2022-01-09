@@ -9,12 +9,16 @@ import { Class, GradeStructure } from '@/class/class.entity'
 import { parseAsync } from 'json2csv'
 import { Duplex } from 'stream'
 
-function toStream(buffer: Buffer) {
-  let tmp = new Duplex()
+function bufferToStream(buffer: Buffer) {
+  // Remove BOM in buffer 
+  if (buffer[0] === 0xEF && buffer[1] === 0xBB && buffer[2] === 0xBF)
+    buffer = buffer.slice(3)
+  
 
-  tmp.push(buffer)
-  tmp.push(null)
-  return tmp
+  let duplexStream = new Duplex({encoding: 'utf-8'})
+  duplexStream.push(buffer)
+  duplexStream.push(null)
+  return duplexStream
 }
 
 class UpdatePointEntity {
@@ -128,7 +132,7 @@ export class StudentService {
     return students
   }
 
-  async bulkCreateStudent(file: Buffer, classId: string, req: AuthRequest) {
+  async bulkCreateStudent(filBuffer: Buffer, classId: string, req: AuthRequest) {
     if (
       !(
         await this.classRepo.findOne({
@@ -140,22 +144,20 @@ export class StudentService {
       throw new BadRequestException('You can create student in this class')
     }
 
-    const stream = toStream(file)
-    const entities = (await this.csvParser.parse(
+    const stream = bufferToStream(filBuffer)
+
+    let entities = (await this.csvParser.parse(
       stream,
       CreateStudentEntity,
       undefined,
       undefined,
-      { strict: true, separator: ',' },
+      { strict: true, separator: ','},
     )) as ParsedData<CreateStudentEntity>
 
-    const duplicateStudents = await this.studentRepo.find({
-      where: { classId, academicId: In(entities.list.map((e) => e.id)) },
-    })
+    await this.studentRepo.delete({ classId: classId });
 
     return this.studentRepo.save(
       entities.list
-        .filter((e) => duplicateStudents.every((s) => s.academicId !== e.id))
         .map(({ name, id }) => ({
           classId,
           name,
@@ -177,7 +179,7 @@ export class StudentService {
       )
     }
 
-    const stream = toStream(file)
+    const stream = bufferToStream(file)
     const entities = (await this.csvParser.parse(
       stream,
       UpdatePointEntity,

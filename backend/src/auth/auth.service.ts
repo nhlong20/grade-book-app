@@ -4,30 +4,73 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { compare, hash } from 'bcrypt'
 import { Response } from 'express'
-import { JwtPayload } from '@/utils/interface'
+import { AuthRequest, JwtPayload } from '@/utils/interface'
 import { DTO } from '@/type'
 import * as jwt from 'jsonwebtoken'
+import { MailService } from '@/mail/mail.service'
+import { randomBytes } from 'crypto'
+import moment from 'moment'
 
 @Injectable()
 export class AuthService {
-  constructor(@InjectRepository(User) private userRepo: Repository<User>) { }
+  constructor(
+    @InjectRepository(User) private userRepo: Repository<User>,
+    private mailService: MailService,
+  ) {}
 
   async signup(dto: DTO.Auth.SignUp) {
     if (await this.checkExistence(dto.email))
       throw new BadRequestException('User already exists')
 
+    const token = randomBytes(48).toString('base64url')
+
+    await this.mailService.sendActivationEmail(dto.email, token)
     await this.userRepo.save({
       ...dto,
       password: await hash(dto.password, 10),
       googleId: dto.googleId ? await hash(dto.googleId, 10) : null,
+      activateToken: token,
+      activateTokenExpiration: moment().add(5, 'hour').toDate(),
+    })
+  }
+
+  async activate(dto: DTO.Auth.Activate) {
+    const user = await this.userRepo.findOne({
+      where: { activateToken: dto.token },
+    })
+
+    if (!user) throw new BadRequestException('User not found')
+    if (moment().isAfter(user.activateTokenExpiration))
+      throw new BadRequestException('Token expired')
+
+    return this.userRepo.save({
+      ...user,
+      activated: true,
+      activateTokenExpiration: null,
+      activateToken: null,
+    })
+  }
+
+  async resendActivateEmail(req: AuthRequest) {
+    const user = await this.userRepo.findOne({ where: { id: req.user.id } })
+    if (!user) throw new BadRequestException('User not found')
+
+    const token = randomBytes(48).toString('base64url')
+    await this.mailService.sendActivationEmail(user.email, token)
+
+    return this.userRepo.save({
+      ...user,
+      activateToken: token,
+      activateTokenExpiration: moment().add(5, 'hour').toDate(),
     })
   }
 
   async login(dto: DTO.Auth.Login, res: Response) {
-    const user = await this.userRepo.createQueryBuilder("user")
-    .addSelect('user.password')
-    .where("user.email = :email", {email: dto.email })
-    .getOne()
+    const user = await this.userRepo
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.email = :email', { email: dto.email })
+      .getOne()
 
     if (!user) throw new BadRequestException('Email or password is wrong')
     if (!(await compare(dto.password, user.password)))
@@ -37,7 +80,7 @@ export class AuthService {
       email: user.email,
       name: user.name,
       id: user.id,
-      mssv: user.mssv
+      mssv: user.mssv,
     }
 
     const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -67,7 +110,7 @@ export class AuthService {
       email: user.email,
       name: user.name,
       id: user.id,
-      mssv: user.mssv
+      mssv: user.mssv,
     }
 
     return payload

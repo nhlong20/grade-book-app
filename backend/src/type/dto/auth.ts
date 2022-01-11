@@ -50,3 +50,10 @@ export class CheckUserExistence {
   @IsEmail()
   email: string
 }
+
+export class Activate {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  token: string
+}

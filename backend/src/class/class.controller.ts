@@ -20,7 +20,7 @@ import { ClassService } from './class.service'
 @ApiBearerAuth('access-token')
 @Controller('class')
 export class ClassController {
-  constructor(private readonly service: ClassService) { }
+  constructor(private readonly service: ClassService) {}
 
   @Post()
   @ApiOperation({ summary: 'create class' })
@@ -57,6 +57,15 @@ export class ClassController {
     @Body() dto: DTO.Class.SendInvitation,
   ) {
     return this.service.sendInvitation(classId, dto, req)
+  }
+
+  @Post(':id/invite-token')
+  @ApiOperation({ summary: 'to generate invite token' })
+  createInviteToken(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Request() req: AuthRequest,
+  ) {
+    return this.service.generateInviteToken(id, req)
   }
 
   @Put(':id/join')

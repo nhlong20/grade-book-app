@@ -41,6 +41,8 @@ export class GradeStructure extends BaseEntity {
   @Column({ type: 'varchar' })
   detail: string
 
+  @Column({ nullable: true, default: null })
+  inviteToken: string | null
 
   @Column({ default: 0 })
   order: number

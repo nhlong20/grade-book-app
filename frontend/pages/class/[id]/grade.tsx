@@ -163,7 +163,7 @@ export default function ClassGrade() {
           >
             <div className="border-r"> MSSV </div>
             <div className="border-r"> Fullname </div>
-            <div className="border-r"> Overall grade </div>
+            <div className="border-r"> Overall Grade </div>
             {clas?.gradeStructure
               .sort((a, b) => a.order - b.order)
               .map(({ id: structId, title, detail }) => (

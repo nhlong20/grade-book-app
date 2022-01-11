@@ -8,6 +8,7 @@ import { User } from '@/user/user.entity'
 import { paginate } from 'nestjs-typeorm-paginate'
 import { MailService } from '@/mail/mail.service'
 import moment from 'moment'
+import { randomBytes } from 'crypto'
 
 @Injectable()
 export class ClassService {
@@ -233,5 +234,23 @@ export class ClassService {
       throw new BadRequestException('Grade Struct does not exist')
 
     return this.gradeStructureRepo.remove(gradeStruct)
+  }
+
+  async generateInviteToken(classId: string, req: AuthRequest) {
+    const clas = await this.classRepo.findOne({
+      where: { id: classId },
+      relations: ['teachers'],
+    })
+
+    if (!clas.teachers.some((user) => user.id === req.user.id)) {
+      throw new BadRequestException('you can not do this')
+    }
+
+    const token = randomBytes(10).toString('base64url')
+
+    return this.classRepo.save({
+      ...clas,
+      token,
+    })
   }
 }

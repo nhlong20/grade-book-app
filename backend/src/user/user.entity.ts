@@ -25,8 +25,29 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', select: false })
   password: string
 
-  @Column({ type: 'varchar', default: null, unique: true  })
+  @Column({ type: 'varchar', default: null, unique: true })
   mssv: string
+
+  @Column({ default: false })
+  activated: boolean
+
+  @Column({ default: null, nullable: true })
+  activateToken: string | null
+
+  @Column({ default: null, nullable: true })
+  activateTokenExpiration: Date | null
+
+  @Column({ default: null, nullable: true })
+  resetPasswordToken: string | null
+
+  @Column({ default: null, nullable: true })
+  resetPasswordTokenExpiration: Date | null
+
+  @Column({ default: false })
+  disabled: boolean
+
+  @Column({ default: false })
+  isAdmin: boolean
 
   @ManyToMany(() => Class, (c) => c.teachers)
   ownerClasses: Class[]

@@ -12,6 +12,7 @@ import { StudentModule } from './student/student.module'
 import { MulterModule } from '@nestjs/platform-express'
 import { memoryStorage } from 'multer'
 import { ReviewModule } from './review/review.module'
+import { AdminModule } from './admin/admin.module'
 
 @Module({
   imports: [
@@ -32,9 +33,10 @@ import { ReviewModule } from './review/review.module'
     PassportModule,
     StudentModule,
     ReviewModule,
+    AdminModule,
     JwtModule.register({ secret: process.env.JWT_SECRET }),
     MulterModule.register({
-      storage: memoryStorage()
+      storage: memoryStorage(),
     }),
   ],
   providers: [
@@ -45,4 +47,4 @@ import { ReviewModule } from './review/review.module'
     },
   ],
 })
-export class AppModule { }
+export class AppModule {}

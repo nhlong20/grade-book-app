@@ -28,27 +28,37 @@ export class AdminController {
   @Post()
   @ApiCreatedResponse({ type: User })
   @ApiOperation({ summary: 'to create admin account' })
-  createAdmin(@Body() dto: DTO.Admin.CreateAdmin) {}
+  createAdmin(@Body() dto: DTO.Admin.CreateAdmin) {
+    return this.service.createAdmin(dto)
+  }
 
   @Get()
   @ApiCreatedResponse({ type: Pagination })
   @ApiOperation({ summary: 'to get many admin account' })
-  getAdmins(@Query() query: DTO.Admin.GetAdminsQuery) {}
+  getAdmins(@Query() query: DTO.Admin.GetAdminsQuery) {
+    return this.service.getMany(query, true)
+  }
 
   @Get(':id')
   @ApiCreatedResponse({ type: User })
   @ApiOperation({ summary: 'to get detailed admin account' })
-  getDetailedAdmin(@Param('id', ParseUUIDPipe) id: string) {}
+  getDetailedAdmin(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.getOne(id, true)
+  }
 
   @Get('/users')
   @ApiCreatedResponse({ type: Pagination })
   @ApiOperation({ summary: 'to get many users account' })
-  getUser(@Query() query: DTO.Admin.GetAdminsQuery) {}
+  getUser(@Query() query: DTO.Admin.GetAdminsQuery) {
+    return this.service.getMany(query)
+  }
 
   @Get('/users/:id')
   @ApiCreatedResponse({ type: User })
   @ApiOperation({ summary: 'to get detailed user account' })
-  getDetailedUser(@Param('id', ParseUUIDPipe) id: string) {}
+  getDetailedUser(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.getOne(id, false)
+  }
 
   @Get('/users/:id/studen-id')
   @ApiCreatedResponse({ type: User })
@@ -71,10 +81,14 @@ export class AdminController {
   @Get('class')
   @ApiCreatedResponse({ type: Pagination })
   @ApiOperation({ summary: 'to get many classes account' })
-  getClasses(@Query() query: DTO.Admin.GetAdminsQuery) {}
+  getClasses(@Query() query: DTO.Admin.GetAdminsQuery) {
+    return this.service.getManyClasses(query)
+  }
 
   @Get('class/:id')
   @ApiCreatedResponse({ type: Pagination })
   @ApiOperation({ summary: 'to get detailed class account' })
-  getDetailedClass(@Param('id', ParseUUIDPipe) id: string) {}
+  getDetailedClass(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.getOneClass(id)
+  }
 }

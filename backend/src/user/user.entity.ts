@@ -25,7 +25,7 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', select: false })
   password: string
 
-  @Column({ type: 'varchar', default: null, unique: true })
+  @Column({ type: 'varchar', default: null, nullable: true, unique: true })
   mssv: string
 
   @Column({ default: false })

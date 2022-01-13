@@ -81,4 +81,41 @@ export class AdminService {
 
     return user
   }
+
+  async ban(id: string) {
+    const user = await this.userRepo.findOne({
+      where: { id, isAdmin: false, disabled: false },
+    })
+    if (!user) throw new BadRequestException('User not found')
+
+    return this.userRepo.save({
+      ...user,
+      disabled: true,
+    })
+  }
+
+  async unban(id: string) {
+    const user = await this.userRepo.findOne({
+      where: { id, isAdmin: false, disabled: true },
+    })
+    if (!user) throw new BadRequestException('User not found')
+
+    return this.userRepo.save({
+      ...user,
+      disabled: true,
+    })
+  }
+
+  async updateStudentId(id: string, dto: DTO.Admin.UpdateStudentId) {
+    const user = await this.userRepo.findOne({
+      where: { id },
+    })
+
+    if (!user) throw new BadRequestException('user not found')
+
+    return this.userRepo.save({
+      ...user,
+      mssv: dto.studentId,
+    })
+  }
 }

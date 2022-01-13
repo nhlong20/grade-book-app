@@ -66,17 +66,23 @@ export class AdminController {
   updateStudentId(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: DTO.Admin.UpdateStudentId,
-  ) {}
+  ) {
+    return this.service.updateStudentId(id, dto)
+  }
 
   @Put('/users/:id/ban')
   @ApiCreatedResponse({ type: User })
   @ApiOperation({ summary: 'to ban student' })
-  ban(@Param('id', ParseUUIDPipe) id: string) {}
+  ban(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.ban(id)
+  }
 
   @Put('/users/:id/unban')
   @ApiCreatedResponse({ type: User })
   @ApiOperation({ summary: 'to unban student' })
-  unban(@Param('id', ParseUUIDPipe) id: string) {}
+  unban(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.unban(id)
+  }
 
   @Get('class')
   @ApiCreatedResponse({ type: Pagination })

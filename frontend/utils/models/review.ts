@@ -1,12 +1,13 @@
 import { User } from './user'
 import { GradeStruct } from './gradeStruct'
 import { Comment } from './comment'
+import { Student } from './student'
 
 export interface Review {
   comments: Comment[]
   owner: User
   grade: {
-    student: User
+    student: Student
     struct: GradeStruct
     point: number
     expose: boolean
@@ -16,4 +17,5 @@ export interface Review {
   resolved: boolean
   formerGrade: number | null
   id: string
+  createdAt: Date
 }

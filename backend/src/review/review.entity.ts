@@ -15,13 +15,15 @@ export class Review extends BaseEntity {
   @OneToMany(() => Comment, (c) => c.review)
   comments: Comment[]
 
-  @OneToOne(() => User)
+  @ManyToOne(() => User)
+  @JoinColumn()
   owner: User
 
   @Column({ type: 'uuid' })
   ownerId: string
 
-  @OneToOne(() => Grade, { onUpdate: 'CASCADE' })
+  @OneToOne(() => Grade, (g) => g.review, { onUpdate: 'CASCADE' })
+  @JoinColumn()
   grade: Grade
 
   @Column({ type: 'uuid' })

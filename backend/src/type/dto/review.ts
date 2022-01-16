@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { Type } from 'class-transformer'
 import {
   IsNotEmpty,
   IsNumber,
@@ -6,7 +7,7 @@ import {
   IsString,
   IsUUID,
   MaxLength,
-  MinLength,
+  Min,
 } from 'class-validator'
 
 export class CreateReview {
@@ -23,6 +24,7 @@ export class CreateReview {
   @ApiProperty()
   @IsNumber()
   @IsPositive()
-  @MinLength(0)
+  @Min(0)
+  @Type(() => Number)
   expectedGrade: number
 }

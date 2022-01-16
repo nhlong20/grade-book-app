@@ -1,6 +1,7 @@
 import { Class, GradeStructure } from '@/class/class.entity'
+import { Review } from '@/review/review.entity'
 import { BaseEntity } from '@/utils/base.entity'
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm'
 
 @Entity()
 export class Student extends BaseEntity {
@@ -42,4 +43,7 @@ export class Grade extends BaseEntity {
 
   @Column({ default: false })
   expose: boolean
+
+  @OneToOne(() => Review, r => r.grade)
+  review: Review
 }

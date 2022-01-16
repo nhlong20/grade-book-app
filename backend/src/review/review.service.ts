@@ -19,7 +19,15 @@ export class ReviewService {
   async getOneReview(id: string, req: AuthRequest) {
     const review = await this.reviewRepo.findOne({
       where: { id },
-      relations: ['grade.student.class.teacher', 'owner', 'comments'],
+      relations: [
+        'grade',
+        'grade.struct',
+        'grade.student',
+        'grade.student.class',
+        'grade.student.class.teachers',
+        'owner',
+        'comments',
+      ],
     })
 
     if (!review) throw new BadRequestException('review not found')
@@ -50,7 +58,15 @@ export class ReviewService {
   async createComment(dto: DTO.Comment.CreateComment, req: AuthRequest) {
     const review = await this.reviewRepo.findOne({
       where: { id: dto.reviewId },
-      relations: ['grade.student.class.teacher', 'owner'],
+      relations: [
+        'grade',
+        'grade.struct',
+        'grade.student',
+        'grade.student.class',
+        'grade.student.class.teachers',
+        'owner',
+        'comments',
+      ],
     })
 
     if (
@@ -70,7 +86,15 @@ export class ReviewService {
   async resolveReview(id: string, req: AuthRequest) {
     const review = await this.reviewRepo.findOne({
       where: { id },
-      relations: ['grade.student.class.teacher', 'owner', 'comments'],
+      relations: [
+        'grade',
+        'grade.struct',
+        'grade.student',
+        'grade.student.class',
+        'grade.student.class.teachers',
+        'owner',
+        'comments',
+      ],
     })
 
     if (!review) throw new BadRequestException('review not found')

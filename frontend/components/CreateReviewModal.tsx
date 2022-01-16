@@ -69,7 +69,7 @@ export default function CreateReviewModal({ visible, close, gradeId }: Props) {
           </label>
           <textarea
             className="w-full cr-input"
-            id="expect"
+            id="explan"
             {...register('explanation')}
             rows={3}
           />

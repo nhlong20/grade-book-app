@@ -5,7 +5,6 @@ import { IsArray, IsNumber, IsUUID, Max, Min, MinLength } from 'class-validator'
 export class UpdatePoint {
   @ApiProperty()
   @IsNumber()
-  @Max(100)
   @Min(0)
   @Type(() => Number)
   point: number
@@ -46,7 +45,6 @@ export class CreatePoint {
 
   @ApiProperty()
   @IsNumber()
-  @Max(100)
   @Min(0)
   @Type(() => Number)
   point: number

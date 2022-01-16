@@ -10,12 +10,11 @@ import { parseAsync } from 'json2csv'
 import { Duplex } from 'stream'
 
 function bufferToStream(buffer: Buffer) {
-  // Remove BOM in buffer 
-  if (buffer[0] === 0xEF && buffer[1] === 0xBB && buffer[2] === 0xBF)
+  // Remove BOM in buffer
+  if (buffer[0] === 0xef && buffer[1] === 0xbb && buffer[2] === 0xbf)
     buffer = buffer.slice(3)
-  
 
-  let duplexStream = new Duplex({encoding: 'utf-8'})
+  let duplexStream = new Duplex({ encoding: 'utf-8' })
   duplexStream.push(buffer)
   duplexStream.push(null)
   return duplexStream
@@ -132,7 +131,11 @@ export class StudentService {
     return students
   }
 
-  async bulkCreateStudent(filBuffer: Buffer, classId: string, req: AuthRequest) {
+  async bulkCreateStudent(
+    filBuffer: Buffer,
+    classId: string,
+    req: AuthRequest,
+  ) {
     if (
       !(
         await this.classRepo.findOne({
@@ -151,18 +154,17 @@ export class StudentService {
       CreateStudentEntity,
       undefined,
       undefined,
-      { strict: true, separator: ','},
+      { strict: true, separator: ',' },
     )) as ParsedData<CreateStudentEntity>
 
-    await this.studentRepo.delete({ classId: classId });
+    await this.studentRepo.delete({ classId: classId })
 
     return this.studentRepo.save(
-      entities.list
-        .map(({ name, id }) => ({
-          classId,
-          name,
-          academicId: id,
-        })),
+      entities.list.map(({ name, id }) => ({
+        classId,
+        name,
+        academicId: id,
+      })),
     )
   }
 
@@ -249,7 +251,7 @@ export class StudentService {
 
   async batchExpose(dto: DTO.Student.BatchExpose) {
     const grades = await this.gradeRepo.find({
-      where: { id: In(dto.ids), expose: false },
+      where: { id: In(dto.ids) },
     })
 
     const missingIds = dto.studentIds.filter((id) =>

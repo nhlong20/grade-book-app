@@ -27,6 +27,7 @@ import { useAuth } from '@utils/hooks/useAuth'
 import { useTypedSession } from '@utils/hooks/useTypedSession'
 import ViewGradeDetail from '@components/ViewGradeDetail'
 import { useModal } from '@utils/hooks/useModal'
+import CreateReviewModal from '@components/CreateReviewModal'
 
 const MenuItem = Menu.Item
 
@@ -75,6 +76,8 @@ export default function ClassGrade() {
     },
   })
 
+  const [reviewModal, openReviewModal, closeReviewModal] = useModal()
+
   const { mutateAsync: mutateUploadScore } = useMutation(
     'upload-score',
     uploadScore,
@@ -106,6 +109,8 @@ export default function ClassGrade() {
 
   const [visible, open, close] = useModal()
   const [selectedId, setSelectedId] = useState<string>()
+
+  const [selectedGradeId, setSelectedGradeId] = useState<string>()
 
   return (
     <Layout requireLogin>
@@ -255,9 +260,20 @@ export default function ClassGrade() {
                   ) / Object.values(grades).length || '0'}
                   %
                 </div>
+
+                <CreateReviewModal
+                  gradeId={selectedGradeId}
+                  visible={reviewModal}
+                  close={closeReviewModal}
+                />
+
                 {clas?.gradeStructure.map(({ id }) => (
                   <div key={grades[id]?.id} className="border-r">
                     <GradeInput
+                      onOpenReviewModal={() => {
+                        setSelectedGradeId(grades[id]?.id)
+                        openReviewModal()
+                      }}
                       structId={id}
                       studentId={studentId}
                       id={grades[id]?.id}

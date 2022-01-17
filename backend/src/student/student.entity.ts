@@ -1,7 +1,14 @@
 import { Class, GradeStructure } from '@/class/class.entity'
 import { Review } from '@/review/review.entity'
 import { BaseEntity } from '@/utils/base.entity'
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm'
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm'
 
 @Entity()
 export class Student extends BaseEntity {
@@ -18,20 +25,20 @@ export class Student extends BaseEntity {
   @JoinColumn()
   class: Class
 
-  @OneToMany(() => Grade, (grade) => grade.student)
+  @OneToMany(() => Grade, (grade) => grade.student, { onDelete: 'CASCADE' })
   grades: Grade[]
 }
 
 @Entity()
 export class Grade extends BaseEntity {
-  @ManyToOne(() => Student, (student) => student.grades)
+  @ManyToOne(() => Student, (student) => student.grades, {onDelete: "CASCADE"})
   @JoinColumn()
   student: Student
 
   @Column({ type: 'uuid' })
   studentId: string
 
-  @ManyToOne(() => GradeStructure)
+  @ManyToOne(() => GradeStructure, (g) => g.grades, { onDelete: 'CASCADE' })
   @JoinColumn()
   struct: GradeStructure
 
@@ -44,6 +51,6 @@ export class Grade extends BaseEntity {
   @Column({ default: false })
   expose: boolean
 
-  @OneToOne(() => Review, r => r.grade)
+  @OneToOne(() => Review, (r) => r.grade, { onDelete: 'CASCADE' })
   review: Review
 }

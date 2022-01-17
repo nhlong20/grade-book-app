@@ -26,11 +26,14 @@ export class ClassService {
       where: { email: req.user.email },
     })
 
+    const token = randomBytes(10).toString('base64url')
+
     if (!user) throw new BadRequestException('User does not exist')
 
     return this.classRepo.save({
       ...dto,
       teachers: [user],
+      inviteToken: token,
     })
   }
 
@@ -136,6 +139,28 @@ export class ClassService {
     return true
   }
 
+  async joinByCode(code: string, req: AuthRequest) {
+    const [c, user] = await Promise.all([
+      this.classRepo.findOne({
+        where: { inviteToken: code },
+        relations: ['teachers', 'students'],
+      }),
+      this.userRepo.findOne({ where: { email: req.user.email } }),
+    ])
+
+    const isTeacher = c.teachers.some(({ id }) => id === user.id)
+    const isStudents = c.students.some(({ id }) => id === user.id)
+
+    if (isTeacher || isStudents) {
+      throw new BadRequestException('User has already joined the class')
+    }
+
+    return this.classRepo.save({
+      ...c,
+      students: [...c.students, user],
+    })
+  }
+
   async join(classId: string, dto: DTO.Class.JoinClass, req: AuthRequest) {
     const [c, user] = await Promise.all([
       this.classRepo.findOne({
@@ -234,23 +259,5 @@ export class ClassService {
       throw new BadRequestException('Grade Struct does not exist')
 
     return this.gradeStructureRepo.remove(gradeStruct)
-  }
-
-  async generateInviteToken(classId: string, req: AuthRequest) {
-    const clas = await this.classRepo.findOne({
-      where: { id: classId },
-      relations: ['teachers'],
-    })
-
-    if (!clas.teachers.some((user) => user.id === req.user.id)) {
-      throw new BadRequestException('you can not do this')
-    }
-
-    const token = randomBytes(10).toString('base64url')
-
-    return this.classRepo.save({
-      ...clas,
-      token,
-    })
   }
 }

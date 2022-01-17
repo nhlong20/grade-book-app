@@ -12,7 +12,7 @@ import {
 
 @Entity()
 export class Review extends BaseEntity {
-  @OneToMany(() => Comment, (c) => c.review)
+  @OneToMany(() => Comment, (c) => c.review, { onDelete: 'CASCADE' })
   comments: Comment[]
 
   @ManyToOne(() => User)
@@ -22,7 +22,10 @@ export class Review extends BaseEntity {
   @Column({ type: 'uuid' })
   ownerId: string
 
-  @OneToOne(() => Grade, (g) => g.review, { onUpdate: 'CASCADE' })
+  @OneToOne(() => Grade, (g) => g.review, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   grade: Grade
 
@@ -51,7 +54,7 @@ export class Comment extends BaseEntity {
   @Column({ type: 'uuid' })
   authorId: string
 
-  @ManyToOne(() => Review, (r) => r.comments)
+  @ManyToOne(() => Review, (r) => r.comments, { onDelete: 'CASCADE' })
   @JoinColumn()
   review: Review
 

@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   Request,
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
@@ -59,15 +60,6 @@ export class ClassController {
     return this.service.sendInvitation(classId, dto, req)
   }
 
-  @Post(':id/invite-token')
-  @ApiOperation({ summary: 'to generate invite token' })
-  createInviteToken(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Request() req: AuthRequest,
-  ) {
-    return this.service.generateInviteToken(id, req)
-  }
-
   @Put(':id/join')
   @ApiOperation({ summary: 'to join class' })
   join(
@@ -76,6 +68,12 @@ export class ClassController {
     @Body() dto: DTO.Class.JoinClass,
   ) {
     return this.service.join(classId, dto, req)
+  }
+
+  @Put('join-by-code')
+  @ApiOperation({ summary: 'to join class' })
+  joinByCode(@Req() req: AuthRequest, @Query('code') code: string) {
+    return this.service.joinByCode(code, req)
   }
 
   @Get(':id/grade-structure')

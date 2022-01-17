@@ -1,3 +1,4 @@
+import { Grade } from '@/student/student.entity'
 import { User } from '@/user/user.entity'
 import { BaseEntity } from '@/utils/base.entity'
 import {
@@ -28,7 +29,12 @@ export class Class extends BaseEntity {
   @JoinTable()
   students: User[]
 
-  @OneToMany(() => GradeStructure, (gradeStructure) => gradeStructure.class)
+  @Column({ nullable: true, default: null, unique: true })
+  inviteToken: string | null
+
+  @OneToMany(() => GradeStructure, (gradeStructure) => gradeStructure.class, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   gradeStructure: GradeStructure[]
 }
@@ -41,9 +47,6 @@ export class GradeStructure extends BaseEntity {
   @Column({ type: 'varchar' })
   detail: string
 
-  @Column({ nullable: true, default: null })
-  inviteToken: string | null
-
   @Column({ default: 0 })
   order: number
 
@@ -52,6 +55,9 @@ export class GradeStructure extends BaseEntity {
 
   @ManyToOne(() => Class, (clazz) => clazz.gradeStructure)
   class: Class
+
+  @OneToMany(() => Grade, (g) => g.struct, { onDelete: 'CASCADE' })
+  grades: Grade[]
 }
 
 export enum CodeType {

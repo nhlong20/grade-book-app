@@ -2,10 +2,11 @@ import { useInput } from '@utils/hooks/useInput'
 import { createInvitation as createInvitationService } from '@utils/service/class'
 import { Modal, notification } from 'antd'
 import { useCallback, useEffect, useState } from 'react'
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { useRouter } from 'next/router'
 import { useTeacher } from '@utils/hooks/useTeacher'
 import { useAuth } from '@utils/hooks/useAuth'
+import { Class } from '@utils/models/class'
 // import { CodeType } from '@utils/models/invitation'
 export enum CodeType {
   Student = 'student',
@@ -18,10 +19,14 @@ interface Props {
 }
 
 export default function CreateInvitation({ close, visible }: Props) {
+  const { query } = useRouter()
+  const { data: clas } = useQuery<Class>(['class', query.id], {
+    enabled: false,
+  })
+
   const [emails, setEmails] = useState([])
   const [type, changeType] = useInput('')
   const client = useQueryClient()
-  const { query } = useRouter()
   const { isStudent, isTeacher } = useAuth()
 
   const { mutateAsync, isLoading } = useMutation(
@@ -59,6 +64,15 @@ export default function CreateInvitation({ close, visible }: Props) {
   return (
     <Modal visible={visible} onCancel={close} footer={null} centered>
       <div className="text-semibold text-2xl mb-6">Create Invitation</div>
+
+      <div className='mb-4'>
+        Invite Code:
+        <span className="inline-block border p-1 ml-2  rounded-[4px] border-blue-600 text-blue-600">
+          {clas?.inviteToken}
+        </span>
+      </div>
+
+      <div className='mb-4 border-b'  />
 
       <div className="mb-4">
         <label htmlFor="email" className="cr-label">

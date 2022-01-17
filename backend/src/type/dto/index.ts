@@ -1,3 +1,5 @@
+import { NotiMessage } from '@/noti/noti.entity'
+
 export * as User from './user'
 export * as Auth from './auth'
 export * as Class from './class'
@@ -5,4 +7,6 @@ export * as Utils from './util'
 export * as Student from './student'
 export * as Review from './review'
 export * as Comment from './comment'
+export * as Noti from './noti'
+export * as NotiMessage from './notiMessage'
 export * as Admin from './admin'

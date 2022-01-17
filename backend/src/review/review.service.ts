@@ -1,9 +1,15 @@
 import { Class } from '@/class/class.entity'
+import { NotiService } from '@/noti/noti.service'
 import { DTO } from '@/type'
+import { CreateNotification } from '@/type/dto/noti'
+import { CreateNotiMessage } from '@/type/dto/notiMessage'
+import { User } from '@/user/user.entity'
 import { AuthRequest } from '@/utils/interface'
 import {
   BadRequestException,
   ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
@@ -16,6 +22,7 @@ export class ReviewService {
     @InjectRepository(Review) private reviewRepo: Repository<Review>,
     @InjectRepository(Comment) private commentRepo: Repository<Comment>,
     @InjectRepository(Class) private classRepo: Repository<Class>,
+    private readonly notiService: NotiService,
   ) {}
 
   async getManyReview(classId: string, req: AuthRequest) {
@@ -71,10 +78,18 @@ export class ReviewService {
 
     if (review) throw new BadRequestException('Review existed')
 
-    return this.reviewRepo.save({
+    let result  = await this.reviewRepo.save({
       ownerId: req.user.id,
       ...dto,
     })
+    
+    const newReview = await this.getOneReview(result.id, req)
+    let receivers = newReview?.grade?.student?.class?.teachers
+    let title = "Review request"
+    let body = req.user.name + " has requested a review"
+    this.genReviewNotification(req, newReview, title, body, receivers)
+
+    return result
   }
 
   async createComment(dto: DTO.Comment.CreateComment, req: AuthRequest) {
@@ -98,6 +113,15 @@ export class ReviewService {
       review.owner.id !== req.user.id
     )
       throw new ForbiddenException('You can not do this')
+    
+    const teacher: User = review?.grade?.student?.class?.teachers?.find(teacher => teacher.id === req.user.id)
+    let receivers = [review.owner]
+    if (teacher != undefined && teacher != null) {
+       receivers = review.grade.student.class.teachers
+    }
+    let title = "Review Comment"
+    let body = teacher?.name || req.user.name + " commented on a review"
+    this.genReviewNotification(req, review, title, body, receivers)
 
     return this.commentRepo.save({
       authorId: req.user.id,
@@ -131,6 +155,12 @@ export class ReviewService {
     review.formerGrade = review.grade.point
     review.grade.point = review.expectedGrade
 
+    const teacher: User = review.grade.student.class.teachers.find(teacher => teacher.id === req.user.id)
+    const receivers = [review.owner]
+    const title = "Review Resolved"
+    let body = teacher?.name + " has resolved your mark review"
+    this.genReviewNotification(req, review, title , body, receivers)
+
     return this.reviewRepo.save({
       ...review,
       resolved: true,
@@ -154,5 +184,22 @@ export class ReviewService {
       ...review,
       resolved: false,
     })
+  }
+
+  async genReviewNotification(req: AuthRequest, review: Review, title: string, body: string, receivers: User[]) {
+    // Create Notification Message
+    const notiMsg = new CreateNotiMessage()
+    notiMsg.title = title
+    notiMsg.body = body 
+    notiMsg.sourceId = review.id
+    notiMsg.sourceType = "Review"
+    const newNotiMsg = await this.notiService.createNotiMessage(notiMsg)
+
+    // Create Noti
+    const noti = new CreateNotification()
+    noti.messageId = newNotiMsg.id
+    noti.receivers = receivers
+
+    await this.notiService.createNoti(noti, req)
   }
 }

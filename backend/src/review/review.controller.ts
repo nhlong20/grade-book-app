@@ -45,7 +45,7 @@ export class ReviewController {
   }
 
   @Put(':id/resolve')
-  @ApiOperation({ summary: 'to create review' })
+  @ApiOperation({ summary: 'to resole review' })
   resolve(@Param('id', ParseUUIDPipe) id: string, @Req() req: AuthRequest) {
     return this.service.resolveReview(id, req)
   }

@@ -57,7 +57,7 @@ export class User extends BaseEntity {
   subscriptedClasses: Class[]
   
   @ManyToMany(() => Noti, (n) => n.receivers)
-  notis: Noti[]
+  receivedNotifications: Noti[]
 
   @OneToMany(() => Noti, (n) => n.actor)
   notifications: Noti[]

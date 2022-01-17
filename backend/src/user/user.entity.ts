@@ -1,6 +1,7 @@
 import { Class } from '@/class/class.entity'
+import { Noti } from '@/noti/noti.entity'
 import { BaseEntity } from '@/utils/base.entity'
-import { Column, Entity, ManyToMany } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany } from 'typeorm'
 
 @Entity({ name: 'user' })
 export class User extends BaseEntity {
@@ -54,4 +55,10 @@ export class User extends BaseEntity {
 
   @ManyToMany(() => Class, (c) => c.students)
   subscriptedClasses: Class[]
+  
+  @ManyToMany(() => Noti, (n) => n.receivers)
+  notis: Noti[]
+
+  @OneToMany(() => Noti, (n) => n.actor)
+  notifications: Noti[]
 }

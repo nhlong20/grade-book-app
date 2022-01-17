@@ -14,6 +14,7 @@ import { memoryStorage } from 'multer'
 import { ReviewModule } from './review/review.module'
 import { AdminModule } from './admin/admin.module'
 import { NotiModule } from './noti/noti.module'
+import { EventEmitterModule } from '@nestjs/event-emitter'
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { NotiModule } from './noti/noti.module'
       synchronize: process.env.NODE_ENV !== 'production',
       autoLoadEntities: true,
     }),
+    EventEmitterModule.forRoot(),
     UserModule,
     AuthModule,
     ClassModule,
@@ -36,6 +38,7 @@ import { NotiModule } from './noti/noti.module'
     ReviewModule,
     AdminModule,
     NotiModule,
+
     JwtModule.register({ secret: process.env.JWT_SECRET }),
     MulterModule.register({
       storage: memoryStorage(),

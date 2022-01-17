@@ -78,15 +78,16 @@ export class ReviewService {
 
     if (review) throw new BadRequestException('Review existed')
 
-    let result: Review  = await this.reviewRepo.save({
+    let result  = await this.reviewRepo.save({
       ownerId: req.user.id,
       ...dto,
     })
-
-    let receivers = review?.grade?.student?.class?.teachers
+    
+    const newReview = await this.getOneReview(result.id, req)
+    let receivers = newReview?.grade?.student?.class?.teachers
     let title = "Review request"
     let body = req.user.name + " has requested a review"
-    this.genReviewNotification(req, review, title, body, receivers)
+    this.genReviewNotification(req, newReview, title, body, receivers)
 
     return result
   }
@@ -191,7 +192,7 @@ export class ReviewService {
     notiMsg.title = title
     notiMsg.body = body 
     notiMsg.sourceId = review.id
-    notiMsg.sourceType = typeof (review)
+    notiMsg.sourceType = "Review"
     const newNotiMsg = await this.notiService.createNotiMessage(notiMsg)
 
     // Create Noti

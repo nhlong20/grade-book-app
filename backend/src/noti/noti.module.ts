@@ -1,7 +1,5 @@
-import { ReviewModule } from '@/review/review.module'
-import { forwardRef, Module } from '@nestjs/common'
+import {  Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { NotiController } from './noti.controller'
 import { Noti, NotiMessage } from './noti.entity'
 import { NotiService } from './noti.service'
 
@@ -10,7 +8,6 @@ import { NotiService } from './noti.service'
   imports: [
     TypeOrmModule.forFeature([Noti, NotiMessage])
   ],
-  controllers: [NotiController],
   providers: [NotiService],
 })
 export class NotiModule { }

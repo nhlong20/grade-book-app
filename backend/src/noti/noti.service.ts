@@ -25,8 +25,10 @@ export class NotiService {
   }
 
   async createNoti(dto: DTO.Noti.CreateNotification, req: AuthRequest) {
+    console.log(dto.receivers)
     const noti = await this.notiRepo.save({
       actorId: req.user.id,
+      receivers: dto.receivers,
       ...dto,
     })
     this.eventEmitter.emit('noti', noti)

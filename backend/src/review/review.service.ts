@@ -1,9 +1,14 @@
 import { Class } from '@/class/class.entity'
+import { NotiService } from '@/noti/noti.service'
 import { DTO } from '@/type'
+import { CreateNotification } from '@/type/dto/noti'
+import { CreateNotiMessage } from '@/type/dto/notiMessage'
 import { AuthRequest } from '@/utils/interface'
 import {
   BadRequestException,
   ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
@@ -16,6 +21,7 @@ export class ReviewService {
     @InjectRepository(Review) private reviewRepo: Repository<Review>,
     @InjectRepository(Comment) private commentRepo: Repository<Comment>,
     @InjectRepository(Class) private classRepo: Repository<Class>,
+    private readonly notiService: NotiService,
   ) {}
 
   async getManyReview(classId: string, req: AuthRequest) {
@@ -130,6 +136,20 @@ export class ReviewService {
 
     review.formerGrade = review.grade.point
     review.grade.point = review.expectedGrade
+
+    // Create Notification Message
+    let teacher = review.grade.student.class.teachers.find(teacher => teacher.id === req.user.id )
+    const notiMsg = new CreateNotiMessage()
+    notiMsg.title = "Mark review"
+    notiMsg.body = teacher.name + "has resolved your mark review"
+    notiMsg.sourceId = review.id
+    notiMsg.sourceType = typeof (review)
+    const newNotiMsg = await this.notiService.createNotiMessage(notiMsg)
+
+    // Create Noti
+    const noti = new CreateNotification()
+    noti.messageId = newNotiMsg.id
+    const newNoti = await this.notiService.createNoti(noti, req)
 
     return this.reviewRepo.save({
       ...review,

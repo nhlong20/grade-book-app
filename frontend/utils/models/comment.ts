@@ -6,4 +6,5 @@ export interface Comment {
   author: User,
   review: Review
   content: string
+  createdAt: Date
 }

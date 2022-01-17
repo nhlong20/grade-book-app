@@ -1,3 +1,4 @@
+import { Class } from '@/class/class.entity'
 import { DTO } from '@/type'
 import { AuthRequest } from '@/utils/interface'
 import {
@@ -14,7 +15,27 @@ export class ReviewService {
   constructor(
     @InjectRepository(Review) private reviewRepo: Repository<Review>,
     @InjectRepository(Comment) private commentRepo: Repository<Comment>,
+    @InjectRepository(Class) private classRepo: Repository<Class>,
   ) {}
+
+  async getManyReview(classId: string, req: AuthRequest) {
+    const clas = await this.classRepo.findOne({
+      where: { id: classId },
+      relations: ['teachers'],
+    })
+    if (!clas) throw new BadRequestException()
+
+    if (clas.teachers.some((u) => u.id === req.user.id)) {
+      return this.reviewRepo.find({
+        relations: ['grade', 'grade.struct', 'owner'],
+        order: {
+          createdAt: 'ASC',
+        },
+      })
+    }
+
+    throw new BadRequestException('You can not do this')
+  }
 
   async getOneReview(id: string, req: AuthRequest) {
     const review = await this.reviewRepo.findOne({
@@ -27,6 +48,7 @@ export class ReviewService {
         'grade.student.class.teachers',
         'owner',
         'comments',
+        'comments.author',
       ],
     })
 

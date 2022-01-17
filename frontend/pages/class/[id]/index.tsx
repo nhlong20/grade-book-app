@@ -111,6 +111,11 @@ export default function ClassDetail() {
             <a className="text-current">Grade</a>
           </Link>
         </button>
+        <button className="cr-button-outline">
+          <Link href={`/class/${query.id}/review`}>
+            <a className="text-current">Review Requests</a>
+          </Link>
+        </button>
       </div>
 
       <div className="cr-container py-4 mb-6 grid grid-cols-[250px,1fr,250px] gap-4">

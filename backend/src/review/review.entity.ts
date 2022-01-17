@@ -44,7 +44,7 @@ export class Review extends BaseEntity {
 
 @Entity()
 export class Comment extends BaseEntity {
-  @OneToOne(() => User)
+  @ManyToOne(() => User)
   @JoinColumn()
   author: User
 

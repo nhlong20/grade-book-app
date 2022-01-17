@@ -8,13 +8,10 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
   Req,
 } from '@nestjs/common'
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { ReviewService } from './review.service'
 
 @Controller('review')
@@ -30,6 +27,15 @@ export class ReviewController {
     @Req() req: AuthRequest,
   ) {
     return this.service.getOneReview(id, req)
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'to get many reviews' })
+  getManyReview(
+    @Req() req: AuthRequest,
+    @Query('classId', ParseUUIDPipe) id: string,
+  ) {
+    return this.service.getManyReview(id, req)
   }
 
   @Post()

@@ -17,3 +17,16 @@ export const getReview = (id: string, token?: string) => () =>
 
 export const resolveReview = (id: string) => () =>
   axios.put(API + '/review/' + id + '/resolve').then((res) => res.data)
+
+export const getReviews = (classId: string, token?: string) => () =>
+  axios
+    .get<Review[]>(API + '/review', {
+      params: { classId },
+      headers: {
+        authorization: 'Bearer ' + token,
+      },
+    })
+    .then((res) => res.data)
+
+export const createComment = (data: { content: string; reviewId: string }) =>
+  axios.post(API + '/review/comment', data)

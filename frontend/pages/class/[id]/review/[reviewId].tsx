@@ -5,7 +5,7 @@ import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import { dehydrate, QueryClient, useMutation, useQuery } from 'react-query'
 import moment from 'moment'
-import Comment from '@components/Comment'
+import Comments from '@components/Comment'
 import { notification } from 'antd'
 
 export const getServerSideProps: GetServerSideProps = async ({
@@ -13,7 +13,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   query,
 }) => {
   const client = new QueryClient()
-  const id = query.id as string
+  const id = query.reviewId as string
   const token = getSessionToken(req.cookies)
 
   if (token) {
@@ -31,7 +31,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 
 export default function ReviewDetail() {
   const { query, push } = useRouter()
-  const id = query.id as string
+  const id = query.reviewId as string
 
   const { data: review } = useQuery(['review', id], getReview(id), {
     enabled: false,
@@ -57,7 +57,10 @@ export default function ReviewDetail() {
     <Layout requireLogin>
       <div className="cr-container py-4 relative min-h-[calc(100vh-32px-70px)]">
         {!review?.resolved && (
-          <button onClick={() => mutateAsync()} className="cr-button absolute bottom-0 right-[60px]">
+          <button
+            onClick={() => mutateAsync()}
+            className="cr-button absolute bottom-0 right-[60px]"
+          >
             Resolve this request
             <span className="fa fa-check ml-2" />
           </button>
@@ -105,9 +108,7 @@ export default function ReviewDetail() {
               <b className="underline">Discussion</b>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <Comment />
-            </div>
+            <Comments />
           </div>
         </div>
       </div>

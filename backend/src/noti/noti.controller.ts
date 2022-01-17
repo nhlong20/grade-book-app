@@ -22,15 +22,5 @@ import { NotiService } from './noti.service'
 @ApiBearerAuth('access-token')
 export class NotiController {
   constructor(private service: NotiService) { }
-
-  @Get('')
-  @ApiOperation({ summary: 'to get one notification' })
-  getOneReview(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Req() req: AuthRequest,
-  ) {
-    return this.service.listNotifications(id, req)
-  }
-
-  
+ 
 }

@@ -12,7 +12,7 @@ services:
     volumes:
        - postgres:/data/postgres
 
-  apollo:
+  backend:
     container_name: backend
     image: ghcr.io/nhlong20/grade-book-app:backend
     depends_on:

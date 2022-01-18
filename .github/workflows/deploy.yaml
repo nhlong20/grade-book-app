@@ -81,6 +81,6 @@ jobs:
           PRIVATE_KEY: ${{ secrets.AWS_PRIVATE }}
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ubuntu@18.167.61.239 '
+          ssh -o StrictHostKeyChecking=no -i private_key ubuntu@16.162.104.246 '
             cd ~/grade-book-app && ./start.sh
           '

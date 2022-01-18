@@ -58,3 +58,8 @@ export const createPoint = (data: {
   studentId: string
   structId: string
 }) => axios.post(API + '/student/grade', data).then((res) => res.data)
+
+export const joinByCode = (params: { code: string }) =>
+  axios
+    .put<Class>(API + '/class/join-by-code', undefined, { params })
+    .then((r) => r.data)

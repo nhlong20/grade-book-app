@@ -7,6 +7,7 @@ import { useModal } from '@utils/hooks/useModal'
 import CreateCourseModal from '@components/CreateCourseModal'
 import Link from 'next/link'
 import { getUser } from '@utils/service/user'
+import JoinByCode from '@components/JoinByCode'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const client = new QueryClient()
@@ -31,18 +32,28 @@ export default function Index() {
   ]
 
   const [visible, open, close] = useModal()
+  const [join, openJoin, closeJoin] = useModal()
 
   return (
     <Layout requireLogin>
       <CreateCourseModal close={close} visible={visible} />
+      <JoinByCode visible={join} close={closeJoin} />
+
       <div className="cr-container py-4 mb-6">
         <div className="flex justify-between items-center">
           <h1 className="inline-block text-3xl font-medium mr-2 ">
             Your Classes
           </h1>
-          <button onClick={open} className="cr-button mb-2 font-medium">
-            <span className="fa fa-plus mr-2" /> Create class
-          </button>
+
+          <div className='flex gap-2'>
+            <button onClick={open} className="cr-button mb-2 font-medium">
+              <span className="fa fa-plus mr-2" /> Create class
+            </button>
+
+            <button onClick={openJoin} className="cr-button mb-2 font-medium">
+              <span className="fa fa-plus mr-2" /> Join A Class
+            </button>
+          </div>
         </div>
 
         <div

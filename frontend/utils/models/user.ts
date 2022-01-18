@@ -1,4 +1,5 @@
 import { Class } from "./class";
+import { Noti } from "./noti";
 
 export interface User {
   id: string
@@ -9,4 +10,5 @@ export interface User {
   mssv: string,
   subscriptedClasses: Class[]
   ownerClasses: Class[]
+  receivedNotifications: Noti[]
 }

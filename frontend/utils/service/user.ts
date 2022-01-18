@@ -1,3 +1,4 @@
+import { Noti } from '@utils/models/noti'
 import { User } from '@utils/models/user'
 import axios from 'axios'
 import { API } from 'environment'
@@ -9,3 +10,4 @@ export const getUser = (token?: string) => () =>
 
 export const updateUserInfo = (data: { name: string }) =>
   axios.patch<User>(API + '/user', data).then((res) => res.data)
+

@@ -1,13 +1,13 @@
-import { Module } from '@nestjs/common'
+import {  Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { NotiController } from './noti.controller'
 import { Noti, NotiMessage } from './noti.entity'
 import { NotiService } from './noti.service'
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Noti, NotiMessage])],
-  controllers: [NotiController],
+  imports: [
+    TypeOrmModule.forFeature([Noti, NotiMessage])
+  ],
   providers: [NotiService],
 })
 export class NotiModule { }

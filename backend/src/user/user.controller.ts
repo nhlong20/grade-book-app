@@ -23,8 +23,15 @@ export class UserController {
   }
 
   @Get()
-  getUser(@Request() req: AuthRequest) {
+  @ApiOperation({ summary: 'to get classes that user is the owner or the member' })
+  getUserClasses(@Request() req: AuthRequest) {
     return this.service.getUserClasses(req)
+  }
+
+  @Get("/notification")
+  @ApiOperation({ summary: 'to get call notification of user' })
+  getUserNotification(@Request() req: AuthRequest) {
+    return this.service.getUserNotifications(req)
   }
 
 }

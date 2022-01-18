@@ -1,13 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsNotEmpty, IsString, IsUUID, MaxLength } from 'class-validator'
+import { IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator'
 
 export class CreateNotiMessage {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(100)
-  content: string
-
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -22,9 +16,11 @@ export class CreateNotiMessage {
 
   @ApiProperty()
   @IsUUID()
+  @IsOptional()
   sourceId: string
 
   @ApiProperty()
   @IsString()
+  @IsOptional()
   sourceType: string
 }

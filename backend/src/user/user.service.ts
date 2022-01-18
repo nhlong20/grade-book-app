@@ -35,6 +35,18 @@ export class UserService {
     })
   }
 
+  async getUserNotifications(req: AuthRequest) {
+    const user = await this.userRepo.findOne({
+      where: { email: req.user.email },
+      relations: [
+        'receivedNotifications',
+        'receivedNotifications.message',
+        'receivedNotifications.actor'
+      ],
+    })
+    return user.receivedNotifications
+  }
+
   async changePassword(req: AuthRequest, dto: DTO.User.ChangePassword) {
     const user = await this.userRepo.findOne({ where: { id: req.user.id } })
     if (!user) throw new BadRequestException('User not found')

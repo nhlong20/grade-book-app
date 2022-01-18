@@ -41,7 +41,7 @@ export class Noti extends BaseEntity {
   @Column({ type: 'uuid' })
   actorId: string
 
-  @ManyToMany(() => User, (user) => user.notis)
+  @ManyToMany(() => User, (user) => user.receivedNotifications)
   @JoinTable()
   receivers: User[]
 

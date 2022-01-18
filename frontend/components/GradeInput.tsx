@@ -14,7 +14,6 @@ type Props = {
   studentId: string
   expose?: boolean
   structId: string
-  onOpenReviewModal: () => void
 }
 
 export default function GradeInput({
@@ -23,7 +22,6 @@ export default function GradeInput({
   studentId,
   expose,
   structId,
-  onOpenReviewModal: openReviewModal,
 }: Props) {
   const { query } = useRouter()
   const client = useQueryClient()
@@ -134,19 +132,6 @@ export default function GradeInput({
           </button>
         </div>
       )}
-
-      {
-        // !isTeacher && (
-        true && (
-          <button
-            onClick={openReviewModal}
-            title="Request a review from teachers"
-            className="min-w-[32px] h-8 rounded-full hover:bg-gray-200"
-          >
-            <span className="fa fa-mountain" />
-          </button>
-        )
-      }
     </div>
   )
 }

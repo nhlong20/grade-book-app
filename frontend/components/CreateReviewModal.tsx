@@ -1,21 +1,24 @@
+import { Class } from '@utils/models/class'
 import { Review } from '@utils/models/review'
 import { createReview } from '@utils/service/review'
 import { Modal, notification } from 'antd'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { useMutation } from 'react-query'
+import { useMutation, useQuery } from 'react-query'
 
 type Props = {
   visible: boolean
   close: () => void
-  gradeId: string | undefined
 }
 
-type FormData = Pick<Review, 'expectedGrade' | 'explanation'>
+type FormData = Pick<Review, 'expectedGrade' | 'explanation'> & {
+  gradeId: string
+}
 
-export default function CreateReviewModal({ visible, close, gradeId }: Props) {
-  const { push } = useRouter()
+export default function CreateReviewModal({ visible, close }: Props) {
+  const { push, query } = useRouter()
+  const id = query.id as string
   const { register, handleSubmit, reset } = useForm<FormData>()
 
   const { mutateAsync, isLoading } = useMutation(
@@ -39,10 +42,12 @@ export default function CreateReviewModal({ visible, close, gradeId }: Props) {
 
   const submit = useCallback(
     handleSubmit((data) => {
-      mutateAsync({ ...data, gradeId: gradeId || '' })
+      mutateAsync(data)
     }),
-    [gradeId],
+    [],
   )
+
+  const { data: clas } = useQuery<Class>(['class', id], { enabled: false })
 
   return (
     <Modal visible={visible} onCancel={close} centered footer={null}>
@@ -51,6 +56,23 @@ export default function CreateReviewModal({ visible, close, gradeId }: Props) {
       </div>
 
       <form onSubmit={submit} noValidate>
+        <div className="mb-4">
+          <label className="cr-label" htmlFor="gradid">
+            Grade Struct
+          </label>
+          <select
+            className="w-full cr-input"
+            id="gradid"
+            {...register('gradeId')}
+          >
+            {clas?.gradeStructure.map((struc) => (
+              <option key={struc.id} value={struc.id}>
+                {struc.title}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="mb-4">
           <label htmlFor="expect" className="cr-label">
             Expected Grade

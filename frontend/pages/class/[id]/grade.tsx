@@ -110,8 +110,6 @@ export default function ClassGrade() {
   const [visible, open, close] = useModal()
   const [selectedId, setSelectedId] = useState<string>()
 
-  const [selectedGradeId, setSelectedGradeId] = useState<string>()
-
   return (
     <Layout requireLogin>
       <ViewGradeDetail
@@ -119,6 +117,7 @@ export default function ClassGrade() {
         close={close}
         selectedStudentId={selectedId!}
       />
+
       <div className="cr-container py-4">
         <div className="flex justify-between">
           <div className="flex gap-2">
@@ -130,6 +129,11 @@ export default function ClassGrade() {
             <button className="cr-button">
               <Link href={`/class/${query.id}/grade`}>
                 <a className="text-current">Grade</a>
+              </Link>
+            </button>
+            <button className="cr-button-outline">
+              <Link href={`/class/${query.id}/review`}>
+                <a className="text-current">Review Requests</a>
               </Link>
             </button>
           </div>
@@ -155,6 +159,12 @@ export default function ClassGrade() {
                   Download Grade
                 </button>
               </>
+            )}
+            {!false && (
+              // {!isTeacher && (
+              <button onClick={openReviewModal} className="cr-button">
+                Request a review
+              </button>
             )}
           </div>
         </div>
@@ -227,6 +237,8 @@ export default function ClassGrade() {
               ))}
           </div>
 
+          <CreateReviewModal visible={reviewModal} close={closeReviewModal} />
+
           {students
             ?.filter((s) => isTeacher || s.academicId === session?.user.mssv)
             .map(({ id: studentId, name, grades, academicId, userId }) => (
@@ -261,19 +273,9 @@ export default function ClassGrade() {
                   %
                 </div>
 
-                <CreateReviewModal
-                  gradeId={selectedGradeId}
-                  visible={reviewModal}
-                  close={closeReviewModal}
-                />
-
                 {clas?.gradeStructure.map(({ id }) => (
                   <div key={grades[id]?.id} className="border-r">
                     <GradeInput
-                      onOpenReviewModal={() => {
-                        setSelectedGradeId(grades[id]?.id)
-                        openReviewModal()
-                      }}
                       structId={id}
                       studentId={studentId}
                       id={grades[id]?.id}

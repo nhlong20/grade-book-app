@@ -2,6 +2,8 @@ name: Build Docker images and perform deployment
 on:
   push:
     branches: ["dev"]
+  workflow_dispatch:
+    branches: [dev]
 
 env:
   REGISTRY: ghcr.io

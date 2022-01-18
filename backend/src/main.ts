@@ -14,7 +14,7 @@ async function bootstrap() {
       transform: true
     }),
   )
-  app.setGlobalPrefix('api')
+  app.setGlobalPrefix(process.env.PREFIX)
   app.use(cookieParser())
   app.enableCors({
     credentials: true,

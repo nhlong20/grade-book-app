@@ -21,6 +21,7 @@ COPY --from=builder /app/.env ./
 
 ENV FE_URL http://webnc.bee-club.org
 ENV DB_HOST postgres
+ENV PREFIX v1/api
 
 EXPOSE 8000
 

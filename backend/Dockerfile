@@ -16,10 +16,12 @@ ENV NODE_ENV dev
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./
 COPY --from=builder /app/.env ./
 
-ENV DB_HOST dev-db.cjqy64ggirgx.ap-southeast-1.rds.amazonaws.com
+ENV FE_URL http://webnc.bee-club.org
+ENV DB_HOST postgres
 
-EXPOSE 8080
+EXPOSE 8000
 
-CMD ["node", "dist/main"]
+CMD ["npm", "start"]

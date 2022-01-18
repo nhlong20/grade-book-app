@@ -1,34 +1,24 @@
-version: '3.8'
+version: '3.9'
 services:
-  api:
-    # image: thomas-oliver/nestjs-dockerized
-    build:
-      dockerfile: Dockerfile
-      context: .
-    depends_on:
-      - postgres
-    environment:
-      DB_HOST: localhost
-      DB_PORT: 5432
-      DB_USERNAME: postgres
-      DB_PASSWORD: postgres
-      DB_NAME: gradebook
-      NODE_ENV: development
-      FE_URL: https://nextjs-ten-beta-55.vercel.app/
-      MAIL_HOST: smtp.gmail.com
-      MAIL_PORT: 587
-      MAIL_USER: hcmusmods@gmail.com
-      MAIL_PASSWORD: Admin@123
-      MAIL_FROM: "GradeBook"no-reply@gradebook.com
-      PORT: 3000
-    ports:
-      - '8080:3000'
-
   postgres:
+    container_name: postgres
     image: postgres:alpine
     ports:
-      - '5433:5432'
+      - '5432:5432'
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: gradebook
+      PGDATA: /data/postgres
+    volumes:
+       - postgres:/data/postgres
+
+  apollo:
+    container_name: backend
+    image: ghcr.io/nhlong20/grade-book-app:backend
+    depends_on:
+      - postgres
+    ports:
+      - '8000:8000'
+
+volumes:
+    postgres:

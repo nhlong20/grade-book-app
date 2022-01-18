@@ -1,5 +1,7 @@
+import { useTypedSession } from '@utils/hooks/useTypedSession'
 import { Class } from '@utils/models/class'
 import { Review } from '@utils/models/review'
+import { Student } from '@utils/models/student'
 import { createReview } from '@utils/service/review'
 import { Modal, notification } from 'antd'
 import { useRouter } from 'next/router'
@@ -20,6 +22,7 @@ export default function CreateReviewModal({ visible, close }: Props) {
   const { push, query } = useRouter()
   const id = query.id as string
   const { register, handleSubmit, reset } = useForm<FormData>()
+  const [session] = useTypedSession()
 
   const { mutateAsync, isLoading } = useMutation(
     'create-review',
@@ -40,14 +43,23 @@ export default function CreateReviewModal({ visible, close }: Props) {
     reset()
   }, [visible])
 
-  const submit = useCallback(
-    handleSubmit((data) => {
-      mutateAsync(data)
-    }),
-    [],
-  )
-
   const { data: clas } = useQuery<Class>(['class', id], { enabled: false })
+  const { data: students } = useQuery<Student[]>(['students', id], {
+    enabled: false,
+  })
+
+  const submit = useCallback(
+    handleSubmit(({ expectedGrade, explanation, gradeId }) => {
+      mutateAsync({
+        explanation,
+        expectedGrade,
+        gradeId:
+          students?.find((s) => s.academicId === session?.user.mssv)?.grades[gradeId]
+            .id || '',
+      })
+    }),
+    [session, clas, students],
+  )
 
   return (
     <Modal visible={visible} onCancel={close} centered footer={null}>

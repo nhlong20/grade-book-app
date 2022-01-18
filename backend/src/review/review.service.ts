@@ -8,8 +8,6 @@ import { AuthRequest } from '@/utils/interface'
 import {
   BadRequestException,
   ForbiddenException,
-  forwardRef,
-  Inject,
   Injectable,
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
@@ -84,9 +82,11 @@ export class ReviewService {
     })
     
     const newReview = await this.getOneReview(result.id, req)
+
     let receivers = newReview?.grade?.student?.class?.teachers
     let title = "Review request"
     let body = req.user.name + " has requested a review"
+
     this.genReviewNotification(req, newReview, title, body, receivers)
 
     return result

@@ -24,7 +24,7 @@ export class AuthService {
 
     const token = randomBytes(48).toString('base64url')
 
-    await this.mailService.sendActivationEmail(dto.email, token)
+    // await this.mailService.sendActivationEmail(dto.email, token)
     await this.userRepo.save({
       ...dto,
       password: await hash(dto.password, 10),

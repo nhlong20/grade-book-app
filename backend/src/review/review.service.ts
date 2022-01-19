@@ -57,11 +57,14 @@ export class ReviewService {
       ],
     })
 
+    console.log(review.grade.student.class.teachers)
+    console.log(req.user.id)
+
     if (!review) throw new BadRequestException('review not found')
     if (
       !review.grade.student.class.teachers.some(
         ({ id }) => id === req.user.id,
-      ) ||
+      ) &&
       review.owner.id !== req.user.id
     )
       throw new ForbiddenException('You can not do this')
@@ -76,16 +79,16 @@ export class ReviewService {
 
     if (review) throw new BadRequestException('Review existed')
 
-    let result  = await this.reviewRepo.save({
+    let result = await this.reviewRepo.save({
       ownerId: req.user.id,
       ...dto,
     })
-    
+
     const newReview = await this.getOneReview(result.id, req)
 
     let receivers = newReview?.grade?.student?.class?.teachers
-    let title = "Review request"
-    let body = req.user.name + " has requested a review"
+    let title = 'Review request'
+    let body = req.user.name + ' has requested a review'
 
     this.genReviewNotification(req, newReview, title, body, receivers)
 
@@ -113,14 +116,16 @@ export class ReviewService {
       review.owner.id !== req.user.id
     )
       throw new ForbiddenException('You can not do this')
-    
-    const teacher: User = review?.grade?.student?.class?.teachers?.find(teacher => teacher.id === req.user.id)
+
+    const teacher: User = review?.grade?.student?.class?.teachers?.find(
+      (teacher) => teacher.id === req.user.id,
+    )
     let receivers = [review.owner]
     if (teacher != undefined && teacher != null) {
-       receivers = review.grade.student.class.teachers
+      receivers = review.grade.student.class.teachers
     }
-    let title = "Review Comment"
-    let body = teacher?.name || req.user.name + " commented on a review"
+    let title = 'Review Comment'
+    let body = teacher?.name || req.user.name + ' commented on a review'
     this.genReviewNotification(req, review, title, body, receivers)
 
     return this.commentRepo.save({
@@ -147,7 +152,7 @@ export class ReviewService {
     if (
       !review.grade.student.class.teachers.some(
         ({ id }) => id === req.user.id,
-      ) ||
+      ) &&
       review.owner.id !== req.user.id
     )
       throw new ForbiddenException('You can not do this')
@@ -155,11 +160,13 @@ export class ReviewService {
     review.formerGrade = review.grade.point
     review.grade.point = review.expectedGrade
 
-    const teacher: User = review.grade.student.class.teachers.find(teacher => teacher.id === req.user.id)
+    const teacher: User = review.grade.student.class.teachers.find(
+      (teacher) => teacher.id === req.user.id,
+    )
     const receivers = [review.owner]
-    const title = "Review Resolved"
-    let body = teacher?.name + " has resolved your mark review"
-    this.genReviewNotification(req, review, title , body, receivers)
+    const title = 'Review Resolved'
+    let body = teacher?.name + ' has resolved your mark review'
+    this.genReviewNotification(req, review, title, body, receivers)
 
     return this.reviewRepo.save({
       ...review,
@@ -186,13 +193,19 @@ export class ReviewService {
     })
   }
 
-  async genReviewNotification(req: AuthRequest, review: Review, title: string, body: string, receivers: User[]) {
+  async genReviewNotification(
+    req: AuthRequest,
+    review: Review,
+    title: string,
+    body: string,
+    receivers: User[],
+  ) {
     // Create Notification Message
     const notiMsg = new CreateNotiMessage()
     notiMsg.title = title
-    notiMsg.body = body 
+    notiMsg.body = body
     notiMsg.sourceId = review.id
-    notiMsg.sourceType = "Review"
+    notiMsg.sourceType = 'Review'
     const newNotiMsg = await this.notiService.createNotiMessage(notiMsg)
 
     // Create Noti

@@ -131,11 +131,13 @@ export default function ClassGrade() {
                 <a className="text-current">Grade</a>
               </Link>
             </button>
-            <button className="cr-button-outline">
-              <Link href={`/class/${query.id}/review`}>
-                <a className="text-current">Review Requests</a>
-              </Link>
-            </button>
+            {isTeacher && (
+              <button className="cr-button-outline">
+                <Link href={`/class/${query.id}/review`}>
+                  <a className="text-current">Review Requests</a>
+                </Link>
+              </button>
+            )}
           </div>
 
           <div className="flex gap-2">
@@ -160,8 +162,7 @@ export default function ClassGrade() {
                 </button>
               </>
             )}
-            {!false && (
-              // {!isTeacher && (
+            {!isTeacher && (
               <button onClick={openReviewModal} className="cr-button">
                 Request a review
               </button>

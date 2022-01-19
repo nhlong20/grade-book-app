@@ -20,7 +20,10 @@ export const getServerSideProps: GetServerSideProps = async ({
     await client.prefetchQuery('reviews', getReviews(classId, token))
   }
 
+  const reviews = client.getQueryData('reviews')
+
   return {
+    notFound: !reviews,
     props: {
       dehydratedState: dehydrate(client),
     },
@@ -73,7 +76,10 @@ export default function ReviewsPage() {
               className="p-4 border rounded-[4px] flex justify-between items-center"
             >
               <div>
-                <div className="font-bold">{review.owner.name}</div>
+                <div className="font-bold">
+                  {review.owner.name}{' '}
+                  {review.resolved ? <span className="fa fa-check" /> : null}
+                </div>
                 <div>{review.grade.struct.title}</div>
               </div>
               <div>

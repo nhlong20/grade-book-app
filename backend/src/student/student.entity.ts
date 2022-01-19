@@ -31,7 +31,9 @@ export class Student extends BaseEntity {
 
 @Entity()
 export class Grade extends BaseEntity {
-  @ManyToOne(() => Student, (student) => student.grades, {onDelete: "CASCADE"})
+  @ManyToOne(() => Student, (student) => student.grades, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   student: Student
 
@@ -51,6 +53,6 @@ export class Grade extends BaseEntity {
   @Column({ default: false })
   expose: boolean
 
-  @OneToOne(() => Review, (r) => r.grade, { onDelete: 'CASCADE' })
+  @OneToOne(() => Review, (r) => r.grade)
   review: Review
 }

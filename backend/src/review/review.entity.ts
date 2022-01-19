@@ -25,6 +25,7 @@ export class Review extends BaseEntity {
   @OneToOne(() => Grade, (g) => g.review, {
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
+    cascade: true
   })
   @JoinColumn()
   grade: Grade

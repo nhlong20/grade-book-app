@@ -32,6 +32,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 export default function ReviewDetail() {
   const { query, push } = useRouter()
   const id = query.reviewId as string
+  const classId = query.id as string
 
   const { data: review } = useQuery(['review', id], getReview(id), {
     enabled: false,
@@ -45,7 +46,7 @@ export default function ReviewDetail() {
     {
       onSuccess() {
         notification.success({ message: 'Resolve review successfully' })
-        push(`/class/${review?.grade.student.class.id}/grade`)
+        push(`/class/${classId}/grade`)
       },
       onError() {
         notification.error({ message: 'Resolve review unsuccessfully' })

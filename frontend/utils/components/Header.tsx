@@ -40,7 +40,10 @@ type FormData = {
 }
 
 export default function Header({ title }: Props) {
-  const { data: notifications } = useQuery('notifications', getReceivedNotification())
+  const { data: notifications } = useQuery(
+    'notifications',
+    getReceivedNotification(),
+  )
   const [session] = useTypedSession()
   const [seed] = useState(Math.random())
   const [visible, setVisible] = useState(false)
@@ -86,7 +89,10 @@ export default function Header({ title }: Props) {
 
   return (
     <header className="cr-container sticky top-0 flex justify-between items-center h-[60px] shadow-md">
-      <div className="font-semibold text-xl">{title || 'Classroom'}</div>
+      <Link href="/">
+        <a className="font-semibold text-xl">{title || 'Classroom'}</a>
+      </Link>
+
       <div className="flex gap-3 items-center relative z-20">
         <span>Hi, {session?.user.name}</span>
 

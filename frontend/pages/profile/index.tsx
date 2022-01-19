@@ -147,7 +147,7 @@ export default function Profile() {
                     ? 'cr-input w-full'
                     : 'cr-input w-full  bg-gray-200'
                 }
-                disabled={mssv == '' ? false : true}
+                // disabled={mssv == '' ? false : true}
                 {...register('mssv')}
               />
             </div>

@@ -1,9 +1,11 @@
+import { yupResolver } from '@hookform/resolvers/yup'
 import { joinByCode } from '@utils/service/class'
 import { Modal, notification } from 'antd'
 import { useRouter } from 'next/router'
 import { useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
+import { object, string } from 'yup'
 
 type Props = {
   visible: boolean
@@ -16,7 +18,19 @@ type FormData = {
 
 export default function JoinByCode({ close, visible }: Props) {
   const { push } = useRouter()
-  const { register, handleSubmit } = useForm<FormData>()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: yupResolver(
+      object().shape({
+        code: string()
+          .typeError('Code has to be a string')
+          .required('Code is required'),
+      }),
+    ),
+  })
 
   const { mutateAsync, isLoading } = useMutation('join-class', joinByCode, {
     onSuccess(res) {
@@ -52,11 +66,12 @@ export default function JoinByCode({ close, visible }: Props) {
           className="cr-input w-full"
           {...register('code')}
         />
+        {errors.code && (
+          <div className="mt-2 text-red-600">{errors.code?.message}</div>
+        )}
 
         <div className="mt-4 flex gap-2 justify-end">
-          <button className="cr-button">
-            Submit
-          </button>
+          <button className="cr-button">Submit</button>
 
           <button onClick={close} type="button" className="cr-button-outline">
             Cancel

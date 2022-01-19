@@ -1,3 +1,4 @@
+import { yupResolver } from '@hookform/resolvers/yup'
 import { useTypedSession } from '@utils/hooks/useTypedSession'
 import { Class } from '@utils/models/class'
 import { Review } from '@utils/models/review'
@@ -8,6 +9,7 @@ import { useRouter } from 'next/router'
 import { useCallback, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQuery } from 'react-query'
+import { number, object, string } from 'yup'
 
 type Props = {
   visible: boolean
@@ -22,7 +24,23 @@ export default function CreateReviewModal({ visible, close }: Props) {
   const { push, query } = useRouter()
   const classId = query.id as string
 
-  const { register, handleSubmit, reset } = useForm<FormData>()
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: yupResolver(
+      object().shape({
+        expectedGrade: number()
+          .typeError('Expected grade has to be a number')
+          .required('Expected grade is required'),
+        explanation: string()
+          .typeError('Explanation has to be a string')
+          .required('Explanation is required'),
+      }),
+    ),
+  })
   const [session] = useTypedSession()
 
   const { mutateAsync, isLoading } = useMutation(
@@ -106,6 +124,11 @@ export default function CreateReviewModal({ visible, close }: Props) {
             id="expect"
             {...register('expectedGrade')}
           />
+          {errors.expectedGrade && (
+            <div className="mt-2 text-red-600">
+              {errors.expectedGrade.message}
+            </div>
+          )}
         </div>
 
         <div className="mb-4">
@@ -118,6 +141,11 @@ export default function CreateReviewModal({ visible, close }: Props) {
             {...register('explanation')}
             rows={3}
           />
+          {errors.explanation && (
+            <div className="mt-2 text-red-600">
+              {errors.explanation.message}
+            </div>
+          )}
         </div>
 
         <div className="mb-4 flex gap-2 justify-end">

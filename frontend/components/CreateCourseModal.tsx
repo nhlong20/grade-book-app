@@ -1,18 +1,37 @@
-import { useInput } from '@utils/hooks/useInput'
 import { createCourse as createCourseService } from '@utils/service/class'
 import { Modal, notification } from 'antd'
-import { useCallback, useEffect } from 'react'
+import { useCallback } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useForm } from 'react-hook-form'
 
 interface Props {
   visible: boolean
   close: () => void
 }
 
+const schema = yup.object().shape({
+  name: yup
+    .string()
+    .typeError('Name has to be a string')
+    .required('Name is required'),
+  description: yup
+    .string()
+    .typeError('Description has to be a string')
+    .optional(),
+})
+
 export default function CreateCourseModal({ close, visible }: Props) {
-  const [name, changeName] = useInput('')
-  const [description, changeDescription] = useInput('')
   const client = useQueryClient()
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  })
 
   const { mutateAsync, isLoading } = useMutation(
     'create-course',
@@ -29,14 +48,12 @@ export default function CreateCourseModal({ close, visible }: Props) {
     },
   )
 
-  useEffect(() => {
-    changeName({ target: { value: '' } } as any)
-    changeDescription({ target: { value: '' } } as any)
-  }, [visible])
-
-  const createCourse = useCallback(async () => {
-    await mutateAsync({ name, description })
-  }, [name, description])
+  const createCourse = useCallback(
+    handleSubmit((data) => {
+      mutateAsync(data)
+    }),
+    [],
+  )
 
   return (
     <Modal visible={visible} onCancel={close} footer={null} centered>
@@ -49,11 +66,13 @@ export default function CreateCourseModal({ close, visible }: Props) {
         <input
           autoFocus
           type="text"
-          value={name}
-          onChange={changeName}
+          {...register('name')}
           id="name"
           className="cr-input w-full"
         />
+        {errors.name && (
+          <div className="mt-2 text-red-600">{errors.name?.message}</div>
+        )}
       </div>
 
       <div className="mb-4">
@@ -62,11 +81,13 @@ export default function CreateCourseModal({ close, visible }: Props) {
         </label>
         <input
           type="text"
-          value={description}
-          onChange={changeDescription}
+          {...register('description')}
           id="desc"
           className="cr-input w-full"
         />
+        {errors.description && (
+          <div className="mt-2 text-red-600">{errors.description?.message}</div>
+        )}
       </div>
 
       <div className="mb-4 flex gap-2">

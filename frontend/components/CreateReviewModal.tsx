@@ -20,7 +20,9 @@ type FormData = Pick<Review, 'expectedGrade' | 'explanation'> & {
 
 export default function CreateReviewModal({ visible, close }: Props) {
   const { push, query } = useRouter()
-  const id = query.id as string
+  const classId = query.id as string
+  const id = query.reviewId as string
+
   const { register, handleSubmit, reset } = useForm<FormData>()
   const [session] = useTypedSession()
 
@@ -33,7 +35,7 @@ export default function CreateReviewModal({ visible, close }: Props) {
       },
       onSuccess(res) {
         notification.success({ message: 'Submit review successfully' })
-        push(`/review/${res.id}`)
+        push(`/class/${classId}/review/${id}`)
       },
     },
   )
@@ -43,8 +45,8 @@ export default function CreateReviewModal({ visible, close }: Props) {
     reset()
   }, [visible])
 
-  const { data: clas } = useQuery<Class>(['class', id], { enabled: false })
-  const { data: students } = useQuery<Student[]>(['students', id], {
+  const { data: clas } = useQuery<Class>(['class', classId], { enabled: false })
+  const { data: students } = useQuery<Student[]>(['students', classId], {
     enabled: false,
   })
 
@@ -54,8 +56,9 @@ export default function CreateReviewModal({ visible, close }: Props) {
         explanation,
         expectedGrade,
         gradeId:
-          students?.find((s) => s.academicId === session?.user.mssv)?.grades[gradeId]
-            .id || '',
+          students?.find((s) => s.academicId === session?.user.mssv)?.grades[
+            gradeId
+          ].id || '',
       })
     }),
     [session, clas, students],

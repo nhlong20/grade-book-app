@@ -76,7 +76,7 @@ export default function Profile() {
 
   const updateInformation = useCallback(
     handleSubmit((data) => {
-      // mutateAsync(data)
+      mutateAsync(data)
     }),
     [],
   )

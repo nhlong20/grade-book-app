@@ -13,9 +13,8 @@ export class EmitterService {
     })
   }
 
-  @OnEvent('auth.invalidate', { async: true })
-  invalidateSession(payload: any) {
-    this.$emitter.next({ data: { opcode: OpCode.INVALIDATE_SESSION, payload } })
+  @OnEvent('noti.created', { async: true })
+  invalidateSession() {
     this.$emitter.next({ data: { opcode: OpCode.CONNECT_SUCCESSFULLY } })
   }
 }

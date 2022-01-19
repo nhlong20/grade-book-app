@@ -3,12 +3,13 @@ import { useTypedSession } from '@utils/hooks/useTypedSession'
 import { signout } from 'next-auth/client'
 import { MouseEvent, useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
-import { dehydrate, QueryClient, useQuery, useQueryClient } from 'react-query'
+import { dehydrate, QueryClient, useQuery } from 'react-query'
 import { getSessionToken } from '@utils/libs/getToken'
 import { GetServerSideProps } from 'next'
 import { getReceivedNotification } from '@utils/service/noti'
-import { GlobalState } from '@utils/GlobalStateKey'
 import { API } from 'environment'
+import moment from 'moment'
+
 type Props = {
   title?: string
 }
@@ -33,23 +34,16 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
 }
 
-type FormData = {
-  name: string
-  phone: string
-  mssv: string
-}
-
 export default function Header({ title }: Props) {
-  const { data: notifications } = useQuery(
+  const { data: notifications, refetch } = useQuery(
     'notifications',
     getReceivedNotification(),
+    { enabled: false },
   )
   const [session] = useTypedSession()
   const [seed] = useState(Math.random())
   const [visible, setVisible] = useState(false)
   const [showNotiList, setShowNotiList] = useState(false)
-  const receivedNotifications = [...(notifications || [])]
-  const client = useQueryClient()
 
   const toggle = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
@@ -62,7 +56,11 @@ export default function Header({ title }: Props) {
   }, [])
 
   useEffect(() => {
-    const close = () => setVisible(false)
+    const close = () => {
+      setVisible(false)
+      setShowNotiList(false)
+    }
+
     document.addEventListener('click', close)
 
     return () => {
@@ -78,8 +76,9 @@ export default function Header({ title }: Props) {
     })
 
     if (!eventSource) return
+
     eventSource.onmessage = ({ data }: MessageEvent) => {
-      client.setQueryData(GlobalState.SUBSCRIPTION, JSON.parse(data))
+      refetch()
     }
 
     return () => {
@@ -88,7 +87,7 @@ export default function Header({ title }: Props) {
   }, [session])
 
   return (
-    <header className="cr-container sticky top-0 flex justify-between items-center h-[60px] shadow-md">
+    <header className="cr-container z-10 sticky top-0 flex justify-between items-center h-[60px] shadow-md">
       <Link href="/">
         <a className="font-semibold text-xl">{title || 'Classroom'}</a>
       </Link>
@@ -126,23 +125,29 @@ export default function Header({ title }: Props) {
         )}
 
         {showNotiList && (
-          <div className="absolute border top-[120%] right-0 bg-white rounded-md shadow-md py-2 min-w-[150px] whitespace-nowrap flex flex-col h-auto">
-            {receivedNotifications.length == 0 ? (
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="absolute border top-[120%] z-10 right-0 bg-white rounded-md shadow-md p-2 py-4 max-h-[600px] overflow-auto min-w-[350px] flex flex-col gap-2"
+          >
+            {!notifications?.length && (
               <div>
                 <a className={menuItemClass}>
                   <p>Bạn không có thông báo nào</p>
                 </a>
               </div>
-            ) : (
-              <></>
             )}
-            {receivedNotifications?.map(({ actor, message }) => (
-              <div>
-                <a className="py-2">
-                  <h4>{message.title}</h4>
-                  <p className="">{message.body}</p>
-                  <small>{message.createdAt}</small>
-                </a>
+
+            {notifications?.map(({ actor, message }) => (
+              <div className="py-2">
+                <div className="font-semibold text-blue-600">
+                  {message.title}
+                </div>
+                <div className="">{message.body}</div>
+                <small>
+                  {moment(message.createdAt)
+                    .add(7, 'hours')
+                    .format('DD/MM/YYYY HH:mm A')}
+                </small>
               </div>
             ))}
           </div>

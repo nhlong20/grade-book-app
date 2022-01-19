@@ -4,8 +4,7 @@ import { getUser, updateUserInfo } from '@utils/service/user'
 import { notification } from 'antd'
 import { GetServerSideProps } from 'next'
 import { useForm } from 'react-hook-form'
-import { useCallback, useEffect } from 'react'
-
+import { useCallback, useEffect, useMemo } from 'react'
 import {
   dehydrate,
   QueryClient,
@@ -13,6 +12,7 @@ import {
   useQuery,
   useQueryClient,
 } from 'react-query'
+import { signOut } from 'next-auth/client'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const token = getSessionToken(ctx.req.cookies)
@@ -37,12 +37,20 @@ type FormData = {
 
 export default function Profile() {
   const { data } = useQuery('user', getUser())
-  const { email, name, role, phone, mssv } = data || {}
   const client = useQueryClient()
 
+  const defaultValues = useMemo(
+    () => ({ name: data?.name, phone: data?.phone, mssv: data?.mssv  }),
+    [data],
+  )
+
   const { register, handleSubmit, reset } = useForm<FormData>({
-    defaultValues: { name, phone, mssv },
+    defaultValues,
   })
+
+  useEffect(() => {
+    reset(defaultValues)
+  }, [defaultValues])
 
   const { mutateAsync, isLoading } = useMutation(
     'update-information',
@@ -50,15 +58,13 @@ export default function Profile() {
       return updateUserInfo(data)
     },
     {
-      onSuccess(data) {
+      onSuccess() {
         notification.success({
           message: 'Update information successfully.',
         })
-        reset({ name: data.name })
-        reset({ phone: data.phone })
-        reset({ mssv: data.mssv })
 
         client.invalidateQueries('user')
+        signOut()
       },
       onError() {
         notification.error({
@@ -70,7 +76,7 @@ export default function Profile() {
 
   const updateInformation = useCallback(
     handleSubmit((data) => {
-      mutateAsync(data)
+      // mutateAsync(data)
     }),
     [],
   )
@@ -86,9 +92,8 @@ export default function Profile() {
               />
             </div>
             <div>
-              <div className="font-semibold">{name}</div>
-              <div className="font-semibold">{email}</div>
-              <div className="font-semibold">{role}</div>
+              <div className="font-semibold">{data?.name}</div>
+              <div className="font-semibold">{data?.email}</div>
             </div>
           </div>
 
@@ -106,7 +111,6 @@ export default function Profile() {
                 id="name"
                 className="cr-input w-full"
                 {...register('name')}
-                defaultValue={name}
               />
             </div>
             <div className="flex flex-row my-4 content-start">
@@ -117,7 +121,7 @@ export default function Profile() {
                 type="email"
                 id="email"
                 className="cr-input w-full bg-gray-200"
-                value={email}
+                value={data?.email}
                 disabled
               />
             </div>
@@ -128,7 +132,6 @@ export default function Profile() {
               <input
                 type="text"
                 id="phone"
-                defaultValue={phone}
                 className="cr-input w-full"
                 {...register('phone')}
               />
@@ -136,18 +139,15 @@ export default function Profile() {
 
             <div className="flex flex-row my-4">
               <div className="text-right text-base mx-8 mt-2 font-medium">
-                <label htmlFor="mssv">MSSV</label>
+                <label htmlFor="mssv">Student Id</label>
               </div>
               <input
                 type="text"
                 id="mssv"
-                defaultValue={mssv}
                 className={
-                  mssv == ''
-                    ? 'cr-input w-full'
-                    : 'cr-input w-full  bg-gray-200'
+                  data?.mssv ? 'cr-input w-full bg-gray-200' : 'cr-input w-full'
                 }
-                // disabled={mssv == '' ? false : true}
+                disabled={!!data?.mssv}
                 {...register('mssv')}
               />
             </div>

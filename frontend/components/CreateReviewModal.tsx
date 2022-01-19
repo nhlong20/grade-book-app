@@ -52,6 +52,15 @@ export default function CreateReviewModal({ visible, close }: Props) {
 
   const submit = useCallback(
     handleSubmit(({ expectedGrade, explanation, gradeId }) => {
+      const grade = students?.find((s) => s.academicId === session?.user.mssv)
+        ?.grades[gradeId]
+
+      if (!grade?.expose) {
+        notification.error({
+          message: 'You can not request review on this grade',
+        })
+      }
+
       mutateAsync({
         explanation,
         expectedGrade,

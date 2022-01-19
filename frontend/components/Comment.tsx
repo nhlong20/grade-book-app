@@ -30,6 +30,7 @@ export default function Comments() {
     {
       onSuccess() {
         client.invalidateQueries(['review', id])
+        setValue('reviewId', '')
       },
       onError() {
         notification.error({ message: 'Post comment unsuccessfully' })

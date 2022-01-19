@@ -38,12 +38,15 @@ export class UserService {
   }
 
   async getUserNotifications(req: AuthRequest) {
-   return this.notiRepo.find({
-     where: {
-       actorId: req.user.id
-     },
-     relations: ['message', 'actor']
-   })
+    return this.notiRepo
+      .find({
+        relations: ['message', 'actor', 'receivers'],
+      })
+      .then((reviews) =>
+        reviews.filter((r) =>
+          r.receivers.some((user) => user.id === req.user.id),
+        ),
+      )
   }
 
   async changePassword(req: AuthRequest, dto: DTO.User.ChangePassword) {

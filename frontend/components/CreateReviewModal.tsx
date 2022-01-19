@@ -21,7 +21,6 @@ type FormData = Pick<Review, 'expectedGrade' | 'explanation'> & {
 export default function CreateReviewModal({ visible, close }: Props) {
   const { push, query } = useRouter()
   const classId = query.id as string
-  const id = query.reviewId as string
 
   const { register, handleSubmit, reset } = useForm<FormData>()
   const [session] = useTypedSession()
@@ -35,7 +34,7 @@ export default function CreateReviewModal({ visible, close }: Props) {
       },
       onSuccess(res) {
         notification.success({ message: 'Submit review successfully' })
-        push(`/class/${classId}/review/${id}`)
+        push(`/class/${classId}/review/${res.id}`)
       },
     },
   )

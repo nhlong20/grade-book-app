@@ -7,6 +7,7 @@ import { dehydrate, QueryClient, useMutation, useQuery } from 'react-query'
 import moment from 'moment'
 import Comments from '@components/Comment'
 import { notification } from 'antd'
+import { useTeacher } from '@utils/hooks/useTeacher'
 
 export const getServerSideProps: GetServerSideProps = async ({
   req,
@@ -54,10 +55,12 @@ export default function ReviewDetail() {
     },
   )
 
+  const isTeacher = useTeacher()
+
   return (
     <Layout requireLogin>
       <div className="cr-container py-4 relative min-h-[calc(100vh-32px-70px)]">
-        {!review?.resolved && (
+        {!review?.resolved && isTeacher && (
           <button
             onClick={() => mutateAsync()}
             className="cr-button absolute bottom-0 right-[60px]"

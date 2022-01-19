@@ -49,7 +49,7 @@ export class Grade extends BaseEntity {
   @Column({ type: 'uuid' })
   structId: string
 
-  @Column({ nullable: true, default: null })
+  @Column({ nullable: true, default: null, type: 'float' })
   point: number
 
   @Column({ default: false })

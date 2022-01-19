@@ -94,7 +94,10 @@ export default function ReviewDetail() {
 
         <div className="grid grid-cols-2 gap-8 mt-8 p-4 border rounded-md text-xl">
           <div>Expected Grade: {review?.expectedGrade}</div>
-          <div>Initial Grade: {review?.grade.point}</div>
+          <div>
+            Initial Grade:{' '}
+            {review?.resolved ? review.formerGrade : review?.grade.point}
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-8">

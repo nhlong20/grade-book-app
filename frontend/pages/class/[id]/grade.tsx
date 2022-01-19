@@ -283,7 +283,9 @@ export default function ClassGrade() {
                       point={Number(grades[id]?.point || '0')}
                       expose={grades[id]?.expose}
                     />
+
                     <Divider />
+
                     <div className="flex justify-between items-center">
                       <div></div>
                       <div className="italic pr-4">

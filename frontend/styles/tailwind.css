@@ -5,8 +5,16 @@
     @apply px-3 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-500 cr-transition focus:bg-blue-700;
   }
 
+  .cr-button:disabled {
+    @apply pointer-events-none;
+  }
+
   .cr-button-outline {
     @apply box-border px-3 py-2 rounded-md border border-gray-400 bg-white text-gray-600  hover:text-blue-400 hover:border-blue-400  cr-transition focus:border-blue-700 focus:text-blue-700;
+  }
+
+  .cr-button-outline:disabled {
+    @apply pointer-events-none;
   }
 
   .cr-input {

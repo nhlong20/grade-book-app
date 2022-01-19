@@ -16,9 +16,7 @@ export default function Comments() {
   const id = query.reviewId as string
   const client = useQueryClient()
 
-  const { data: review } = useQuery(['review', id], getReview(id), {
-    enabled: false,
-  })
+  const { data: review } = useQuery(['review', id], getReview(id))
 
   const { handleSubmit, register, reset, setValue } = useForm<CommentData>()
 
@@ -31,7 +29,7 @@ export default function Comments() {
     createComment,
     {
       onSuccess() {
-        client.invalidateQueries('review')
+        client.invalidateQueries(['review', id])
       },
       onError() {
         notification.error({ message: 'Post comment unsuccessfully' })
@@ -48,14 +46,14 @@ export default function Comments() {
 
   return (
     <div className="mt-4">
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 max-h-[400px] overflow-auto">
         {review?.comments.map((comment) => (
           <div key={comment.id}>
             <div>
               <span className="font-semibold">{comment.author.name}</span> at{' '}
               {moment(comment.createdAt).format('DD/MM/YYYY HH:mm')}
             </div>
-            <div className='mt-1'>{comment.content}</div>
+            <div className="mt-1">{comment.content}</div>
           </div>
         ))}
       </div>
@@ -64,15 +62,21 @@ export default function Comments() {
         <textarea
           className="cr-input w-full"
           placeholder="Comment"
+          disabled={review?.resolved}
           rows={2}
           {...register('content')}
         />
 
         <div className="mt-4 flex gap-2 justify-end">
-          <button disabled={isLoading} type="submit" className="cr-button">
+          <button
+            disabled={isLoading || review?.resolved}
+            type="submit"
+            className="cr-button"
+          >
             Submit
           </button>
           <button
+            disabled={review?.resolved}
             onClick={() => reset({ content: '', reviewId: id })}
             type="button"
             className="cr-button-outline"

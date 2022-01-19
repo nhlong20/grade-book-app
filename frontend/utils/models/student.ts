@@ -1,4 +1,5 @@
 import { Class } from "./class";
+import { Review } from "./review";
 
 export interface Student {
   id: string
@@ -11,6 +12,7 @@ export interface Student {
       id: string
       point: string
       expose: boolean
+      review: Review
     }
   }
 }

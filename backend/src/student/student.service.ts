@@ -104,7 +104,7 @@ export class StudentService {
     let [students, clas] = await Promise.all([
       this.studentRepo.find({
         where: { classId },
-        relations: ['grades', 'grades.struct'],
+        relations: ['grades', 'grades.struct', 'grades.review'],
       }),
       this.classRepo.findOne({
         where: { id: classId },
@@ -122,6 +122,7 @@ export class StudentService {
             point: current.point,
             id: current.id,
             expose: current.expose,
+            review: current.review
           },
         }),
         {},

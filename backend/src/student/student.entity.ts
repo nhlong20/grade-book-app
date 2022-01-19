@@ -8,14 +8,16 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
+  Unique,
 } from 'typeorm'
 
 @Entity()
+@Unique(['id', 'academicId'])
 export class Student extends BaseEntity {
   @Column()
   name: string
 
-  @Column({ unique: true })
+  @Column()
   academicId: string
 
   @Column({ type: 'uuid', select: false })

@@ -2,6 +2,7 @@ import { useAuth } from '@utils/hooks/useAuth'
 import { Class } from '@utils/models/class'
 import { Student } from '@utils/models/student'
 import { Modal } from 'antd'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useMemo } from 'react'
 import { useQuery } from 'react-query'
@@ -18,10 +19,10 @@ export default function ViewGradeDetail({
   selectedStudentId,
 }: Props) {
   const { query } = useRouter()
-  const id = query.id as string
+  const classId = query.id as string
 
-  const { data: clas } = useQuery<Class>(['class', id], { enabled: false })
-  const { data: students } = useQuery<Student[]>(['students', id], {
+  const { data: clas } = useQuery<Class>(['class', classId], { enabled: false })
+  const { data: students } = useQuery<Student[]>(['students', classId], {
     enabled: false,
   })
 
@@ -35,7 +36,7 @@ export default function ViewGradeDetail({
     [student, clas],
   )
 
-  const {isTeacher} = useAuth()
+  const { isTeacher } = useAuth()
 
   return (
     <Modal visible={visible} onCancel={close} centered footer={null}>
@@ -60,10 +61,25 @@ export default function ViewGradeDetail({
               <div key={struct.id} className="grid grid-cols-2 gap-4 w-full">
                 <span>Struct: {struct.title}</span>
                 <span>
-                  {(student?.grades[struct.id].expose || isTeacher) ? (
+                  {student?.grades[struct.id].expose || isTeacher ? (
                     <span>{student?.grades[struct.id].point} points</span>
                   ) : (
                     'NA'
+                  )}
+
+                  {student?.grades[struct.id].review && (
+                    <Link
+                      href={`/class/${classId}/review/${
+                        student?.grades[struct.id].review.id
+                      }`}
+                    >
+                      <button
+                        title="This grade has a review request"
+                        className="cr-button ml-2 !p-1 w-8 h-8 inline-grid place-content-center rounded-full"
+                      >
+                        <span className="fa fa-exclamation" />
+                      </button>
+                    </Link>
                   )}
                 </span>
               </div>

@@ -112,7 +112,7 @@ export class ReviewService {
     if (
       !review.grade.student.class.teachers.some(
         ({ id }) => id === req.user.id,
-      ) ||
+      ) &&
       review.owner.id !== req.user.id
     )
       throw new ForbiddenException('You can not do this')

@@ -1,4 +1,4 @@
-import { Avatar } from 'antd'
+import { Avatar, notification } from 'antd'
 import { useTypedSession } from '@utils/hooks/useTypedSession'
 import { signout } from 'next-auth/client'
 import { MouseEvent, useCallback, useEffect, useState } from 'react'
@@ -35,15 +35,31 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 }
 
 export default function Header({ title }: Props) {
+  const [isRead, setIsRead] = useState(false)
+
   const { data: notifications, refetch } = useQuery(
     'notifications',
     getReceivedNotification(),
-    { enabled: false },
+    {
+      enabled: false,
+      onSuccess() {
+        setIsRead(false)
+      },
+    },
   )
+
+  console.log({ notifications })
+
   const [session] = useTypedSession()
   const [seed] = useState(Math.random())
   const [visible, setVisible] = useState(false)
   const [showNotiList, setShowNotiList] = useState(false)
+
+  useEffect(() => {
+    if (showNotiList) {
+      setIsRead(true)
+    }
+  }, [showNotiList])
 
   const toggle = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
@@ -71,7 +87,7 @@ export default function Header({ title }: Props) {
   useEffect(() => {
     if (!session) return
 
-    const eventSource = new EventSource(API + '/api/subscribe', {
+    const eventSource = new EventSource(API + '/subscribe', {
       withCredentials: true,
     })
 
@@ -99,8 +115,11 @@ export default function Header({ title }: Props) {
           <Avatar src={`https://avatars.dicebear.com/api/bottts/${seed}.svg`} />
         </button>
 
-        <button onClick={toggleNotiList}>
+        <button className="relative" onClick={toggleNotiList}>
           <span className="fas fa-bell fa-lg mr-2 mt-2" />
+          {!isRead && (
+            <span className="absolute bg-green-600 top-0 right-0 w-3 h-3 rounded-full" />
+          )}
         </button>
 
         {visible && (
@@ -137,7 +156,7 @@ export default function Header({ title }: Props) {
               </div>
             )}
 
-            {notifications?.map(({ actor, message }) => (
+            {notifications?.map(({ message }) => (
               <div className="py-2">
                 <div className="font-semibold text-blue-600">
                   {message.title}

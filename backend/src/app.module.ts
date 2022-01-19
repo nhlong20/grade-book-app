@@ -15,6 +15,7 @@ import { ReviewModule } from './review/review.module'
 import { AdminModule } from './admin/admin.module'
 import { NotiModule } from './noti/noti.module'
 import { EventEmitterModule } from '@nestjs/event-emitter'
+import { GlobalModule } from './global/global.module'
 
 @Module({
   imports: [
@@ -38,7 +39,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter'
     ReviewModule,
     AdminModule,
     NotiModule,
-
+    GlobalModule,
     JwtModule.register({ secret: process.env.JWT_SECRET }),
     MulterModule.register({
       storage: memoryStorage(),

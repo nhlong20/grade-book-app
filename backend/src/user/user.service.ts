@@ -8,11 +8,13 @@ import { compare, hash } from 'bcrypt'
 import { randomBytes } from 'crypto'
 import { MailService } from '@/mail/mail.service'
 import moment from 'moment'
+import { Noti } from '@/noti/noti.entity'
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepo: Repository<User>,
+    @InjectRepository(Noti) private notiRepo: Repository<Noti>,
     private mailService: MailService,
   ) {}
 
@@ -36,15 +38,12 @@ export class UserService {
   }
 
   async getUserNotifications(req: AuthRequest) {
-    const user = await this.userRepo.findOne({
-      where: { email: req.user.email },
-      relations: [
-        'receivedNotifications',
-        'receivedNotifications.message',
-        'receivedNotifications.actor'
-      ],
-    })
-    return user.receivedNotifications
+   return this.notiRepo.find({
+     where: {
+       actorId: req.user.id
+     },
+     relations: ['message', 'actor']
+   })
   }
 
   async changePassword(req: AuthRequest, dto: DTO.User.ChangePassword) {
